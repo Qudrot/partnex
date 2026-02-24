@@ -5,7 +5,7 @@ part 'credibility_score.g.dart';
 enum RiskLevel {
     @JsonValue("low") low,
     @JsonValue("medium") medium,
-    @JsonValue("High") high,
+    @JsonValue("high") high,
 }
 
 @JsonSerializable()
@@ -13,22 +13,18 @@ class CredibilityScore {
   final String id;
   final String organisationId;
   final double totalScore;
-  final double financialHeadlthScore;
-  final double transparencyScore;
-  final double impactScore;
   final RiskLevel riskLevel;
-  final String explanation;
+  final List<String> topContributingFactors;
+  final String? generalExplanation;
   final DateTime calculatedAt;
 
   CredibilityScore({
     required this.id,
     required this.organisationId,
     required this.totalScore,
-    required this.financialHeadlthScore,
-    required this.transparencyScore,
-    required this.impactScore,
     required this.riskLevel,
-    required this.explanation,
+    required this.topContributingFactors,
+    this.generalExplanation,
     required this.calculatedAt,
   });
 
