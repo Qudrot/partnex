@@ -39,12 +39,12 @@ class CustomInputField extends StatelessWidget {
           validator: validator,
           maxLines: maxLines,
           onChanged: onChanged,
-          style: AppTypography.textTheme.bodyLarge?.copyWith(
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.slate900,
           ),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate400,
             ),
             errorText: errorText,
@@ -52,10 +52,15 @@ class CustomInputField extends StatelessWidget {
               color: AppColors.dangerRed,
             ),
             filled: true,
-            fillColor: AppColors.slate100,
+            fillColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              if (states.contains(MaterialState.error) || states.contains(MaterialState.focused)) {
+                return AppColors.slate50;
+              }
+              return AppColors.slate100;
+            }),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 12,
-              horizontal: 14,
+              horizontal: 16,
             ),
             suffixIcon: suffixIcon,
             border: OutlineInputBorder(

@@ -65,8 +65,8 @@ class _OptionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.trustBlue.withOpacity(0.1)
-              : AppColors.slate50,
+              ? AppColors.trustBlue.withValues(alpha: 0.1)
+              : AppColors.neutralWhite,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isSelected ? AppColors.trustBlue : AppColors.slate200,

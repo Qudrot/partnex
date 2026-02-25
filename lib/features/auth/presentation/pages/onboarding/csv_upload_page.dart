@@ -309,7 +309,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: CustomButton(
-                        text: 'Confirm & Continue',
+                        text: 'Continue',
                         variant: ButtonVariant.primary,
                         isDisabled: !_isSuccess,
                         onPressed: () {

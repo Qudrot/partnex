@@ -5,19 +5,50 @@ import 'package:partnest/core/theme/app_typography.dart';
 import 'package:partnest/core/theme/widgets/custom_button.dart';
 import 'package:partnest/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
 import 'package:partnest/features/auth/presentation/pages/dashboard/profile_management_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
+import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_state.dart';
+import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:intl/intl.dart';
 
 class CredibilityDashboardPage extends StatelessWidget {
   const CredibilityDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy Data
-    final int score = 85;
-    final String riskLevel = 'Low Risk';
-    final Color riskColor = AppColors.successGreen;
+    return BlocBuilder<ScoreCubit, ScoreState>(
+      builder: (context, state) {
+        if (state is ScoreLoading || state is ScoreInitial) {
+          return const Scaffold(
+            backgroundColor: Colors.white,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+        if (state is ScoreError) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Center(child: Text('Error loading score: ${state.message}')),
+          );
+        }
+
+        final scoreData = (state as ScoreLoadedSuccess).score;
+
+        String riskLevelString = 'High Risk';
+        Color riskColor = AppColors.dangerRed;
+
+        if (scoreData.riskLevel == RiskLevel.low) {
+          riskLevelString = 'Low Risk';
+          riskColor = AppColors.successGreen;
+        } else if (scoreData.riskLevel == RiskLevel.medium) {
+          riskLevelString = 'Medium Risk';
+          riskColor = AppColors.warningAmber;
+        }
+
+        final formattedDate = DateFormat('MMM d, yyyy \\at h:mm a').format(scoreData.calculatedAt);
+
+        return Scaffold(
+          backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -68,7 +99,7 @@ class CredibilityDashboardPage extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          score.toString(),
+                          scoreData.totalScore.toInt().toString(),
                           style: AppTypography.textTheme.displayLarge?.copyWith(
                             fontSize: 56,
                             color: Colors.white,
@@ -84,7 +115,7 @@ class CredibilityDashboardPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        riskLevel,
+                        riskLevelString,
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -98,7 +129,7 @@ class CredibilityDashboardPage extends StatelessWidget {
                         const Icon(LucideIcons.calendar, size: 16, color: AppColors.slate400),
                         const SizedBox(width: 6),
                         Text(
-                          'Generated on Feb 24, 2026 at 10:45 AM',
+                          'Generated on $formattedDate',
                           style: AppTypography.textTheme.bodySmall?.copyWith(
                             color: AppColors.slate600,
                           ),
@@ -180,38 +211,41 @@ class CredibilityDashboardPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _DriverCard(
-                      rank: '1st',
-                      title: 'Revenue Consistency',
-                      contribution: '+18 points',
-                      contributionColor: AppColors.successGreen,
-                      icon: LucideIcons.trendingUp,
-                      iconColor: AppColors.successGreen,
-                      status: 'Positive',
-                      explanation: 'Your revenue has remained stable over the past 3 years, indicating business resilience.',
-                    ),
+                    if (scoreData.topContributingFactors.isNotEmpty)
+                      _DriverCard(
+                        rank: '1st',
+                        title: 'Years of Operation',
+                        contribution: 'High Impact',
+                        contributionColor: AppColors.successGreen,
+                        icon: LucideIcons.calendarClock,
+                        iconColor: AppColors.successGreen,
+                        status: 'Positive',
+                        explanation: scoreData.topContributingFactors[0],
+                      ),
                     const SizedBox(height: 12),
-                    _DriverCard(
-                      rank: '2nd',
-                      title: 'Expense Ratio',
-                      contribution: '+12 points',
-                      contributionColor: AppColors.trustBlue,
-                      icon: LucideIcons.pieChart,
-                      iconColor: AppColors.trustBlue,
-                      status: 'Neutral',
-                      explanation: 'Your expense-to-revenue ratio is within healthy range (60%), indicating good cost management.',
-                    ),
+                    if (scoreData.topContributingFactors.length > 1)
+                      _DriverCard(
+                        rank: '2nd',
+                        title: 'Company Scale',
+                        contribution: 'High Impact',
+                        contributionColor: AppColors.trustBlue,
+                        icon: LucideIcons.users,
+                        iconColor: AppColors.trustBlue,
+                        status: 'Neutral',
+                        explanation: scoreData.topContributingFactors[1],
+                      ),
                     const SizedBox(height: 12),
-                    _DriverCard(
-                      rank: '3rd',
-                      title: 'Repayment Behavior',
-                      contribution: '+10 points',
-                      contributionColor: AppColors.successGreen,
-                      icon: LucideIcons.checkCircle,
-                      iconColor: AppColors.successGreen,
-                      status: 'Positive',
-                      explanation: 'You have a strong history of on-time payments, demonstrating financial reliability.',
-                    ),
+                    if (scoreData.generalExplanation?.isNotEmpty == true)
+                      _DriverCard(
+                        rank: 'Data Notice',
+                        title: 'AI MVP Boundary',
+                        contribution: 'Limited Data Scope',
+                        contributionColor: AppColors.warningAmber,
+                        icon: LucideIcons.info,
+                        iconColor: AppColors.warningAmber,
+                        status: 'Notice',
+                        explanation: scoreData.generalExplanation ?? '',
+                      ),
                   ],
                 ),
               ),
@@ -258,7 +292,9 @@ class CredibilityDashboardPage extends StatelessWidget {
           ),
         ),
       ),
-    );
+     );
+    },
+   );
   }
 }
 

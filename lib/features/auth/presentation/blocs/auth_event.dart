@@ -17,6 +17,8 @@ class LoginEvent extends AuthEvent {
   List<Object?> get props => [email, password];
 }
 
+class LogoutEvent extends AuthEvent {}
+
 class SignupEvent extends AuthEvent {
   final String name;
   final String email;

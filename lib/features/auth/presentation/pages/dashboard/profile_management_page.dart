@@ -3,6 +3,11 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnest/core/theme/app_colors.dart';
 import 'package:partnest/core/theme/app_typography.dart';
 import 'package:partnest/core/theme/widgets/custom_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnest/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnest/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnest/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnest/features/auth/presentation/pages/onboarding/welcome_role_selection_page.dart';
 
 class ProfileManagementPage extends StatefulWidget {
   const ProfileManagementPage({super.key});
@@ -17,8 +22,21 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.slate50,
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthUnauthenticated) {
+          // Navigate to welcome page and clear navigation stack
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const WelcomeRoleSelectionPage(),
+            ),
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.slate50,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
@@ -224,7 +242,9 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             const SizedBox(height: 24),
             Center(
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<AuthBloc>().add(LogoutEvent());
+                },
                 icon: const Icon(LucideIcons.logOut, size: 16, color: AppColors.slate600),
                 label: Text(
                   'Log Out',
@@ -239,6 +259,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           ],
         ),
       ),
+    ),
     );
   }
 }

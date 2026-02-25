@@ -36,7 +36,6 @@ class CustomBadge extends StatelessWidget {
         text.toUpperCase(),
         style: AppTypography.textTheme.labelLarge?.copyWith(
           color: textColor,
-          letterSpacing: 0.5,
         ),
       ),
     );
@@ -60,7 +59,6 @@ class NeutralBadge extends StatelessWidget {
         text.toUpperCase(),
         style: AppTypography.textTheme.labelLarge?.copyWith(
           color: AppColors.slate900,
-          letterSpacing: 0.5,
         ),
       ),
     );

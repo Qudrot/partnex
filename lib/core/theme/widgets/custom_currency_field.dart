@@ -42,16 +42,16 @@ class CustomCurrencyField extends StatelessWidget {
           onChanged: onChanged,
           validator: validator,
           textAlign: TextAlign.right,
-          style: AppTypography.textTheme.bodyLarge?.copyWith(
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.slate900,
           ),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate400,
             ),
             prefixText: prefixText,
-            prefixStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            prefixStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate600,
             ),
             errorText: errorText,
@@ -59,10 +59,15 @@ class CustomCurrencyField extends StatelessWidget {
               color: AppColors.dangerRed,
             ),
             filled: true,
-            fillColor: AppColors.slate100,
+            fillColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              if (states.contains(MaterialState.error) || states.contains(MaterialState.focused)) {
+                return AppColors.slate50;
+              }
+              return AppColors.slate100;
+            }),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 12,
-              horizontal: 14,
+              horizontal: 16,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),

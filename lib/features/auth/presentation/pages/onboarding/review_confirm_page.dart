@@ -7,6 +7,7 @@ import 'package:partnest/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnest/features/auth/presentation/pages/onboarding/success_next_steps_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnest/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnest/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:partnest/features/auth/presentation/blocs/auth_event.dart';
 import 'package:partnest/features/auth/presentation/blocs/auth_state.dart';
@@ -104,6 +105,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is SmeProfileSubmittedSuccess) {
+          // Inject the newly generated AI Score into our global Score Tracker
+          context.read<ScoreCubit>().loadScore(state.score);
+          
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const SuccessNextStepsPage()),
@@ -272,7 +276,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: CustomButton(
-                      text: 'Submit & Generate Score',
+                      text: 'Generate Score',
                       variant: ButtonVariant.primary,
                       isDisabled: !_isConfirmed || _isSubmitting,
                       isLoading: _isSubmitting,
