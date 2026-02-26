@@ -1,0 +1,11 @@
+﻿Analyzing csv_upload_page.dart...
+
+  error - csv_upload_page.dart:58:56 - The name 'CsvToListConverter' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+  error - csv_upload_page.dart:141:19 - The named parameter 'color' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'color'. - undefined_named_parameter
+  error - csv_upload_page.dart:142:19 - The named parameter 'strokeWidth' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'strokeWidth'. - undefined_named_parameter
+  error - csv_upload_page.dart:143:19 - The named parameter 'dashPattern' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'dashPattern'. - undefined_named_parameter
+  error - csv_upload_page.dart:144:19 - The named parameter 'borderType' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'borderType'. - undefined_named_parameter
+  error - csv_upload_page.dart:144:31 - Undefined name 'BorderType'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - csv_upload_page.dart:145:19 - The named parameter 'radius' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'radius'. - undefined_named_parameter
+
+7 issues found.

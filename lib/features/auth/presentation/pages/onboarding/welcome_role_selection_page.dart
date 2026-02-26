@@ -82,35 +82,35 @@ class WelcomeRoleSelectionPage extends StatelessWidget {
               ),
 
               // Footer
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0, top: 16.0),
-                child: Text.rich(
-                  TextSpan(
-                    text: 'By continuing, you agree to our ',
-                    style: AppTypography.textTheme.bodySmall?.copyWith(
-                      color: AppColors.slate600,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Terms of Service',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.trustBlue,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.trustBlue,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 24.0, top: 16.0),
+              //   child: Text.rich(
+              //     TextSpan(
+              //       text: 'By continuing, you agree to our ',
+              //       style: AppTypography.textTheme.bodySmall?.copyWith(
+              //         color: AppColors.slate600,
+              //       ),
+              //       children: [
+              //         TextSpan(
+              //           text: 'Terms of Service',
+              //           style: AppTypography.textTheme.bodySmall?.copyWith(
+              //             color: AppColors.trustBlue,
+              //             fontWeight: FontWeight.w500,
+              //           ),
+              //         ),
+              //         const TextSpan(text: ' and '),
+              //         TextSpan(
+              //           text: 'Privacy Policy',
+              //           style: AppTypography.textTheme.bodySmall?.copyWith(
+              //             color: AppColors.trustBlue,
+              //             fontWeight: FontWeight.w500,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //     textAlign: TextAlign.center,
+              //   ),
+              // ),
             ],
           ),
         ),

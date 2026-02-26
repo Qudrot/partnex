@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnest/core/theme/app_colors.dart';
@@ -17,26 +22,72 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
   bool _isUploading = false;
   bool _isSuccess = false;
   bool _isError = false;
+  String _errorMessage = '';
+  String _fileName = '';
+  List<List<dynamic>> _parsedData = [];
 
-  void _simulateUpload() async {
-    setState(() {
-      _isUploading = true;
-      _isSuccess = false;
-      _isError = false;
-    });
+  void _pickAndParseFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+        withData: true,
+      );
 
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+      if (result != null) {
+        setState(() {
+          _isUploading = true;
+          _isSuccess = false;
+          _isError = false;
+          _errorMessage = '';
+        });
 
-    setState(() {
-      _isUploading = false;
-      _isSuccess = true;
-    });
+        final file = result.files.single;
+        setState(() => _fileName = file.name);
+
+        String csvString = '';
+        if (file.bytes != null) {
+          csvString = utf8.decode(file.bytes!);
+        } else if (file.path != null) {
+          csvString = await File(file.path!).readAsString();
+        } else {
+          throw Exception("Could not read file data.");
+        }
+
+        // Parse CSV
+        List<List<dynamic>> rowsAsListOfValues = CsvCodec().decoder.convert(csvString);
+
+        if (rowsAsListOfValues.isEmpty) {
+          throw Exception("The CSV file is empty.");
+        }
+
+        // Simulate slight parsing delay for UX
+        await Future.delayed(const Duration(milliseconds: 600));
+
+        if (mounted) {
+           setState(() {
+             _parsedData = rowsAsListOfValues;
+             _isUploading = false;
+             _isSuccess = true;
+           });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+         setState(() {
+           _isUploading = false;
+           _isError = true;
+           _errorMessage = 'Error parsing file. Please check the format. Details: ${e.toString()}';
+           _isSuccess = false;
+         });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.neutralWhite,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -46,14 +97,16 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         ),
         title: Text(
           'Upload Financial Data',
-          style: AppTypography.textTheme.headlineMedium,
+          style: AppTypography.textTheme.headlineMedium?.copyWith(
+             fontSize: 16,
+             color: AppColors.slate900,
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.x, color: AppColors.slate900),
             onPressed: () {
-              // TODO: Handle Close onboarding flow
               Navigator.pop(context);
             },
           ),
@@ -83,8 +136,14 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
 
               // Upload Area
               GestureDetector(
-                onTap: _isUploading ? null : _simulateUpload,
+                onTap: _isUploading ? null : _pickAndParseFile,
                 child: DottedBorder(
+                  options: const RoundedRectDottedBorderOptions(
+                    radius: Radius.circular(8),
+                    color: AppColors.slate300,
+                    strokeWidth: 2,
+                    dashPattern: [6, 6],
+                  ),
                   child: Container(
                     height: 200,
                     width: double.infinity,
@@ -94,21 +153,26 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                     ),
                     child: _isUploading
                         ? const Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.trustBlue,
+                            child: Column(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                  CircularProgressIndicator(color: AppColors.trustBlue),
+                                  SizedBox(height: 16),
+                                  Text('Parsing data...', style: TextStyle(color: AppColors.slate600)),
+                               ],
                             ),
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(
-                                LucideIcons.upload,
-                                size: 32,
-                                color: AppColors.slate600,
+                                LucideIcons.uploadCloud,
+                                size: 48,
+                                color: AppColors.trustBlue,
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Drag and drop your CSV file here',
+                                'Tap to upload from your device',
                                 style: AppTypography.textTheme.bodyLarge
                                     ?.copyWith(
                                       color: AppColors.slate900,
@@ -116,12 +180,6 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                                     ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                'or click to browse',
-                                style: AppTypography.textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.slate600),
-                              ),
-                              const SizedBox(height: 16),
                               Text(
                                 '.csv files only • Max 5 MB',
                                 style: AppTypography.textTheme.bodySmall
@@ -145,7 +203,10 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                   const SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      // TODO: Download CSV template
+                      // TODO: Download CSV template (link to external bucket or save local asset)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                         const SnackBar(content: Text('Downloading template... (Mock)'), behavior: SnackBarBehavior.floating),
+                      );
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -156,6 +217,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                       'Download CSV template',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         color: AppColors.trustBlue,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -168,10 +230,10 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.successGreen.withOpacity(0.1),
+                    color: AppColors.successGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: AppColors.successGreen.withOpacity(0.5),
+                      color: AppColors.successGreen.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Row(
@@ -184,7 +246,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'File parsed successfully. 5 rows detected.',
+                          '$_fileName parsed successfully. ${_parsedData.length} total rows detected.',
                           style: AppTypography.textTheme.bodyMedium?.copyWith(
                             color: AppColors.successGreen,
                             fontWeight: FontWeight.w500,
@@ -199,10 +261,10 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.dangerRed.withOpacity(0.1),
+                    color: AppColors.dangerRed.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: AppColors.dangerRed.withOpacity(0.5),
+                      color: AppColors.dangerRed.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Row(
@@ -215,8 +277,8 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Error parsing file. Please check the format and try again.',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          _errorMessage,
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
                             color: AppColors.dangerRed,
                             fontWeight: FontWeight.w500,
                           ),
@@ -228,14 +290,14 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
 
               const SizedBox(height: 24),
 
-              // Data Preview (Mock)
-              if (_isSuccess)
+              // Data Preview (Dynamic)
+              if (_isSuccess && _parsedData.isNotEmpty)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Data Preview',
+                        'Data Preview (first few rows)',
                         style: AppTypography.textTheme.labelLarge,
                       ),
                       const SizedBox(height: 8),
@@ -244,46 +306,12 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                           decoration: BoxDecoration(
                             border: Border.all(color: AppColors.slate200),
                             borderRadius: BorderRadius.circular(6),
+                            color: Colors.white,
                           ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: SingleChildScrollView(
-                              child: DataTable(
-                                headingRowHeight: 40,
-                                dataRowMinHeight: 40,
-                                dataRowMaxHeight: 40,
-                                headingTextStyle: AppTypography
-                                    .textTheme
-                                    .labelMedium
-                                    ?.copyWith(color: AppColors.slate600),
-                                dataTextStyle: AppTypography.textTheme.bodySmall
-                                    ?.copyWith(color: AppColors.slate900),
-                                columns: const [
-                                  DataColumn(label: Text('Business Name')),
-                                  DataColumn(label: Text('Industry')),
-                                  DataColumn(label: Text('Annual Rev')),
-                                  DataColumn(label: Text('Annual Exp')),
-                                ],
-                                rows: List.generate(
-                                  3,
-                                  (index) => DataRow(
-                                    color:
-                                        MaterialStateProperty.resolveWith<
-                                          Color?
-                                        >((Set<MaterialState> states) {
-                                          return index.isEven
-                                              ? AppColors.slate50
-                                              : AppColors.neutralWhite;
-                                        }),
-                                    cells: const [
-                                      DataCell(Text('Acme Mfg')),
-                                      DataCell(Text('Manufacturing')),
-                                      DataCell(Text('500,000')),
-                                      DataCell(Text('300,000')),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              child: _buildDynamicDataTable(),
                             ),
                           ),
                         ),
@@ -330,5 +358,37 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildDynamicDataTable() {
+     if (_parsedData.isEmpty) return const SizedBox();
+
+     final headers = _parsedData.first;
+     final displayRows = _parsedData.length > 1 ? _parsedData.skip(1).take(5).toList() : <List<dynamic>>[];
+
+     return DataTable(
+        headingRowHeight: 40,
+        dataRowMinHeight: 40,
+        dataRowMaxHeight: 40,
+        headingTextStyle: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600, fontWeight: FontWeight.w700),
+        dataTextStyle: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.slate900),
+        columns: headers.map((header) {
+           return DataColumn(label: Text(header.toString()));
+        }).toList(),
+        rows: displayRows.asMap().entries.map((entry) {
+            int idx = entry.key;
+            List<dynamic> row = entry.value;
+
+            return DataRow(
+                color: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                  return idx.isEven ? AppColors.slate50 : AppColors.neutralWhite;
+                }),
+                cells: List.generate(headers.length, (colIdx) {
+                    final cellValue = colIdx < row.length ? row[colIdx].toString() : '';
+                    return DataCell(Text(cellValue, overflow: TextOverflow.ellipsis));
+                }),
+            );
+        }).toList(),
+     );
   }
 }
