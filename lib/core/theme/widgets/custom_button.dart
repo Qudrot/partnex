@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
 
 enum ButtonVariant { primary, secondary, tertiary, danger }
 

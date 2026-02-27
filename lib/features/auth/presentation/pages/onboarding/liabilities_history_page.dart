@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/core/theme/widgets/custom_currency_field.dart';
-import 'package:partnest/core/theme/widgets/custom_input_field.dart';
-import 'package:partnest/core/theme/widgets/custom_progress_indicator.dart';
-import 'package:partnest/core/theme/widgets/custom_yes_no_field.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_currency_field.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
+import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
+import 'package:partnex/core/theme/widgets/custom_yes_no_field.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnest/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 
 class LiabilitiesHistoryPage extends StatefulWidget {
   const LiabilitiesHistoryPage({super.key});

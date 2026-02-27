@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
-import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
-import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_state.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 class SuccessNextStepsPage extends StatefulWidget {
   const SuccessNextStepsPage({super.key});
@@ -209,11 +209,13 @@ class _SuccessNextStepsPageState extends State<SuccessNextStepsPage> with Single
             children: [
               const Icon(LucideIcons.lock, size: 16, color: AppColors.slate400),
               const SizedBox(width: 8),
-              Text(
-                'Your data is securely encrypted and processed on our servers.',
-                style: AppTypography.textTheme.bodySmall?.copyWith(
-                  color: AppColors.slate600,
-                  fontSize: 12,
+              Flexible(
+                child: Text(
+                  'Your data is securely encrypted and processed on our servers.',
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: AppColors.slate600,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],

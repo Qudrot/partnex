@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_state.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 class ScoreCubit extends Cubit<ScoreState> {
   ScoreCubit() : super(ScoreInitial());

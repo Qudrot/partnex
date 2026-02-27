@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 class CustomBadge extends StatelessWidget {
   final String text;

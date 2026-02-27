@@ -1,6 +1,8 @@
-import 'package:partnest/features/auth/data/models/user_model.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
-import 'package:partnest/features/auth/data/repositories/auth_repository.dart';
+import 'dart:io';
+
+import 'package:partnex/features/auth/data/models/user_model.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
 
 class MockAuthRepository implements AuthRepository {
   
@@ -68,5 +70,25 @@ class MockAuthRepository implements AuthRepository {
       calculatedAt: DateTime.now(),
       topContributingFactors: ["Consistent Revenue Tracking", "Low Liabilities"],
     );
+  }
+
+  @override
+  Future<void> uploadStatementOfAccount(File file) async {
+    // Mock upload delay
+    await Future.delayed(const Duration(seconds: 2));
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getInvestorSmes() async {
+    // Mock investor feed
+    await Future.delayed(const Duration(seconds: 2));
+    return [
+      {
+         "sme_id": "ORG-111",
+         "business_name": "Test Company",
+         "score": 85.0,
+         "risk_level": "LOW",
+      }
+    ];
   }
 }

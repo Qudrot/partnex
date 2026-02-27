@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
-import 'package:partnest/features/auth/presentation/pages/dashboard/profile_management_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/profile_management_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
-import 'package:partnest/features/auth/presentation/blocs/score_cubit/score_state.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 import 'package:intl/intl.dart';
 
 class CredibilityDashboardPage extends StatelessWidget {

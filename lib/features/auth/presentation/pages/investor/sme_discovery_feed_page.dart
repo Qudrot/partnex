@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/partnex_logo.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
 
 class SmeDiscoveryFeedPage extends StatefulWidget {
   const SmeDiscoveryFeedPage({super.key});
@@ -15,10 +16,10 @@ class SmeDiscoveryFeedPage extends StatefulWidget {
 class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
   final List<String> _activeFilters = ['Manufacturing', 'Score: 80+', 'Revenue: ₦500K+'];
 
-  void _navigateToProfile() {
+  void _navigateToProfile(SmeCardData sme) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const SmeProfileExpandedPage()),
+      MaterialPageRoute(builder: (_) => SmeProfileExpandedPage(sme: sme)),
     );
   }
 
@@ -118,7 +119,7 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Row(
         children: [
-          const Icon(LucideIcons.hexagon, color: AppColors.trustBlue, size: 28),
+          const PartnexLogo(size: 32, variant: PartnexLogoVariant.iconOnly),
           const SizedBox(width: 16),
           Expanded(
             child: Container(
@@ -251,7 +252,21 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _navigateToProfile,
+          onTap: () => _navigateToProfile(SmeCardData(
+            companyName: companyName,
+            industry: industry,
+            location: location,
+            employees: employees,
+            revenue: revenue,
+            growthSignal: growthSignal,
+            isGrowthPositive: isGrowthPositive,
+            trustFunded: trustFunded,
+            trustPayments: trustPayments,
+            trustStable: trustStable,
+            score: score,
+            riskLevel: riskLevel,
+            scoreColor: scoreColor,
+          )),
           borderRadius: BorderRadius.circular(8),
           hoverColor: AppColors.slate50,
           child: Padding(

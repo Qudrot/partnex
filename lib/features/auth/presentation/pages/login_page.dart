@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/core/theme/widgets/custom_input_field.dart';
-import 'package:partnest/features/auth/presentation/pages/signup_page.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/welcome_role_selection_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/pages/signup_page.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,8 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _rememberMe = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,28 +31,41 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleSignIn() async {
+  void _handleSignIn() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const WelcomeRoleSelectionPage()),
-      );
+      // Dispatch the real LoginEvent to AuthBloc — this calls the backend API
+      // and stores the JWT token via ApiAuthRepository.
+      context.read<AuthBloc>().add(LoginEvent(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
-      body: SafeArea(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CredibilityDashboardPage()),
+          );
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.dangerRed,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        return Scaffold(
+          backgroundColor: AppColors.neutralWhite,
+          body: SafeArea(
         child: Column(
           children: [
             // Header
@@ -85,8 +100,10 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 8),
+                      // const PartnexLogo(size: 48, variant: PartnexLogoVariant.brandCombo),
+                      // const SizedBox(height: 16),
                       Text(
-                        'Welcome back to Partnex',
+                        'Welcome back',
                         textAlign: TextAlign.center,
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           color: AppColors.slate600,
@@ -137,39 +154,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Checkbox(
-                              value: _rememberMe,
-                              onChanged: (val) {
-                                if (val != null) setState(() => _rememberMe = val);
-                              },
-                              activeColor: AppColors.trustBlue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              side: const BorderSide(color: AppColors.slate200),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Remember me for 30 days',
-                            style: AppTypography.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.slate700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      
                       const SizedBox(height: 24),
                       
                       CustomButton(
                         text: 'Sign In',
                         onPressed: _handleSignIn,
-                        isLoading: _isLoading,
+                        isLoading: isLoading,
                       ),
                       
                       const SizedBox(height: 16),
@@ -207,6 +197,8 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }

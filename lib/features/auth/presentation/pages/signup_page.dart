@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/core/theme/widgets/custom_input_field.dart';
-import 'package:partnest/features/auth/presentation/pages/login_page.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/welcome_role_selection_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/pages/login_page.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/welcome_role_selection_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -23,7 +27,6 @@ class _SignupPageState extends State<SignupPage> {
   
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
 
   // Password Strength
   double _passwordStrength = 0;
@@ -73,28 +76,42 @@ class _SignupPageState extends State<SignupPage> {
     });
   }
 
-  void _handleSignUp() async {
+  void _handleSignUp() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const WelcomeRoleSelectionPage()),
-      );
+      // Dispatch the real SignupEvent to AuthBloc — calls the backend API
+      // and stores the JWT token via ApiAuthRepository.
+      context.read<AuthBloc>().add(SignupEvent(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
-      body: SafeArea(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const WelcomeRoleSelectionPage()),
+          );
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.dangerRed,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        return Scaffold(
+          backgroundColor: AppColors.neutralWhite,
+          body: SafeArea(
         child: Column(
           children: [
             // Header
@@ -134,6 +151,8 @@ class _SignupPageState extends State<SignupPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 8),
+                      // const PartnexLogo(size: 48, variant: PartnexLogoVariant.brandCombo),
+                      // const SizedBox(height: 16),
                       Text(
                         'Join Partnex to unlock funding opportunities',
                         textAlign: TextAlign.center,
@@ -256,8 +275,7 @@ class _SignupPageState extends State<SignupPage> {
                       CustomButton(
                         text: 'Create Account',
                         onPressed: _handleSignUp,
-                        isLoading: _isLoading,
-                        // Terms are assumed accepted by clicking the button in this flow now
+                        isLoading: isLoading,
                       ),
                       
                       const SizedBox(height: 16),
@@ -313,6 +331,8 @@ class _SignupPageState extends State<SignupPage> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
 
 class ComparisonWatchlistPage extends StatefulWidget {
   const ComparisonWatchlistPage({super.key});
@@ -99,7 +99,25 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> with 
   void _navigateToProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const SmeProfileExpandedPage()),
+      MaterialPageRoute(
+        builder: (_) => SmeProfileExpandedPage(
+          sme: const SmeCardData(
+            companyName: 'SME Profile',
+            industry: 'Unknown',
+            location: 'Nigeria',
+            employees: 'N/A',
+            revenue: 'N/A',
+            growthSignal: 'N/A',
+            isGrowthPositive: true,
+            trustFunded: false,
+            trustPayments: false,
+            trustStable: false,
+            score: 0,
+            riskLevel: 'N/A',
+            scoreColor: Color(0xFF94A3B8),
+          ),
+        ),
+      ),
     );
   }
 

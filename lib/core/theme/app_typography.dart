@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:partnest/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_colors.dart';
 
 class AppTypography {
   static final TextTheme textTheme = TextTheme(

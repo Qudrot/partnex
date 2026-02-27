@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnest/features/auth/data/repositories/auth_repository.dart';
+import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 

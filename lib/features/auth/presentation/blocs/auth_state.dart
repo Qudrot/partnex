@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:partnest/features/auth/data/models/user_model.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/data/models/user_model.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();

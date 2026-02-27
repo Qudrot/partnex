@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:partnest/core/network/api_client.dart';
-import 'package:partnest/features/auth/data/models/user_model.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
-import 'package:partnest/features/auth/data/repositories/auth_repository.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:partnex/core/network/api_client.dart';
+import 'package:partnex/features/auth/data/models/user_model.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
 
 /// The official repository that connects your Flutter UI to your
 /// local Express.js & MySQL backend.
 class ApiAuthRepository implements AuthRepository {
   final ApiClient apiClient;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   ApiAuthRepository({required this.apiClient});
 
@@ -16,7 +21,7 @@ class ApiAuthRepository implements AuthRepository {
     try {
       // Calls POST /auth/login on your local backend
       final response = await apiClient.dio.post(
-        '/auth/login',
+        '/api/auth/login',
         data: {
           'email': email,
           'password': password,
@@ -24,6 +29,11 @@ class ApiAuthRepository implements AuthRepository {
       );
 
       // Your backend returns: { user: { id, email, role }, token: "..." }
+      // Log the full response to diagnose any token key mismatches
+      if (kDebugMode) {
+        print('LOGIN RESPONSE DATA: ${response.data}');
+      }
+
       final userData = response.data['user'];
       
       // We map the string role from the backend into our Flutter Enum
@@ -31,7 +41,21 @@ class ApiAuthRepository implements AuthRepository {
       if (userData['role'] == 'sme') parsedRole = UserRole.sme;
       if (userData['role'] == 'investor') parsedRole = UserRole.investor;
 
-      // TODO(Auth): Save response.data['token'] to SecureStorage here!
+      // Resilient token extraction: check multiple possible field names
+      final token = response.data['token'] ??
+          response.data['accessToken'] ??
+          response.data['access_token'] ??
+          response.data['jwt'];
+
+      if (token != null && (token as String).isNotEmpty) {
+        await _secureStorage.write(key: 'jwt_token', value: token);
+        // CRITICAL: Also inject into the live Dio client immediately so
+        // subsequent calls in the same session don't miss the header.
+        apiClient.setToken(token);
+        if (kDebugMode) print('TOKEN STORED + INJECTED: ${token.substring(0, 20)}...');
+      } else {
+        if (kDebugMode) print('WARNING: No token found in login response! Keys: ${response.data.keys}');
+      }
 
       return UserModel(
         id: userData['id'].toString(), // Backend returns int, UserModel expects String
@@ -42,7 +66,10 @@ class ApiAuthRepository implements AuthRepository {
       );
     } catch (e) {
       if (e is DioException) {
-        throw Exception(e.response?.data['message'] ?? 'Failed to login');
+        // Backend may return a Map {"message":"..."} or a raw String
+        final d = e.response?.data;
+        final msg = (d is Map) ? d['message']?.toString() : d?.toString();
+        throw Exception(msg ?? 'Failed to login');
       }
       throw Exception(e.toString());
     }
@@ -58,7 +85,7 @@ class ApiAuthRepository implements AuthRepository {
       // Calls POST /auth/register on your local backend
       // We are hardcoding the role to 'sme' for this MVP onboarding path.
       final response = await apiClient.dio.post(
-        '/auth/register',
+        '/api/auth/register',
         data: {
           'email': email,
           'password': password,
@@ -66,8 +93,28 @@ class ApiAuthRepository implements AuthRepository {
         },
       );
 
+      // Log the full response to diagnose any token key mismatches
+      if (kDebugMode) {
+        print('SIGNUP RESPONSE DATA: ${response.data}');
+      }
+
       // Same payload extraction as login
       final userData = response.data['user'];
+      
+      // Resilient token extraction: check multiple possible field names
+      final token = response.data['token'] ??
+          response.data['accessToken'] ??
+          response.data['access_token'] ??
+          response.data['jwt'];
+
+      if (token != null && (token as String).isNotEmpty) {
+        await _secureStorage.write(key: 'jwt_token', value: token);
+        // CRITICAL: Also inject into the live Dio client immediately.
+        apiClient.setToken(token);
+        if (kDebugMode) print('TOKEN STORED + INJECTED: ${token.substring(0, 20)}...');
+      } else {
+        if (kDebugMode) print('WARNING: No token found in signup response! Keys: ${response.data.keys}');
+      }
 
       return UserModel(
         id: userData['id'].toString(),
@@ -78,7 +125,9 @@ class ApiAuthRepository implements AuthRepository {
       );
     } catch (e) {
       if (e is DioException) {
-        throw Exception(e.response?.data['message'] ?? 'Failed to register');
+        final d = e.response?.data;
+        final msg = (d is Map) ? d['message']?.toString() : d?.toString();
+        throw Exception(msg ?? 'Failed to register');
       }
       throw Exception(e.toString());
     }
@@ -87,75 +136,81 @@ class ApiAuthRepository implements AuthRepository {
   @override
   Future<CredibilityScore> submitSmeProfile(Map<String, dynamic> data) async {
     try {
-      // MVP DIRECT AI INTEGRATION: Bypass db save and hit AI analysis directly
-      // Map the SmeProfileCubit data to the financial numbers the `/api/score/analyze` endpoint expects.
+      // Resolve the token: prefer the static in-memory cache
+      // (set at login/signup), fall back to SecureStorage (app restarts).
+      String? token = apiClient.getCachedToken();
+      if (token == null || token.isEmpty) {
+        token = await _secureStorage.read(key: 'jwt_token');
+      }
 
-      final employees = int.tryParse(data['numberOfEmployees'].toString()) ?? 1;
-      final monthlyRev = double.tryParse(data['monthlyAvgRevenue'].toString()) ?? 0;
-      final monthlyExp = double.tryParse(data['monthlyAvgExpenses'].toString()) ?? 0;
-      final liabilities = double.tryParse(data['existingLiabilities'].toString()) ?? 0;
+      if (kDebugMode) {
+        print('submitSmeProfile token resolved: ${token != null ? '${token.substring(0, 20)}...' : 'NULL'}');
+      }
 
+      if (token == null || token.isEmpty) {
+        throw Exception('Session expired. Please log in again to continue.');
+      }
+
+      // Build explicit auth options for every protected request.
+      // This is the most reliable approach — no interceptor dependency.
+      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
+
+      // 1. Create SME Profile — send ALL required fields in one request
+      final currentYear = DateTime.now().year;
+      final monthlyRev = double.tryParse(data['monthlyAvgRevenue'].toString()) ?? 0.0;
+      final monthlyExp = double.tryParse(data['monthlyAvgExpenses'].toString()) ?? 0.0;
       final annualRevenue = monthlyRev * 12;
-      final annualExpenses = monthlyExp * 12;
-      
-      final expenseRatio = annualRevenue > 0 ? annualExpenses / annualRevenue : 0.5;
-      final profitMargin = annualRevenue > 0 ? (annualRevenue - annualExpenses) / annualRevenue : 0.1;
-      
-      // Rough MVP estimates
-      final annualLoanRepayments = liabilities * 0.2; 
-      final debtServiceRatio = annualRevenue > 0 ? annualLoanRepayments / annualRevenue : 0.1;
-      final transactionActivity = employees * 10;
+      final liabilities = double.tryParse(data['totalLiabilities'].toString()) ?? 0.0;
 
-      final smeFinancialData = {
-        "transaction_activity": transactionActivity,
-        "annual_revenue": annualRevenue,
-        "annual_expenses": annualExpenses,
-        "expense_ratio": expenseRatio,
-        "profit_margin": profitMargin,
-        "annual_loan_repayments": annualLoanRepayments,
-        "debt_service_ratio": debtServiceRatio
-      };
+      await apiClient.dio.post(
+        '/api/sme/profile',
+        data: {
+          "business_name": data['businessName'],
+          "industry_sector": data['industry'],
+          "location": data['location'],
+          "years_of_operation": data['yearsOfOperation'],
+          "number_of_employees": data['numberOfEmployees'],
+          "annual_revenue_year_1": currentYear - 1,
+          "annual_revenue_amount_1": annualRevenue,
+          "annual_revenue_year_2": currentYear,
+          "annual_revenue_amount_2": annualRevenue, // Same estimate for current year
+          "monthly_expenses": monthlyExp,
+          "existing_liabilities": liabilities,
+          "prior_funding_history": data['hasPriorFunding'] == true
+              ? "Received ${data['priorFundingAmount'] ?? 0} from ${data['priorFundingSource'] ?? 'unknown'} in ${data['fundingYear'] ?? 'N/A'}"
+              : "No prior funding",
+        },
+        options: authOptions,
+      );
 
-      print('🚀 SENDING DIRECT AI PAYLOAD: \$smeFinancialData');
+      // 3. Run Credibility Score
+      if (kDebugMode) print('RUNNING SCORE GENERATION');
 
-      final response = await apiClient.dio.post(
-        '/api/score/analyze',
-        data: smeFinancialData,
+      final scoreResponse = await apiClient.dio.post(
+        '/api/score/run',
+        options: authOptions,
       );
       
-      // The backend returns { results: { credibility_score, risk_level, explanation: { strengths, risks } } }
-      final scoreData = response.data['results'];
+      final scoreData = scoreResponse.data;
 
       // Extract risk level string and map to enum
       RiskLevel rLevel = RiskLevel.low;
       if (scoreData['risk_level'] == 'MEDIUM' || scoreData['risk_level'] == 'Medium Risk') rLevel = RiskLevel.medium;
       if (scoreData['risk_level'] == 'HIGH' || scoreData['risk_level'] == 'High Risk') rLevel = RiskLevel.high;
 
-      // Safe extraction of explanation data
-      final explanation = scoreData['explanation'] ?? {};
-      List<String> strengths = [];
-      if (explanation['strengths'] != null) {
-        strengths = List<String>.from(explanation['strengths']);
-      }
-      
-      List<String> risks = [];
-      if (explanation['risks'] != null) {
-        risks = List<String>.from(explanation['risks']);
-      }
-
       return CredibilityScore(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // Dummy ID
-        organisationId: 'direct_analysis',
-        totalScore: (scoreData['credibility_score'] as num).toDouble(),
+        id: DateTime.now().millisecondsSinceEpoch.toString(), 
+        organisationId: scoreData['sme_id']?.toString() ?? 'unknown_sme',
+        totalScore: (scoreData['score'] as num?)?.toDouble() ?? 0.0,
         riskLevel: rLevel,
-        topContributingFactors: strengths,
-        generalExplanation: risks.isNotEmpty ? risks.join('. ') : '',
+        topContributingFactors: [],
+        generalExplanation: "Score generated by ${scoreData['model_version'] ?? 'AI System'}",
         calculatedAt: DateTime.now(),
       );
 
     } catch (e) {
       if (e is DioException) {
-        throw Exception(e.response?.data['message'] ?? 'Failed to generate direct AI score.');
+        throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'Failed to generate credibility score.');
       }
       throw Exception(e.toString());
     }
@@ -169,6 +224,49 @@ class ApiAuthRepository implements AuthRepository {
 
   @override
   Future<void> logout() async {
-    // TODO: Implement clearing token from local storage
+    await _secureStorage.delete(key: 'jwt_token');
+  }
+
+  @override
+  Future<void> uploadStatementOfAccount(File file) async {
+    try {
+      String fileName = file.path.split('/').last;
+      
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(file.path, filename: fileName),
+      });
+
+      await apiClient.dio.post(
+        '/api/soa/upload',
+        data: formData,
+      );
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'Failed to upload statement of account.');
+      }
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getInvestorSmes() async {
+    try {
+      final response = await apiClient.dio.get('/api/investor/smes');
+      final data = response.data;
+      
+      // Ensure we extract a List 
+      if (data is List) {
+        return List<Map<String, dynamic>>.from(data);
+      } else if (data is Map && data.containsKey('data')) {
+        return List<Map<String, dynamic>>.from(data['data']);
+      }
+      
+      return [];
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'Failed to fetch SMEs.');
+      }
+      throw Exception(e.toString());
+    }
   }
 }

@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/core/theme/widgets/custom_dropdown_field.dart';
-import 'package:partnest/core/theme/widgets/custom_input_field.dart';
-import 'package:partnest/core/theme/widgets/custom_progress_indicator.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/revenue_expenses_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_dropdown_field.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
+import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/revenue_expenses_page.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnest/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 
 class BusinessProfilePage extends StatefulWidget {
-  const BusinessProfilePage({super.key});
+  final bool isDocumentUpload;
+
+  const BusinessProfilePage({
+    super.key,
+    this.isDocumentUpload = false,
+  });
 
   @override
   State<BusinessProfilePage> createState() => _BusinessProfilePageState();
@@ -90,10 +96,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               ),
               child: Column(
                 children: [
-                  ProgressIndicatorWidget(progress: 0.20),
+                  ProgressIndicatorWidget(progress: widget.isDocumentUpload ? 0.66 : 0.20),
                   const SizedBox(height: 8),
                   Text(
-                    'Step 1 of 5',
+                    widget.isDocumentUpload ? 'Step 2 of 3' : 'Step 1 of 5',
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       color: AppColors.slate600,
                       fontWeight: FontWeight.w500,
@@ -209,13 +215,21 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             yearsOfOperation: int.parse(_yearsController.text),
                             numberOfEmployees: int.parse(_employeesController.text),
                           );
-                          
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RevenueExpensesPage(),
-                            ),
-                          );
+                          if (widget.isDocumentUpload) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ReviewConfirmPage(isDocumentUpload: true),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RevenueExpensesPage(),
+                              ),
+                            );
+                          }
                         }
                       },
                     ),

@@ -6,10 +6,11 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/business_profile_page.dart';
 
 class CsvUploadPage extends StatefulWidget {
   const CsvUploadPage({super.key});
@@ -118,7 +119,24 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16),
+              // Step indicator for document upload flow
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                child: Column(
+                  children: [
+                    ProgressIndicatorWidget(progress: 0.33),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Step 1 of 3',
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: AppColors.slate600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               Text(
                 'Upload Your Financial Data',
                 style: AppTypography.textTheme.displaySmall,
@@ -344,7 +362,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ReviewConfirmPage(),
+                              builder: (_) => const BusinessProfilePage(isDocumentUpload: true),
                             ),
                           );
                         },

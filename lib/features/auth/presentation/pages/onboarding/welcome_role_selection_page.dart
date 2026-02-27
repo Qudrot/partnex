@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/input_method_selection_page.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/input_method_selection_page.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
 
 class WelcomeRoleSelectionPage extends StatelessWidget {
   const WelcomeRoleSelectionPage({super.key});

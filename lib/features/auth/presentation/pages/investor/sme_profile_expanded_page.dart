@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
 
+// ---------------------------------------------------------------------------
+// Data model passed from the discovery feed into the expanded profile page
+// ---------------------------------------------------------------------------
+class SmeCardData {
+  final String companyName;
+  final String industry;
+  final String location;
+  final String employees;
+  final String revenue;
+  final String growthSignal;
+  final bool isGrowthPositive;
+  final bool trustFunded;
+  final bool trustPayments;
+  final bool trustStable;
+  final int score;
+  final String riskLevel;
+  final Color scoreColor;
+
+  const SmeCardData({
+    required this.companyName,
+    required this.industry,
+    required this.location,
+    required this.employees,
+    required this.revenue,
+    required this.growthSignal,
+    required this.isGrowthPositive,
+    required this.trustFunded,
+    required this.trustPayments,
+    required this.trustStable,
+    required this.score,
+    required this.riskLevel,
+    required this.scoreColor,
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Message SME Bottom Sheet (Screen 14B)
+// ---------------------------------------------------------------------------
 class MessageSmeBottomSheet extends StatefulWidget {
   final String companyName;
 
@@ -16,11 +53,10 @@ class MessageSmeBottomSheet extends StatefulWidget {
 }
 
 class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
-  final String defaultMessageTemplate = "Hi {company}, I'm interested in learning more about your business and potential investment opportunities. Your credibility score caught my attention. Let's connect!";
-
   @override
   Widget build(BuildContext context) {
-    String formattedMessage = defaultMessageTemplate.replaceAll('{company}', widget.companyName);
+    final message =
+        "Hi ${widget.companyName}, I'm interested in learning more about your business and potential investment opportunities. Your credibility score caught my attention. Let's connect!";
 
     return Container(
       decoration: const BoxDecoration(
@@ -33,10 +69,9 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Wrap content tightly vertically
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -70,20 +105,34 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
               ],
             ),
             const SizedBox(height: 16),
-
-            // Social Media Options Grid
             Row(
               children: [
-                Expanded(child: _buildSocialOption('WhatsApp', Icons.call, const Color(0xFF25D366), 'WhatsApp')), // Use generic icon since Lucide lacks WhatsApp
+                Expanded(
+                  child: _buildSocialOption(
+                    'WhatsApp',
+                    Icons.call,
+                    const Color(0xFF25D366),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildSocialOption('LinkedIn', LucideIcons.linkedin, const Color(0xFF0A66C2), 'LinkedIn')),
+                Expanded(
+                  child: _buildSocialOption(
+                    'LinkedIn',
+                    LucideIcons.linkedin,
+                    const Color(0xFF0A66C2),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildSocialOption('Twitter', LucideIcons.twitter, const Color(0xFF1DA1F2), 'Twitter')),
+                Expanded(
+                  child: _buildSocialOption(
+                    'Twitter',
+                    LucideIcons.twitter,
+                    const Color(0xFF1DA1F2),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 24),
-
-            // Pre-Filled Message
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -94,7 +143,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    formattedMessage,
+                    message,
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       fontSize: 12,
                       color: AppColors.slate600,
@@ -102,24 +151,30 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                   ),
                   const SizedBox(height: 8),
                   InkWell(
-                    onTap: () {}, // Action to edit message
+                    onTap: () {},
                     child: Text(
-                        'Edit message',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          fontSize: 12,
-                          color: AppColors.trustBlue,
-                        ),
+                      'Edit message',
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        fontSize: 12,
+                        color: AppColors.trustBlue,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-
-            // Direct Contact Information
-            _buildDirectContact('Email', 'contact@acmemanufacturing.com', LucideIcons.mail),
+            _buildDirectContact(
+              'Email',
+              'contact@${widget.companyName.toLowerCase().replaceAll(' ', '')}.com',
+              LucideIcons.mail,
+            ),
             const SizedBox(height: 12),
-            _buildDirectContact('Phone', '+234 (0) 123 456 7890', LucideIcons.phone),
+            _buildDirectContact(
+              'Phone',
+              '+234 (0) 123 456 7890',
+              LucideIcons.phone,
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -127,11 +182,15 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
     );
   }
 
-  Widget _buildSocialOption(String label, IconData iconData, Color colorHex, String tooltip) {
+  Widget _buildSocialOption(
+    String label,
+    IconData iconData,
+    Color colorHex,
+  ) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {}, // Action to open native app
+        onTap: () {},
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -168,21 +227,21 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
-               label,
-               style: AppTypography.textTheme.labelSmall?.copyWith(
-                 color: AppColors.slate600,
-                 fontSize: 12,
-               ),
-             ),
-             Text(
-               value,
-               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                 color: AppColors.slate900,
-                 fontWeight: FontWeight.w600,
-                 fontSize: 14,
-               ),
-             ),
+            Text(
+              label,
+              style: AppTypography.textTheme.labelSmall?.copyWith(
+                color: AppColors.slate600,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              value,
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.slate900,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
           ],
         ),
       ],
@@ -190,9 +249,14 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
   }
 }
 
-
+// ---------------------------------------------------------------------------
+// SME Profile Expanded Page (Screen 14)
+// ---------------------------------------------------------------------------
 class SmeProfileExpandedPage extends StatefulWidget {
-  const SmeProfileExpandedPage({super.key});
+  /// Real SME data passed from the discovery feed card.
+  final SmeCardData sme;
+
+  const SmeProfileExpandedPage({super.key, required this.sme});
 
   @override
   State<SmeProfileExpandedPage> createState() => _SmeProfileExpandedPageState();
@@ -200,6 +264,14 @@ class SmeProfileExpandedPage extends StatefulWidget {
 
 class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
   bool _isWatchlisted = false;
+
+  String get _initials {
+    final parts = widget.sme.companyName.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return parts[0].substring(0, parts[0].length.clamp(0, 2)).toUpperCase();
+  }
 
   void _navigateToEvidence() {
     Navigator.push(
@@ -209,24 +281,23 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
   }
 
   void _openMessageSheet() {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent, // Let Container handle rounding
-        builder: (context) => const MessageSmeBottomSheet(companyName: 'Acme Manufacturing'),
-      );
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          MessageSmeBottomSheet(companyName: widget.sme.companyName),
+    );
   }
 
   void _toggleWatchlist() {
-    setState(() {
-      _isWatchlisted = !_isWatchlisted;
-    });
-    
+    setState(() => _isWatchlisted = !_isWatchlisted);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           _isWatchlisted ? 'Added to watchlist' : 'Removed from watchlist',
-          style: AppTypography.textTheme.bodyMedium?.copyWith(color: Colors.white),
+          style: AppTypography.textTheme.bodyMedium
+              ?.copyWith(color: Colors.white),
         ),
         backgroundColor: AppColors.slate900,
         behavior: SnackBarBehavior.floating,
@@ -241,15 +312,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0, // Removed elevation as per modern minimalist trends implicitly
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon:
+              const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'SME Profile',
           style: AppTypography.textTheme.headlineMedium?.copyWith(
-            fontSize: 16, // Typical appbar title size
+            fontSize: 16,
             color: AppColors.slate900,
             fontWeight: FontWeight.w600,
           ),
@@ -257,14 +329,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.moreVertical, color: AppColors.slate900),
+            icon: const Icon(LucideIcons.moreVertical,
+                color: AppColors.slate900),
             onPressed: () {},
           ),
         ],
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           children: [
             // Company Header
             Row(
@@ -277,10 +351,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                     color: AppColors.trustBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'AM', // Initials
-                      style: TextStyle(
+                      _initials,
+                      style: const TextStyle(
                         color: AppColors.trustBlue,
                         fontWeight: FontWeight.w700,
                         fontSize: 24,
@@ -294,16 +368,17 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Acme Manufacturing',
-                        style: AppTypography.textTheme.headlineMedium?.copyWith(
-                          fontSize: 24,
+                        widget.sme.companyName,
+                        style:
+                            AppTypography.textTheme.headlineMedium?.copyWith(
+                          fontSize: 22,
                           fontWeight: FontWeight.w700,
                           color: AppColors.slate900,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Manufacturing · Lagos, Nigeria',
+                        '${widget.sme.industry} · ${widget.sme.location}',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           fontSize: 14,
                           color: AppColors.slate600,
@@ -311,27 +386,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '5 years in operation',
+                        '${widget.sme.employees} employees',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           fontSize: 14,
                           color: AppColors.slate600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                             const Icon(LucideIcons.externalLink, size: 14, color: AppColors.trustBlue),
-                             const SizedBox(width: 4),
-                             Text(
-                              'www.acmemanufacturing.com',
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.trustBlue,
-                                fontSize: 14,
-                              ),
-                             ),
-                          ],
                         ),
                       ),
                     ],
@@ -339,10 +397,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
 
-            // Score Badge (Large Centered Circle)
+            // Score Badge
             Center(
               child: Column(
                 children: [
@@ -352,19 +410,19 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.successGreen,
+                        color: widget.sme.scoreColor,
                         shape: BoxShape.circle,
                         boxShadow: const [
                           BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.1),
                             blurRadius: 12,
                             offset: Offset(0, 4),
-                          )
+                          ),
                         ],
                       ),
                       child: Center(
                         child: Text(
-                          '85',
+                          '${widget.sme.score}',
                           style: AppTypography.textTheme.displayLarge?.copyWith(
                             fontSize: 56,
                             fontWeight: FontWeight.w700,
@@ -376,13 +434,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                   ),
                   const SizedBox(height: 12),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: AppColors.successGreen,
+                      color: widget.sme.scoreColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      'Low Risk',
+                      '${widget.sme.riskLevel} Risk',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -392,7 +453,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Generated on Feb 25, 2026 at 1:32 PM',
+                    'Score based on latest upload',
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       color: AppColors.slate600,
                       fontSize: 12,
@@ -404,7 +465,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
 
             const SizedBox(height: 32),
 
-            // Key Metrics Grid
+            // Key Metrics Grid — fixed: use Flexible inside spaceBetween rows
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -413,32 +474,82 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
               crossAxisSpacing: 12,
               childAspectRatio: 1.8,
               children: [
-                _buildMetricCard('Annual Revenue', '₦750K', 'Positive', AppColors.successGreen),
-                _buildMetricCard('Employees', '25', 'Positive', AppColors.successGreen),
-                _buildMetricCard('Liabilities', '₦200K', 'Moderate', AppColors.warningAmber),
-                _buildMetricCard('Profit Margin', '40%', 'Healthy', AppColors.successGreen),
+                _buildMetricCard(
+                  'Revenue',
+                  widget.sme.revenue,
+                  widget.sme.growthSignal,
+                  widget.sme.isGrowthPositive
+                      ? AppColors.successGreen
+                      : AppColors.dangerRed,
+                ),
+                _buildMetricCard(
+                  'Employees',
+                  widget.sme.employees,
+                  'Active',
+                  AppColors.successGreen,
+                ),
+                _buildMetricCard(
+                  'Growth',
+                  widget.sme.growthSignal,
+                  widget.sme.isGrowthPositive ? 'Positive' : 'Declining',
+                  widget.sme.isGrowthPositive
+                      ? AppColors.successGreen
+                      : AppColors.dangerRed,
+                ),
+                _buildMetricCard(
+                  'Risk Level',
+                  widget.sme.riskLevel,
+                  widget.sme.riskLevel == 'Low'
+                      ? 'Healthy'
+                      : widget.sme.riskLevel == 'Med'
+                          ? 'Moderate'
+                          : 'High Risk',
+                  widget.sme.scoreColor,
+                ),
               ],
             ),
 
             const SizedBox(height: 32),
 
             // Trust Signals
-            _buildTrustSignalCard(
-              title: 'Received Prior Funding',
-              explanation: '₦100K from VC in 2022',
-            ),
-            _buildTrustSignalCard(
-              title: 'Payment Timeliness',
-              explanation: '24 of 24 payments on time',
-            ),
-            _buildTrustSignalCard(
-              title: 'Revenue Stability',
-              explanation: 'Consistent +22% YoY growth',
-            ),
+            if (widget.sme.trustFunded)
+              _buildTrustSignalCard(
+                title: 'Received Prior Funding',
+                explanation: 'Business has secured external investment before',
+              ),
+            if (widget.sme.trustPayments)
+              _buildTrustSignalCard(
+                title: 'Payment Timeliness',
+                explanation: 'Consistently makes payments on time',
+              ),
+            if (widget.sme.trustStable)
+              _buildTrustSignalCard(
+                title: 'Revenue Stability',
+                explanation: 'Consistent revenue growth over time',
+              ),
+            if (!widget.sme.trustFunded &&
+                !widget.sme.trustPayments &&
+                !widget.sme.trustStable)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.warningAmber.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.warningAmber),
+                ),
+                child: Text(
+                  'No trust signals available for this SME yet.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.slate700,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
 
             const SizedBox(height: 32),
 
-            // Actions Section
+            // Action Buttons
             CustomButton(
               text: 'Message SME',
               variant: ButtonVariant.primary,
@@ -447,20 +558,18 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
             const SizedBox(height: 12),
             CustomButton(
               text: 'View Evidence & Details',
-              variant: ButtonVariant.secondary, // Light gray
+              variant: ButtonVariant.secondary,
               onPressed: _navigateToEvidence,
             ),
             const SizedBox(height: 12),
-
-            // Tertiary bottom actions
             Row(
               children: [
                 Expanded(
                   child: TextButton.icon(
                     onPressed: _toggleWatchlist,
                     icon: Icon(
-                      _isWatchlisted ? LucideIcons.heart : LucideIcons.heart, // Ideally filled heart if watchlisted
-                      size: 16, 
+                      _isWatchlisted ? LucideIcons.heartOff : LucideIcons.heart,
+                      size: 16,
                       color: AppColors.trustBlue,
                     ),
                     label: Text(
@@ -475,21 +584,24 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                 ),
                 Expanded(
                   child: TextButton.icon(
-                     onPressed: () {},
-                     icon: const Icon(LucideIcons.share2, size: 16, color: AppColors.trustBlue),
-                     label: Text(
-                        'Share',
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.trustBlue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
+                    onPressed: () {},
+                    icon: const Icon(
+                      LucideIcons.share2,
+                      size: 16,
+                      color: AppColors.trustBlue,
+                    ),
+                    label: Text(
+                      'Share',
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.trustBlue,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
+                    ),
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
           ],
         ),
@@ -497,7 +609,12 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
     );
   }
 
-  Widget _buildMetricCard(String label, String value, String statusText, Color statusColor) {
+  Widget _buildMetricCard(
+    String label,
+    String value,
+    String statusText,
+    Color statusColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -509,35 +626,44 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // FIX: Use Flexible on both children to prevent overflow
           Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-                Text(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
                   label,
                   style: AppTypography.textTheme.labelMedium?.copyWith(
                     color: AppColors.slate600,
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
                   statusText,
                   style: AppTypography.textTheme.labelSmall?.copyWith(
                     color: statusColor,
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
                 ),
-             ],
+              ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(
             value,
             style: AppTypography.textTheme.headlineSmall?.copyWith(
               color: AppColors.slate900,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
             maxLines: 1,
@@ -563,7 +689,11 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(LucideIcons.checkCircle, color: AppColors.successGreen, size: 20),
+          const Icon(
+            LucideIcons.checkCircle,
+            color: AppColors.successGreen,
+            size: 20,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -582,7 +712,6 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: AppColors.slate600,
                     fontSize: 12,
-                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
