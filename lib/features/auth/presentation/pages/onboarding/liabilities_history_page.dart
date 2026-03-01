@@ -133,7 +133,13 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
         ),
         title: Text(
           'Liabilities & History',
-          style: AppTypography.textTheme.headlineMedium,
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: AppColors.slate900,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
       ),

@@ -19,6 +19,7 @@ void main() {
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     // Verify that the app builds without crashing
     expect(find.byType(MaterialApp), findsOneWidget);

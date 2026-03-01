@@ -195,10 +195,13 @@ class _RoleCardState extends State<_RoleCard> {
               const SizedBox(height: 16),
               Text(
                 widget.title,
-                style: AppTypography.textTheme.headlineMedium?.copyWith(
+                style: AppTypography.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
                   fontSize: 18,
                   color: AppColors.slate900,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Text(

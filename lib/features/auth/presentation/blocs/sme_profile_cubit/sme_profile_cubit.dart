@@ -29,6 +29,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
     double? annualRevenueAmount3,
     double? monthlyAvgRevenue,
     required double monthlyAvgExpenses,
+    String? documentFileName,
   }) {
     emit(state.copyWith(
       annualRevenueYear1: annualRevenueYear1,
@@ -39,6 +40,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
       annualRevenueAmount3: annualRevenueAmount3,
       monthlyAvgRevenue: monthlyAvgRevenue,
       monthlyAvgExpenses: monthlyAvgExpenses,
+      documentFileName: documentFileName,
     ));
   }
 

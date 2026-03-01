@@ -351,11 +351,13 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
         ),
         title: Text(
           'SME Profile',
-          style: AppTypography.textTheme.headlineMedium?.copyWith(
-            fontSize: 16,
-            color: AppColors.slate900,
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: AppColors.slate900,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         actions: [

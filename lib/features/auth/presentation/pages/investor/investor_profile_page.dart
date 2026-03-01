@@ -16,7 +16,15 @@ class InvestorProfilePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.slate50,
       appBar: AppBar(
-        title: Text('My Profile', style: AppTypography.textTheme.headlineMedium?.copyWith(fontSize: 20)),
+        title: Text(
+          'My Profile',
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 1,

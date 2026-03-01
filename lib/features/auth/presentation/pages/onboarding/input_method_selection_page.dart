@@ -16,10 +16,13 @@ class InputMethodSelectionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'How would you like to provide your data?',
-          style: AppTypography.textTheme.headlineMedium?.copyWith(
-            fontSize: 24,
+          'Data Input Method',
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,

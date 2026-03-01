@@ -61,8 +61,13 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
-                  'Welcome back!',
-                  style: AppTypography.textTheme.headlineMedium,
+                  'Log In',
+                  style: AppTypography.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),

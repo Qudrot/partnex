@@ -8,6 +8,9 @@ class SmeProfileState extends Equatable {
   final int yearsOfOperation;
   final int numberOfEmployees;
 
+  // Step 2: Document Upload Memory
+  final String? documentFileName;
+
   // Step 2: Revenue & Expenses (Strict mapping to backend)
   final int annualRevenueYear1;
   final double annualRevenueAmount1;
@@ -41,6 +44,7 @@ class SmeProfileState extends Equatable {
     this.annualRevenueAmount3,
     this.monthlyAvgRevenue,
     this.monthlyAvgExpenses = 0,
+    this.documentFileName,
     this.totalLiabilities = 0,
     this.outstandingLoans = 0,
     this.hasPriorFunding,
@@ -64,6 +68,7 @@ class SmeProfileState extends Equatable {
     double? annualRevenueAmount3,
     double? monthlyAvgRevenue,
     double? monthlyAvgExpenses,
+    String? documentFileName,
     double? totalLiabilities,
     double? outstandingLoans,
     bool? hasPriorFunding,
@@ -86,6 +91,7 @@ class SmeProfileState extends Equatable {
       annualRevenueAmount3: annualRevenueAmount3 ?? this.annualRevenueAmount3,
       monthlyAvgRevenue: monthlyAvgRevenue ?? this.monthlyAvgRevenue,
       monthlyAvgExpenses: monthlyAvgExpenses ?? this.monthlyAvgExpenses,
+      documentFileName: documentFileName ?? this.documentFileName,
       totalLiabilities: totalLiabilities ?? this.totalLiabilities,
       outstandingLoans: outstandingLoans ?? this.outstandingLoans,
       hasPriorFunding: hasPriorFunding ?? this.hasPriorFunding,

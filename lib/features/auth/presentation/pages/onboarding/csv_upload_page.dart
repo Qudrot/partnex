@@ -11,6 +11,8 @@ import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/business_profile_page.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CsvUploadPage extends StatefulWidget {
   const CsvUploadPage({super.key});
@@ -26,6 +28,73 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
   String _errorMessage = '';
   String _fileName = '';
   List<List<dynamic>> _parsedData = [];
+
+  void _processBankStatementLocally(List<List<dynamic>> rows, String fileName) {
+    if (rows.isEmpty) return;
+
+    // Use headers to dynamically find column indexes
+    final headers = rows.first.map((e) => e.toString().toLowerCase()).toList();
+    
+    int creditIdx = -1;
+    int debitIdx = -1;
+    int descIdx = -1;
+
+    for (int i = 0; i < headers.length; i++) {
+      if (headers[i].contains("credit") || headers[i].contains("deposit")) {
+        creditIdx = i;
+      } else if (headers[i].contains("debit") || headers[i].contains("withdrawal")) {
+        debitIdx = i;
+      } else if (headers[i].contains("narration") || headers[i].contains("description") || headers[i].contains("details")) {
+        descIdx = i;
+      }
+    }
+
+    double totalRevenue = 0.0;
+    double totalExpenses = 0.0;
+    double totalDebt = 0.0;
+
+    // Iterate through data rows (skipping header)
+    for (int i = 1; i < rows.length; i++) {
+      final row = rows[i];
+      
+      // Calculate Revenue
+      if (creditIdx != -1 && creditIdx < row.length) {
+        final val = double.tryParse(row[creditIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''));
+        if (val != null) totalRevenue += val;
+      }
+
+      // Calculate Expenses
+      if (debitIdx != -1 && debitIdx < row.length) {
+        final val = double.tryParse(row[debitIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''));
+        if (val != null) totalExpenses += val;
+      }
+
+      // Calculate Debt (Look for loan keywords in narration)
+      if (descIdx != -1 && descIdx < row.length && debitIdx != -1 && debitIdx < row.length) {
+        final desc = row[descIdx].toString().toLowerCase();
+        if (desc.contains("loan") || desc.contains("fairmoney") || desc.contains("branch") || desc.contains("carbon")) {
+          final debtVal = double.tryParse(row[debitIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''));
+          if (debtVal != null) totalDebt += debtVal;
+        }
+      }
+    }
+
+    // Save metrics into Cubit state
+    context.read<SmeProfileCubit>().updateRevenueExpenses(
+      annualRevenueYear1: DateTime.now().year - 1,
+      annualRevenueAmount1: totalRevenue,
+      annualRevenueYear2: DateTime.now().year - 2,
+      annualRevenueAmount2: totalRevenue * 0.8, // Fallback historical extrapolation
+      monthlyAvgExpenses: totalExpenses / 12,
+      documentFileName: fileName,
+    );
+
+    context.read<SmeProfileCubit>().updateLiabilitiesHistory(
+      totalLiabilities: totalDebt,
+      outstandingLoans: totalDebt,
+      priorFundingSource: "Extracted from CSV",
+    );
+  }
 
   void _pickAndParseFile() async {
     try {
@@ -61,6 +130,9 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         if (rowsAsListOfValues.isEmpty) {
           throw Exception("The CSV file is empty.");
         }
+
+        // Silent Local Computations
+        _processBankStatementLocally(rowsAsListOfValues, file.name);
 
         // Simulate slight parsing delay for UX
         await Future.delayed(const Duration(milliseconds: 600));
@@ -98,10 +170,13 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         ),
         title: Text(
           'Upload Financial Data',
-          style: AppTypography.textTheme.headlineMedium?.copyWith(
-             fontSize: 16,
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+             fontWeight: FontWeight.w600,
+             fontSize: 18,
              color: AppColors.slate900,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         actions: [

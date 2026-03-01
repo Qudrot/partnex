@@ -25,11 +25,13 @@ class ScoreDriversDetailPage extends StatelessWidget {
           children: [
             Text(
               'Score Breakdown',
-              style: AppTypography.textTheme.headlineMedium?.copyWith(
+              style: AppTypography.textTheme.bodyLarge?.copyWith(
                 color: AppColors.slate900,
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Text(

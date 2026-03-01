@@ -47,7 +47,13 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         ),
         title: Text(
           'Profile Management',
-          style: AppTypography.textTheme.headlineMedium?.copyWith(fontSize: 18),
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: AppColors.slate900,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
       ),

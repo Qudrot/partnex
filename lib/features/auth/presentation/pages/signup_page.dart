@@ -110,21 +110,10 @@ class _SignupPageState extends State<SignupPage> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final isLoading = state is AuthLoading;
-        return Container(
-          decoration: const BoxDecoration(
-        color: AppColors.slate900, // Fallback color
-        image: DecorationImage(
-          image: AssetImage("assets/images/bg.png"),
-          fit: BoxFit.cover,
-        ),
-      ),
-
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Container(
-              color: AppColors.neutralWhite,
-              child: SafeArea(
-                        child: Column(
+        return Scaffold(
+          backgroundColor: AppColors.neutralWhite,
+          body: SafeArea(
+            child: Column(
               children: [
                 // Header
                 Padding(
@@ -132,7 +121,11 @@ class _SignupPageState extends State<SignupPage> {
                   child: Center(
                     child: Text(
                       'Create Account',
-                      style: AppTypography.textTheme.headlineMedium,
+                      style: AppTypography.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                      maxLines: 1,
                     ),
                   ),
                 ),
@@ -404,10 +397,8 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
               ],
-                        ),
-                  ),
             ),
-              ),
+          ),
         );
       },
     );

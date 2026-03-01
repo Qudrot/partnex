@@ -118,13 +118,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const PartnexLogo(size: 64, variant: PartnexLogoVariant.brandCombo),
-                const SizedBox(height: 8),
+                const PartnexLogo(size: 48, variant: PartnexLogoVariant.brandCombo),
+                const SizedBox(height: 4),
                 Text(
                   'Your SME credibility platform',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: AppColors.slate600,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),

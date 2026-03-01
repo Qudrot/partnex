@@ -36,7 +36,6 @@ class ReviewConfirmPage extends StatefulWidget {
 
 class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
   bool _isConfirmed = false;
-  String _uploadedFileName = 'Document Attached';
 
   void _submitData() {
     final state = context.read<SmeProfileCubit>().state;
@@ -54,9 +53,6 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
 
       if (result != null) {
         final file = result.files.single;
-        setState(() {
-          _uploadedFileName = file.name;
-        });
 
         // If CSV, auto-parse to update the profile cubit data
         if (file.name.toLowerCase().endsWith('.csv')) {
@@ -68,7 +64,12 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
           }
           if (csvString.isNotEmpty) {
             // Parsed data is available if needed for future auto-fill
-            CsvCodec().decoder.convert(csvString);
+            List<List<dynamic>> rowsAsListOfValues = CsvCodec().decoder.convert(
+              csvString,
+            );
+            if (rowsAsListOfValues.isNotEmpty) {
+              _processBankStatementLocally(rowsAsListOfValues, file.name);
+            }
           }
         }
 
@@ -92,6 +93,81 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
           ),
         );
       }
+    }
+  }
+
+  void _processBankStatementLocally(List<List<dynamic>> rows, String fileName) {
+    if (rows.isEmpty) return;
+
+    final headers = rows.first.map((e) => e.toString().toLowerCase()).toList();
+
+    int creditIdx = -1;
+    int debitIdx = -1;
+    int descIdx = -1;
+
+    for (int i = 0; i < headers.length; i++) {
+      if (headers[i].contains("credit") || headers[i].contains("deposit")) {
+        creditIdx = i;
+      } else if (headers[i].contains("debit") ||
+          headers[i].contains("withdrawal")) {
+        debitIdx = i;
+      } else if (headers[i].contains("narration") ||
+          headers[i].contains("description") ||
+          headers[i].contains("details")) {
+        descIdx = i;
+      }
+    }
+
+    double totalRevenue = 0.0;
+    double totalExpenses = 0.0;
+    double totalDebt = 0.0;
+
+    for (int i = 1; i < rows.length; i++) {
+      final row = rows[i];
+      if (creditIdx != -1 && creditIdx < row.length) {
+        final val = double.tryParse(
+          row[creditIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''),
+        );
+        if (val != null) totalRevenue += val;
+      }
+      if (debitIdx != -1 && debitIdx < row.length) {
+        final val = double.tryParse(
+          row[debitIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''),
+        );
+        if (val != null) totalExpenses += val;
+      }
+      if (descIdx != -1 &&
+          descIdx < row.length &&
+          debitIdx != -1 &&
+          debitIdx < row.length) {
+        final desc = row[descIdx].toString().toLowerCase();
+        if (desc.contains("loan") ||
+            desc.contains("fairmoney") ||
+            desc.contains("branch") ||
+            desc.contains("carbon")) {
+          final debtVal = double.tryParse(
+            row[debitIdx].toString().replaceAll(RegExp(r'[^0-9.]'), ''),
+          );
+          if (debtVal != null) totalDebt += debtVal;
+        }
+      }
+    }
+
+    if (mounted) {
+      context.read<SmeProfileCubit>().updateRevenueExpenses(
+        annualRevenueYear1: DateTime.now().year - 1,
+        annualRevenueAmount1: totalRevenue,
+        annualRevenueYear2: DateTime.now().year - 2,
+        annualRevenueAmount2: totalRevenue * 0.8,
+        monthlyAvgExpenses: totalExpenses / 12,
+        documentFileName: fileName,
+      );
+
+      context.read<SmeProfileCubit>().updateLiabilitiesHistory(
+        totalLiabilities: totalDebt,
+        outstandingLoans: totalDebt,
+        priorFundingSource: "Extracted from CSV",
+      );
     }
   }
 
@@ -230,9 +306,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget.isDocumentUpload
-                            ? 'Step 3 of 3'
-                            : 'Step 4 of 5',
+                        widget.isDocumentUpload ? 'Step 3 of 3' : 'Step 4 of 5',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           color: AppColors.slate600,
                           fontWeight: FontWeight.w500,
@@ -256,10 +330,11 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                               'Business Name': profileState.businessName,
                               'Industry': profileState.industry,
                               'Location': profileState.location,
-                              'Years of Operation':
-                                  profileState.yearsOfOperation.toString(),
-                              'Employees':
-                                  profileState.numberOfEmployees.toString(),
+                              'Years of Operation': profileState
+                                  .yearsOfOperation
+                                  .toString(),
+                              'Employees': profileState.numberOfEmployees
+                                  .toString(),
                             },
                             onEdit: () {
                               Navigator.push(
@@ -287,7 +362,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                 'Year ${profileState.annualRevenueYear3} Revenue':
                                     '₦${profileState.annualRevenueAmount3?.toStringAsFixed(0) ?? 0}',
                               'Monthly Revenue (Approx)':
-                                  profileState.monthlyAvgRevenue != null ? '₦${profileState.monthlyAvgRevenue?.toStringAsFixed(0)}' : 'N/A',
+                                  profileState.monthlyAvgRevenue != null
+                                  ? '₦${profileState.monthlyAvgRevenue?.toStringAsFixed(0)}'
+                                  : 'N/A',
                               'Monthly Expenses':
                                   '₦${profileState.monthlyAvgExpenses.toStringAsFixed(0)}',
                             },
@@ -295,7 +372,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const RevenueExpensesPage(isEditing: true),
+                                  builder: (_) => const RevenueExpensesPage(
+                                    isEditing: true,
+                                  ),
                                 ),
                               );
                             },
@@ -310,12 +389,12 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                   '₦${profileState.outstandingLoans.toStringAsFixed(0)}',
                               'Prior Funding':
                                   profileState.hasPriorFunding == true
-                                      ? 'Yes'
-                                      : 'No',
+                                  ? 'Yes'
+                                  : 'No',
                               'Prior Funding Amount':
                                   profileState.priorFundingAmount != null
-                                      ? '₦${profileState.priorFundingAmount!.toStringAsFixed(0)}'
-                                      : 'N/A',
+                                  ? '₦${profileState.priorFundingAmount!.toStringAsFixed(0)}'
+                                  : 'N/A',
                               'Funding Source':
                                   profileState.priorFundingSource ?? 'N/A',
                               'Funding Year':
@@ -327,8 +406,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const LiabilitiesHistoryPage(isEditing: true),
+                                  builder: (_) => const LiabilitiesHistoryPage(
+                                    isEditing: true,
+                                  ),
                                 ),
                               );
                             },
@@ -339,7 +419,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             title: 'Financial Documents',
                             editLabel: 'Change',
                             data: {
-                              'Uploaded File': _uploadedFileName,
+                              'Uploaded File':
+                                  profileState.documentFileName ??
+                                  'Document Attached',
                               'Status': 'Ready for Submission',
                             },
                             onEdit: _rePickDocument,
@@ -407,7 +489,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                       // Submit Button
                       Expanded(
                         child: CustomButton(
-                          text: widget.isUpdatingRecord ? 'Generate New Score' : 'Confirm & Submit Profile',
+                          text: widget.isUpdatingRecord
+                              ? 'Generate New Score'
+                              : 'Confirm & Submit Profile',
                           variant: ButtonVariant.primary,
                           isLoading: isSubmitting,
                           isDisabled: !_isConfirmed || isSubmitting,

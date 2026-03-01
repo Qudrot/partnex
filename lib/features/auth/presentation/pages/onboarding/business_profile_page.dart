@@ -10,6 +10,10 @@ import 'package:partnex/features/auth/presentation/pages/onboarding/revenue_expe
 import 'package:partnex/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/analysis_state_page.dart';
 
 class BusinessProfilePage extends StatefulWidget {
   final bool isDocumentUpload;
@@ -100,13 +104,33 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         ),
         title: Text(
           'Business Profile',
-          style: AppTypography.textTheme.headlineMedium,
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: AppColors.slate900,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, authState) {
+            if (authState is SmeProfileSubmittedSuccess) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AnalysisStatePage(),
+                ),
+              );
+            }
+          },
+          builder: (context, authState) {
+            final isSubmitting = authState is SmeProfileSubmitting;
+            
+            return Column(
+              children: [
             // Progress Indicator
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -221,9 +245,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: CustomButton(
-                      text: widget.isEditing ? 'Save Changes' : 'Next',
+                      text: widget.isEditing ? 'Save Changes' : (widget.isDocumentUpload ? 'Submit' : 'Next'),
                       variant: ButtonVariant.primary,
-                      isDisabled: !_isFormValid,
+                      isDisabled: !_isFormValid || isSubmitting,
+                      isLoading: isSubmitting,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Save state to Cubit
@@ -258,7 +283,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                 ],
               ),
             ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );

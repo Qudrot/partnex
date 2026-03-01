@@ -157,6 +157,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
     required TextEditingController amountCtrl,
     required String helperText,
     bool isMobile = false,
+    bool isOptional = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,6 +178,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     maxLength: 4,
                     onChanged: _onFieldChanged,
                     validator: (val) {
+                      if (isOptional && yearCtrl.text.isEmpty && amountCtrl.text.isEmpty) return null;
                       if (val == null || val.isEmpty || val.length != 4) return 'Valid year';
                       return null;
                     },
@@ -228,6 +230,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     validator: (val) {
+                      if (isOptional && yearCtrl.text.isEmpty && amountCtrl.text.isEmpty) return null;
                       if (val == null || val.isEmpty) return 'Valid amount';
                       return null;
                     },
@@ -258,11 +261,13 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
         ),
         title: Text(
           'Revenue & Expenses',
-          style: AppTypography.textTheme.headlineMedium?.copyWith(
-            fontSize: 24,
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            fontSize: 18,
             color: AppColors.slate900,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         actions: [
@@ -362,6 +367,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                           amountCtrl: _amount3Controller,
                           helperText: 'Annual revenue for ${_year3Controller.text}',
                           isMobile: isMobile,
+                          isOptional: true,
                         ),
                         const SizedBox(height: 12),
                       ] else ...[
