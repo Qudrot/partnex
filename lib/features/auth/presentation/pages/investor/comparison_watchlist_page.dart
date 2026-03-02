@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
 
 class ComparisonWatchlistPage extends StatefulWidget {
   const ComparisonWatchlistPage({super.key});
@@ -11,55 +11,64 @@ class ComparisonWatchlistPage extends StatefulWidget {
   State<ComparisonWatchlistPage> createState() => _ComparisonWatchlistPageState();
 }
 
-class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
+class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  
   final List<Map<String, dynamic>> _watchlist = [
     {
       'id': '1',
       'name': 'Acme Manufacturing',
+      'industry': 'Manufacturing',
+      'growthSignal': '↑ 22% YoY',
+      'isGrowthPositive': true,
       'score': 85,
       'scoreColor': AppColors.successGreen,
-      'risk': 'Low Risk',
-      'added': 'Feb 24, 2026',
       'revenue': '₦750K',
-      'employees': '25',
-      'liabilities': '₦200K',
-      'profitMargin': '40%',
-      'growthRate': '+22%',
-      'paymentHistory': 'On Time',
+      'expenseRatio': '60%',
+      'paymentReliability': '100% On-Time ✓',
+      'fundingHistory': 'Seed Funded ✓',
     },
     {
       'id': '2',
-      'name': 'TechStart Solutions',
+      'name': 'TechStart',
+      'industry': 'Technology',
+      'growthSignal': '↑ 45% YoY',
+      'isGrowthPositive': true,
       'score': 62,
       'scoreColor': AppColors.warningAmber,
-      'risk': 'Medium Risk',
-      'added': 'Feb 23, 2026',
       'revenue': '₦500K',
-      'employees': '12',
-      'liabilities': '₦150K',
-      'profitMargin': '35%',
-      'growthRate': '+45%',
-      'paymentHistory': 'On Time',
+      'expenseRatio': '80%',
+      'paymentReliability': '90% On-Time',
+      'fundingHistory': 'Bootstrapped',
     },
     {
       'id': '3',
-      'name': 'Traditional Retail Ltd',
+      'name': 'Retail Ltd',
+      'industry': 'Retail',
+      'growthSignal': '↓ 5% YoY',
+      'isGrowthPositive': false,
       'score': 45,
       'scoreColor': AppColors.dangerRed,
-      'risk': 'High Risk',
-      'added': 'Feb 20, 2026',
       'revenue': '₦300K',
-      'employees': '8',
-      'liabilities': '₦400K',
-      'profitMargin': '20%',
-      'growthRate': '-5%',
-      'paymentHistory': 'Late',
+      'expenseRatio': '95%',
+      'paymentReliability': '60% On-Time',
+      'fundingHistory': 'None',
     },
   ];
 
   final Set<String> _selectedForComparison = {};
 
-  bool get _isComparing => _selectedForComparison.length > 1;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _toggleSelection(String id) {
     setState(() {
@@ -73,6 +82,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
             SnackBar(
               content: Text('You can only compare up to 3 SMEs at a time', style: AppTypography.textTheme.bodyMedium?.copyWith(color: Colors.white)),
               backgroundColor: AppColors.slate900,
+              behavior: SnackBarBehavior.floating,
             ),
           );
         }
@@ -83,155 +93,229 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
   void _navigateToProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const SmeProfileExpandedPage()),
+      MaterialPageRoute(
+        builder: (_) => SmeProfileExpandedPage(
+          sme: const SmeCardData(
+            id: '0',
+            companyName: 'SME Profile',
+            industry: 'Unknown',
+            location: 'Nigeria',
+            yearsOfOperation: 1,
+            numberOfEmployees: 0,
+            annualRevenue: 0.0,
+            monthlyExpenses: 0.0,
+            liabilities: 0.0,
+            fundingHistory: 'None',
+            score: 0,
+            riskLevel: 'N/A',
+          ),
+        ),
+      ),
     );
+  }
+
+  bool _isMetricBest(String key, String value, List<Map<String, dynamic>> comparedItems) {
+     if (comparedItems.length < 2) return false;
+     
+     if (value.contains('↑') || value.contains('✓')) return true;
+
+     if (key == 'score') {
+         int maxScore = 0;
+         for (var item in comparedItems) {
+            if ((item['score'] as int) > maxScore) {
+               maxScore = item['score'] as int;
+            }
+         }
+         return value == maxScore.toString();
+     }
+     
+     return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    final watchlistedItems = _watchlist;
-    final comparingItems = _watchlist.where((item) => _selectedForComparison.contains(item['id'])).toList();
-
     return Scaffold(
       backgroundColor: AppColors.slate50,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: AppColors.slate200,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Watchlist',
-          style: AppTypography.textTheme.headlineMedium,
+          'Watchlist & Compare',
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+             fontWeight: FontWeight.w600,
+             fontSize: 18,
+             color: AppColors.slate900,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _selectedForComparison.clear();
-              });
-            },
-            child: Text(
-              'Clear',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
-            ),
-          ),
-        ],
+        bottom: PreferredSize(
+           preferredSize: const Size.fromHeight(48),
+           child: Container(
+             decoration: const BoxDecoration(
+               border: Border(bottom: BorderSide(color: AppColors.slate200, width: 1)),
+             ),
+             child: TabBar(
+               controller: _tabController,
+               labelColor: AppColors.trustBlue,
+               unselectedLabelColor: AppColors.slate600,
+               indicatorColor: AppColors.trustBlue,
+               indicatorWeight: 3,
+               labelStyle: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+               tabs: [
+                 Tab(text: 'Watchlist (${_watchlist.length})'),
+                 Tab(text: 'Comparison (${_selectedForComparison.length}/3)'),
+               ],
+             ),
+           ),
+        ),
       ),
       body: SafeArea(
-        child: Column(
+        child: TabBarView(
+          controller: _tabController,
           children: [
-            // Sorting & Filter Header
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              color: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${watchlistedItems.length} SMEs Saved',
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.slate600,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        Text(
-                          'Sort by: Date Added',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.slate900,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(LucideIcons.chevronDown, size: 16, color: AppColors.slate600),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-
-            // Main Content
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  // Comparison View
-                  if (_isComparing) ...[
-                    Text(
-                      'Comparison View',
-                      style: AppTypography.textTheme.headlineSmall?.copyWith(
-                        color: AppColors.slate900,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildComparisonTable(comparingItems),
-                    const SizedBox(height: 32),
-                    Divider(color: AppColors.slate200),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // Instruction Text if not comparing
-                  if (!_isComparing && watchlistedItems.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.trustBlue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(LucideIcons.info, size: 20, color: AppColors.trustBlue),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Select 2 or 3 SMEs below to compare them side-by-side.',
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.trustBlue,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // Watchlist Cards
-                  Text(
-                    'Your Watchlist',
-                    style: AppTypography.textTheme.headlineSmall?.copyWith(
-                      color: AppColors.slate900,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (watchlistedItems.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Text(
-                          'Your watchlist is empty.',
-                          style: AppTypography.textTheme.bodyLarge?.copyWith(
-                            color: AppColors.slate500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ...watchlistedItems.map((sme) => _buildWatchlistCard(sme)),
-                ],
-              ),
-            ),
+             _buildWatchlistView(),
+             _buildComparisonView(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildWatchlistView() {
+     if (_watchlist.isEmpty) {
+        return _buildEmptyState();
+     }
+
+     return ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+           Text(
+             'Select up to 3 SMEs to compare side-by-side.',
+             style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
+           ),
+           const SizedBox(height: 16),
+           ..._watchlist.map((sme) => _buildWatchlistCard(sme)),
+        ],
+     );
+  }
+
+  Widget _buildComparisonView() {
+     final comparingItems = _watchlist.where((item) => _selectedForComparison.contains(item['id'])).toList();
+     
+     if (comparingItems.isEmpty) {
+        return Center(
+           child: Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+                const Icon(LucideIcons.gitCompare, size: 64, color: AppColors.slate300),
+                const SizedBox(height: 16),
+                Text(
+                  'No SMEs selected',
+                  style: AppTypography.textTheme.headlineSmall?.copyWith(color: AppColors.slate900),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Select SMEs from your watchlist to compare',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate500),
+                ),
+                const SizedBox(height: 24),
+                TextButton(
+                  onPressed: () {
+                     _tabController.animateTo(0); // Switch to Watchlist tab
+                  },
+                  child: Text(
+                    'Go to Watchlist',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                       color: AppColors.trustBlue,
+                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+             ],
+           ),
+        );
+     }
+
+     return Column(
+        children: [
+           _buildComparisonHeader(),
+           Expanded(
+             child: ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: [
+                   _buildComparisonTable(comparingItems),
+                ],
+             ),
+           ),
+        ],
+     );
+  }
+
+  Widget _buildEmptyState() {
+     return Center(
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+            const Icon(LucideIcons.heart, size: 64, color: AppColors.slate300),
+            const SizedBox(height: 16),
+            Text(
+              'No companies yet',
+              style: AppTypography.textTheme.headlineSmall?.copyWith(
+                color: AppColors.slate900,
+              ),
+            ),
+             const SizedBox(height: 8),
+            Text(
+              'Start adding companies to your watchlist',
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.slate500,
+              ),
+            ),
+             const SizedBox(height: 24),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Explore Companies',
+                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                   color: AppColors.trustBlue,
+                   fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+         ],
+       ),
+     );
+  }
+
+  Widget _buildComparisonHeader() {
+     return Container(
+       color: Colors.white,
+       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+       decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.slate200, width: 1)),
+       ),
+       child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+             TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(LucideIcons.share2, size: 16, color: AppColors.trustBlue),
+                label: Text('Share', style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.trustBlue)),
+             ),
+             TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(LucideIcons.download, size: 16, color: AppColors.trustBlue),
+                label: Text('Export PDF', style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.trustBlue)),
+             ),
+          ],
+       ),
+     );
   }
 
   Widget _buildWatchlistCard(Map<String, dynamic> sme) {
@@ -240,109 +324,108 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.trustBlue.withValues(alpha: 0.05) : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isSelected ? AppColors.trustBlue : AppColors.slate200,
-          width: isSelected ? 2 : 1,
-        ),
+        border: Border.all(color: AppColors.slate200),
+        boxShadow: const [
+          BoxShadow(
+             color: Color.fromRGBO(0, 0, 0, 0.02),
+             blurRadius: 4,
+             offset: Offset(0, 2),
+          )
+        ],
       ),
-      child: InkWell(
-        onTap: _navigateToProfile,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Checkbox for comparison
-              InkWell(
-                onTap: () => _toggleSelection(sme['id']),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  margin: const EdgeInsets.only(top: 4, right: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.trustBlue : Colors.white,
-                    border: Border.all(
-                      color: isSelected ? AppColors.trustBlue : AppColors.slate300,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _navigateToProfile, // Routing directly to correct component on entire card tap
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                  // Explicit Checkbox for Comparison
+                  SizedBox(
+                     height: 24,
+                     width: 24,
+                     child: Checkbox(
+                       value: isSelected,
+                       activeColor: AppColors.trustBlue,
+                       side: const BorderSide(color: AppColors.slate300, width: 1.5),
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                       onChanged: (val) {
+                          _toggleSelection(sme['id']);
+                       },
+                     ),
                   ),
-                  child: isSelected
-                      ? const Icon(LucideIcons.check, size: 16, color: Colors.white)
-                      : null,
-                ),
-              ),
-
-              // Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            sme['name'],
-                            style: AppTypography.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.slate900,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                          Row(
+                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                             children: [
+                                Expanded(
+                                  child: Text(
+                                    sme['name'],
+                                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: AppColors.slate900,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                   icon: const Icon(LucideIcons.trash2, size: 16, color: AppColors.slate400),
+                                   padding: EdgeInsets.zero,
+                                   constraints: const BoxConstraints(),
+                                   onPressed: () {
+                                       setState(() {
+                                          _watchlist.removeWhere((item) => item['id'] == sme['id']);
+                                          _selectedForComparison.remove(sme['id']);
+                                       });
+                                   },
+                                ),
+                             ],
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _watchlist.removeWhere((item) => item['id'] == sme['id']);
-                              _selectedForComparison.remove(sme['id']);
-                            });
-                          },
-                          child: const Icon(LucideIcons.trash2, size: 18, color: AppColors.slate400),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text(
-                          sme['score'].toString(),
-                          style: AppTypography.textTheme.headlineMedium?.copyWith(
-                            fontSize: 24,
-                            color: sme['scoreColor'],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: sme['scoreColor'].withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            sme['risk'],
-                            style: AppTypography.textTheme.labelSmall?.copyWith(
-                              color: sme['scoreColor'],
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(height: 2),
+                          Text(
+                            sme['industry'],
+                            style: AppTypography.textTheme.bodySmall?.copyWith(
+                              color: AppColors.slate600,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Added ${sme['added']}',
-                          style: AppTypography.textTheme.bodySmall?.copyWith(
-                            color: AppColors.slate500,
+                          const SizedBox(height: 12),
+                          Row(
+                             children: [
+                               Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                     color: sme['scoreColor'],
+                                     borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    sme['score'].toString(),
+                                    style: AppTypography.textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                                  ),
+                               ),
+                               const SizedBox(width: 8),
+                                Text(
+                                  sme['growthSignal'],
+                                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                                    color: (sme['isGrowthPositive'] as bool) ? AppColors.successGreen : AppColors.dangerRed,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                             ],
                           ),
-                        ),
-                      ],
+                       ],
                     ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+               ],
+            ),
           ),
         ),
       ),
@@ -353,14 +436,12 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
     if (items.isEmpty) return const SizedBox.shrink();
 
     final metrics = [
-      {'label': 'Score', 'key': 'score'},
-      {'label': 'Risk Level', 'key': 'risk'},
+      {'label': 'Credibility Score', 'key': 'score'},
       {'label': 'Revenue', 'key': 'revenue'},
-      {'label': 'Employees', 'key': 'employees'},
-      {'label': 'Liabilities', 'key': 'liabilities'},
-      {'label': 'Profit Margin', 'key': 'profitMargin'},
-      {'label': 'Growth Rate', 'key': 'growthRate'},
-      {'label': 'Payment History', 'key': 'paymentHistory'},
+      {'label': 'YoY Growth', 'key': 'growthSignal'},
+      {'label': 'Expense Ratio', 'key': 'expenseRatio'},
+      {'label': 'Payment Reliability', 'key': 'paymentReliability'},
+      {'label': 'Funding History', 'key': 'fundingHistory'},
     ];
 
     return Container(
@@ -372,64 +453,61 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          headingRowColor: WidgetStateProperty.all(AppColors.slate50),
-          dataRowMinHeight: 48,
-          dataRowMaxHeight: 48,
-          columns: [
-            DataColumn(
-              label: Text(
-                'Metric',
-                style: AppTypography.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.slate900,
-                ),
-              ),
-            ),
-            ...items.map((item) => DataColumn(
-              label: Text(
-                item['name'],
-                style: AppTypography.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.trustBlue,
-                ),
-              ),
-            )),
-          ],
-          rows: metrics.map((metricRow) {
-            return DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    metricRow['label']!,
-                    style: AppTypography.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.slate700,
+           columnSpacing: 24,
+           headingRowColor: WidgetStateProperty.all(AppColors.slate50),
+           columns: [
+              const DataColumn(label: Text('')), 
+              ...items.map((item) => DataColumn(
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                          Text(
+                            item['name'],
+                            style: AppTypography.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.slate900),
+                          ),
+                          Container(
+                             margin: const EdgeInsets.only(top: 4),
+                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                             decoration: BoxDecoration(color: item['scoreColor'], borderRadius: BorderRadius.circular(4)),
+                             child: Text(item['score'].toString(), style: AppTypography.textTheme.labelSmall?.copyWith(color: Colors.white)),
+                          )
+                       ],
                     ),
                   ),
-                ),
-                ...items.map((item) {
-                  final val = item[metricRow['key']!].toString();
-                  Color textColor = AppColors.slate900;
-                  FontWeight weight = FontWeight.w400;
-
-                  if (metricRow['key'] == 'score') {
-                    textColor = item['scoreColor'];
-                    weight = FontWeight.w700;
-                  }
-
-                  return DataCell(
-                    Text(
-                      val,
-                      style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: textColor,
-                        fontWeight: weight,
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            );
-          }).toList(),
+              )),
+           ],
+           rows: metrics.map((metricDict) {
+               return DataRow(
+                  cells: [
+                     DataCell(Text(
+                        metricDict['label']!,
+                        style: AppTypography.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.slate600),
+                     )),
+                     ...items.map((item) {
+                        final valStr = item[metricDict['key']!].toString();
+                        final isBest = _isMetricBest(metricDict['key']!, valStr, items);
+                        return DataCell(
+                            Container(
+                               padding: const EdgeInsets.all(6),
+                               decoration: isBest ? BoxDecoration(
+                                  color: AppColors.successGreen.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                               ) : null,
+                               child: Text(
+                                  valStr,
+                                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                                     color: isBest ? AppColors.successGreen : AppColors.slate900,
+                                     fontWeight: isBest ? FontWeight.w600 : FontWeight.w400,
+                                  ),
+                               ),
+                            ),
+                        );
+                     }),
+                  ],
+               );
+           }).toList(),
         ),
       ),
     );

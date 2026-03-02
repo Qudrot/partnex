@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:partnest/features/auth/data/models/user_model.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/features/auth/data/models/user_model.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -10,6 +10,8 @@ abstract class AuthState extends Equatable {
 }
 
 class AuthInitial extends AuthState {}
+
+class AuthUnauthenticated extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
@@ -47,6 +49,20 @@ class SmeProfileSubmissionError extends AuthState {
   final String message;
 
   const SmeProfileSubmissionError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// Special states for Investor Onboarding submission
+class InvestorProfileSubmitting extends AuthState {}
+
+class InvestorProfileSubmittedSuccess extends AuthState {}
+
+class InvestorProfileSubmissionError extends AuthState {
+  final String message;
+
+  const InvestorProfileSubmissionError(this.message);
 
   @override
   List<Object?> get props => [message];

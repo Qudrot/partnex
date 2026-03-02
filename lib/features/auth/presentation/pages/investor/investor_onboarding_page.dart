@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/investor/sme_discovery_feed_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/partnex_logo.dart';
+import 'package:partnex/core/services/ui_service.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/sme_discovery_feed_page.dart';
+
+import 'package:partnex/features/auth/presentation/pages/investor/investor_profile_page.dart';
 
 class InvestorOnboardingPage extends StatefulWidget {
-  const InvestorOnboardingPage({super.key});
+  final bool isEditing;
+
+  const InvestorOnboardingPage({
+    super.key,
+    this.isEditing = false,
+  });
 
   @override
   State<InvestorOnboardingPage> createState() => _InvestorOnboardingPageState();
@@ -62,16 +75,24 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
   ];
 
   void _navigateToFeed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const SmeDiscoveryFeedPage()),
-    );
+    uiService.replaceWith(const SmeDiscoveryFeedPage());
+  }
+
+  void _submitProfile() {
+    context.read<AuthBloc>().add(SubmitInvestorProfileEvent({
+      'role': _selectedRole,
+      'sectors': _selectedSectors.toList(),
+      'ticketSize': _selectedTicketSize ?? 'Not Specified',
+    }, isEditing: widget.isEditing));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final isLoading = state is InvestorProfileSubmitting;
+        return Scaffold(
+          backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -85,22 +106,10 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                     const SizedBox(height: 32),
                     
                     // Header Logo
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(LucideIcons.hexagon, color: AppColors.trustBlue, size: 32),
-                          const SizedBox(width: 8),
-                          Text(
-                            'PARTNEX',
-                            style: AppTypography.textTheme.displayMedium?.copyWith(
-                              color: AppColors.trustBlue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
+                    // const Center(
+                    //   child: PartnexLogo(size: 32, variant: PartnexLogoVariant.brandCombo),
+                    // ),
+                    // const SizedBox(height: 32),
 
                     // Hero Section
                     Text(
@@ -276,18 +285,19 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                 children: [
                   Expanded(
                     child: CustomButton(
-                      text: 'Skip',
+                      text: widget.isEditing ? 'Cancel' : 'Skip',
                       variant: ButtonVariant.secondary,
-                      onPressed: _navigateToFeed,
+                      onPressed: widget.isEditing ? () => uiService.goBack() : _navigateToFeed,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     flex: 2,
                     child: CustomButton(
-                      text: 'Continue',
+                      text: widget.isEditing ? 'Save Profile' : 'Continue',
                       variant: ButtonVariant.primary,
-                      onPressed: _navigateToFeed,
+                      isLoading: isLoading,
+                      onPressed: _submitProfile,
                     ),
                   ),
                 ],
@@ -296,6 +306,8 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

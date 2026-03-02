@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
 
 class CustomInputField extends StatelessWidget {
   final String label;
@@ -12,6 +12,7 @@ class CustomInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLines;
   final void Function(String)? onChanged;
+  final Iterable<String>? autofillHints;
 
   const CustomInputField({
     super.key,
@@ -24,6 +25,7 @@ class CustomInputField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.onChanged,
+    this.autofillHints,
   });
 
   @override
@@ -39,12 +41,13 @@ class CustomInputField extends StatelessWidget {
           validator: validator,
           maxLines: maxLines,
           onChanged: onChanged,
-          style: AppTypography.textTheme.bodyLarge?.copyWith(
+          autofillHints: autofillHints,
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.slate900,
           ),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate400,
             ),
             errorText: errorText,
@@ -52,10 +55,15 @@ class CustomInputField extends StatelessWidget {
               color: AppColors.dangerRed,
             ),
             filled: true,
-            fillColor: AppColors.slate100,
+            fillColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              if (states.contains(MaterialState.error) || states.contains(MaterialState.focused)) {
+                return AppColors.slate50;
+              }
+              return AppColors.slate100;
+            }),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 12,
-              horizontal: 14,
+              horizontal: 16,
             ),
             suffixIcon: suffixIcon,
             border: OutlineInputBorder(

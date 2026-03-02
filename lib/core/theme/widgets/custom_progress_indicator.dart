@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:partnest/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_colors.dart';
 
 class ProgressIndicatorWidget extends StatelessWidget {
   final double progress; // between 0.0 and 1.0

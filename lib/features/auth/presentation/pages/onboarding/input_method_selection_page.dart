@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/core/theme/widgets/custom_button.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/business_profile_page.dart';
-import 'package:partnest/features/auth/presentation/pages/onboarding/csv_upload_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/business_profile_page.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/csv_upload_page.dart';
+import 'package:partnex/features/auth/presentation/pages/onboarding/revenue_expenses_page.dart';
 
 class InputMethodSelectionPage extends StatelessWidget {
-  const InputMethodSelectionPage({super.key});
+  final bool isUpdatingRecord;
+  const InputMethodSelectionPage({super.key, this.isUpdatingRecord = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Data Input Method',
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -36,12 +48,6 @@ class InputMethodSelectionPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 16),
-              Text(
-                'How would you like to provide your data?',
-                style: AppTypography.textTheme.displaySmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
               Text(
                 'Choose the method that works best for you. You can always edit your information later.',
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -70,7 +76,7 @@ class InputMethodSelectionPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const BusinessProfilePage(),
+                              builder: (_) => isUpdatingRecord ? const RevenueExpensesPage(isUpdatingRecord: true) : const BusinessProfilePage(),
                             ),
                           );
                         },
@@ -92,7 +98,9 @@ class InputMethodSelectionPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const CsvUploadPage(),
+                              builder: (_) => CsvUploadPage(
+                                isUpdatingRecord: isUpdatingRecord,
+                              ),
                             ),
                           );
                         },

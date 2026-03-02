@@ -16,6 +16,7 @@ class CredibilityScore {
   final RiskLevel riskLevel;
   final List<String> topContributingFactors;
   final String? generalExplanation;
+  final String modelVersion;
   final DateTime calculatedAt;
 
   CredibilityScore({
@@ -25,6 +26,7 @@ class CredibilityScore {
     required this.riskLevel,
     required this.topContributingFactors,
     this.generalExplanation,
+    required this.modelVersion,
     required this.calculatedAt,
   });
 

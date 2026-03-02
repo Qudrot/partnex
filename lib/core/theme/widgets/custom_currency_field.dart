@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
 
 class CustomCurrencyField extends StatelessWidget {
   final String label;
@@ -12,6 +12,8 @@ class CustomCurrencyField extends StatelessWidget {
   final String prefixText;
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
+  final Color? fillColor;
+  final EdgeInsetsGeometry? contentPadding;
 
   const CustomCurrencyField({
     super.key,
@@ -23,6 +25,8 @@ class CustomCurrencyField extends StatelessWidget {
     this.prefixText = '₦',
     this.onChanged,
     this.validator,
+    this.fillColor,
+    this.contentPadding,
   });
 
   @override
@@ -30,8 +34,10 @@ class CustomCurrencyField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTypography.textTheme.labelLarge),
-        const SizedBox(height: 8),
+        if (label.isNotEmpty) ...[
+          Text(label, style: AppTypography.textTheme.labelLarge),
+          const SizedBox(height: 8),
+        ],
         TextFormField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -42,16 +48,16 @@ class CustomCurrencyField extends StatelessWidget {
           onChanged: onChanged,
           validator: validator,
           textAlign: TextAlign.right,
-          style: AppTypography.textTheme.bodyLarge?.copyWith(
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.slate900,
           ),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate400,
             ),
             prefixText: prefixText,
-            prefixStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+            prefixStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate600,
             ),
             errorText: errorText,
@@ -59,35 +65,40 @@ class CustomCurrencyField extends StatelessWidget {
               color: AppColors.dangerRed,
             ),
             filled: true,
-            fillColor: AppColors.slate100,
-            contentPadding: const EdgeInsets.symmetric(
+            fillColor: fillColor ?? MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              if (states.contains(MaterialState.error) || states.contains(MaterialState.focused)) {
+                return AppColors.slate50;
+              }
+              return AppColors.slate100;
+            }),
+            contentPadding: contentPadding ?? const EdgeInsets.symmetric(
               vertical: 12,
-              horizontal: 14,
+              horizontal: 16,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: AppColors.slate200),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: AppColors.slate200),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: AppColors.trustBlue,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: AppColors.dangerRed,
                 width: 2,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: AppColors.dangerRed,
                 width: 2,

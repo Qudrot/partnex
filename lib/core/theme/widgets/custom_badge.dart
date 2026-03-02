@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/data/models/credibility_score.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/features/auth/data/models/credibility_score.dart';
 
 class CustomBadge extends StatelessWidget {
   final String text;
@@ -36,7 +36,6 @@ class CustomBadge extends StatelessWidget {
         text.toUpperCase(),
         style: AppTypography.textTheme.labelLarge?.copyWith(
           color: textColor,
-          letterSpacing: 0.5,
         ),
       ),
     );
@@ -60,7 +59,6 @@ class NeutralBadge extends StatelessWidget {
         text.toUpperCase(),
         style: AppTypography.textTheme.labelLarge?.copyWith(
           color: AppColors.slate900,
-          letterSpacing: 0.5,
         ),
       ),
     );

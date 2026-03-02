@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:partnest/core/theme/app_colors.dart';
-import 'package:partnest/core/theme/app_typography.dart';
-import 'package:partnest/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
+import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/partnex_logo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
+import 'package:partnex/core/services/ui_service.dart';
 
 class AnalysisStatePage extends StatefulWidget {
   const AnalysisStatePage({super.key});
@@ -11,7 +20,7 @@ class AnalysisStatePage extends StatefulWidget {
   State<AnalysisStatePage> createState() => _AnalysisStatePageState();
 }
 
-enum ProcessingStage { validation, engineering, inference, finalization, complete }
+enum ProcessingStage { validation, extraction, engineering, inference, finalization, complete }
 
 class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTickerProviderStateMixin {
   ProcessingStage _currentStage = ProcessingStage.validation;
@@ -36,61 +45,80 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTicker
       curve: Curves.easeInOut,
     ));
 
-    _startSimulation();
+    _startAnalysis();
   }
 
-  void _startSimulation() async {
-    // 5 seconds total simulation
+  void _startAnalysis() async {
+    final profileCubit = context.read<SmeProfileCubit>();
+    final authBloc = context.read<AuthBloc>();
+    final scoreCubit = context.read<ScoreCubit>();
+
+    // 1. Data Validation (Fast)
+    await Future.delayed(const Duration(milliseconds: 800));
+    _updateStage(ProcessingStage.extraction);
+
+    // 2. Wait for Background CSV Extraction if needed
+    if (profileCubit.state.csvProcessingStatus == CsvProcessingStatus.processing) {
+       // Wait for success or error
+       await for (final state in profileCubit.stream) {
+         if (state.csvProcessingStatus == CsvProcessingStatus.success || 
+             state.csvProcessingStatus == CsvProcessingStatus.error) {
+           break;
+         }
+       }
+    }
+
+    if (profileCubit.state.csvProcessingStatus == CsvProcessingStatus.error) {
+      uiService.showSnackBar(profileCubit.state.csvErrorMessage ?? 'Extraction failed', isError: true);
+      uiService.goBack();
+      return;
+    }
+
+    _updateStage(ProcessingStage.engineering);
+    await Future.delayed(const Duration(seconds: 1));
+
+    // 3. Trigger Submission to Backend (if not already triggered by ReviewConfirmPage)
+    if (authBloc.state is! SmeProfileSubmitting && authBloc.state is! SmeProfileSubmittedSuccess) {
+      authBloc.add(SubmitSmeProfileEvent(profileCubit.state.toMap()));
+    }
+
+    _updateStage(ProcessingStage.inference);
+    await Future.delayed(const Duration(seconds: 1));
+
+    _updateStage(ProcessingStage.finalization);
     
-    // Data Validation (0-1s)
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() {
-        _currentStage = ProcessingStage.engineering;
-        _secondsRemaining = 4;
-      });
+    // 4. Wait for AuthBloc Success
+    if (authBloc.state is! SmeProfileSubmittedSuccess) {
+       await for (final state in authBloc.stream) {
+         if (!mounted) return;
+         if (state is SmeProfileSubmittedSuccess) {
+           scoreCubit.loadScore(state.score);
+           break;
+         } else if (state is SmeProfileSubmissionError) {
+           uiService.showSnackBar(state.message, isError: true);
+           uiService.goBack();
+           return;
+         }
+       }
     }
 
-    // Feature Engineering (1-2s)
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() {
-        _currentStage = ProcessingStage.inference;
-        _secondsRemaining = 3;
-      });
-    }
+    _updateStage(ProcessingStage.complete);
+    _navigateToDashboard();
+  }
 
-    // Model Inference (2-4s)
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() {
-        _currentStage = ProcessingStage.finalization;
-        _secondsRemaining = 1;
-      });
-    }
-
-    // Score Finalization (4-5s)
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() {
-        _currentStage = ProcessingStage.complete;
-        _secondsRemaining = 0;
-      });
-      _navigateToDashboard();
-    }
+  void _updateStage(ProcessingStage stage) {
+    if (!mounted) return;
+    setState(() {
+      _currentStage = stage;
+      // Heuristic for remaining seconds
+      _secondsRemaining = (ProcessingStage.values.length - 1) - stage.index;
+    });
   }
 
   void _navigateToDashboard() {
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const CredibilityDashboardPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 200),
-      ),
-    );
+    uiService.showSnackBar('Credibility Score Generated Successfully!');
+
+    uiService.replaceWith(const CredibilityDashboardPage());
   }
 
   @override
@@ -199,22 +227,8 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTicker
             children: [
               const SizedBox(height: 24),
               
-              // Header Placeholder
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(LucideIcons.hexagon, color: AppColors.trustBlue, size: 32),
-                    const SizedBox(width: 8),
-                    Text(
-                      'PARTNEX',
-                      style: AppTypography.textTheme.displayMedium?.copyWith(
-                        color: AppColors.trustBlue,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Header
+              const PartnexLogo(size: 24, variant: PartnexLogoVariant.brandCombo),
 
               const SizedBox(height: 48),
 
@@ -249,15 +263,15 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTicker
               const SizedBox(height: 32),
 
               // Hero Text
-              Text(
-                'Analyzing Your Credibility',
-                style: AppTypography.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.slate900,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
+              // Text(
+              //   'Analyzing Your Credibility',
+              //   style: AppTypography.textTheme.headlineLarge?.copyWith(
+              //     fontWeight: FontWeight.w700,
+              //     color: AppColors.slate900,
+              //   ),
+              //   textAlign: TextAlign.center,
+              // ),
+              // const SizedBox(height: 8),
               Text(
                 'We\'re processing your financial data and computing your credibility score.',
                 style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -277,6 +291,11 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTicker
                         title: 'Data Validation',
                         stepStage: ProcessingStage.validation,
                         pendingIcon: LucideIcons.checkCircle,
+                      ),
+                      _buildStep(
+                        title: 'Background Data Extraction',
+                        stepStage: ProcessingStage.extraction,
+                        pendingIcon: LucideIcons.database,
                       ),
                       _buildStep(
                         title: 'Feature Engineering',
@@ -299,16 +318,16 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> with SingleTicker
               ),
 
               // Estimated Time
-              Center(
-                child: Text(
-                  'Your score will be ready in approximately $_secondsRemaining seconds',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate600,
-                  ),
-                ),
-              ),
+              // Center(
+              //   child: Text(
+              //     'Your score will be ready in approximately $_secondsRemaining seconds',
+              //     style: AppTypography.textTheme.bodyMedium?.copyWith(
+              //       color: AppColors.slate600,
+              //     ),
+              //   ),
+              // ),
 
-              const SizedBox(height: 32),
+              // const SizedBox(height: 32),
 
               // Reassurance
               Row(

@@ -15,13 +15,15 @@ class UserModel {
     final String name;
     final UserRole role;
     final String? profilePicture;
+    final bool profileCompleted;
 
     UserModel({
         required this.id,
         required this.email,
         required this.name,
         required this.role,
-        this.profilePicture
+        this.profilePicture,
+        this.profileCompleted = false,
     });
 
     factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
