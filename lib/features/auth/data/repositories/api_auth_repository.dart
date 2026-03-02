@@ -60,10 +60,20 @@ class ApiAuthRepository implements AuthRepository {
       if (token != null && (token as String).isNotEmpty) {
         await _secureStorage.write(key: 'jwt_token', value: token);
         await _secureStorage.write(key: 'user_role', value: parsedRole.name);
-        await _secureStorage.write(key: 'profile_completed', value: isProfileCompleted.toString());
         // CRITICAL: Also inject into the live Dio client immediately so
         // subsequent calls in the same session don't miss the header.
         apiClient.setToken(token);
+
+        // Fallback check: if the login payload skipped the flag, manually check the score endpoint
+        if (parsedRole == UserRole.sme && !isProfileCompleted) {
+          try {
+            final score = await getMyScore(); // getMyScore calls POST /api/score/run and throws if not found
+            isProfileCompleted = true;
+            if (kDebugMode) print('LOGIN RECOVERY: Found existing SME score, updating flag.');
+          } catch (_) {}
+        }
+
+        await _secureStorage.write(key: 'profile_completed', value: isProfileCompleted.toString());
         if (kDebugMode) print('TOKEN STORED + INJECTED: ${token.substring(0, 20)}...');
       } else {
         if (kDebugMode) print('WARNING: No token found in login response! Keys: ${response.data.keys}');
@@ -197,7 +207,11 @@ class ApiAuthRepository implements AuthRepository {
 
       // Build explicit auth options for every protected request.
       // This is the most reliable approach — no interceptor dependency.
-      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
+      final authOptions = Options(
+        headers: {'Authorization': 'Bearer $token'},
+        receiveTimeout: const Duration(seconds: 60),
+        sendTimeout: const Duration(seconds: 60),
+      );
 
       final Map<String, dynamic> payload = {
         "business_name": data['businessName'],
@@ -280,6 +294,12 @@ class ApiAuthRepository implements AuthRepository {
       );
 
     } catch (e) {
+      if (kDebugMode) {
+        print('Score Generation Error in submitSmeProfile: $e');
+        if (e is DioException) {
+          print('DioException response data: ${e.response?.data}');
+        }
+      }
       if (e is DioException) {
         throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'Failed to generate credibility score.');
       }
@@ -299,7 +319,6 @@ class ApiAuthRepository implements AuthRepository {
         throw Exception('Session expired. Please log in again.');
       }
 
-      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
 
       // Mocking the Backend Profile Save to unblock the UI
       // In the future, this should be an apiClient.dio.post('/api/investor/profile')
@@ -404,7 +423,11 @@ class ApiAuthRepository implements AuthRepository {
       if (token == null || token.isEmpty) {
         token = await _secureStorage.read(key: 'jwt_token');
       }
-      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
+      final authOptions = Options(
+        headers: {'Authorization': 'Bearer $token'},
+        receiveTimeout: const Duration(seconds: 60),
+        sendTimeout: const Duration(seconds: 60),
+      );
 
       // We use /score/run to compute/fetch the latest score per API docs
       final scoreResponse = await apiClient.dio.post('/api/score/run', options: authOptions);
@@ -435,6 +458,12 @@ class ApiAuthRepository implements AuthRepository {
         calculatedAt: DateTime.now(),
       );
      } catch(e) {
+       if (kDebugMode) {
+         print('Score Generation Error: $e');
+         if (e is DioException) {
+           print('DioException response data: ${e.response?.data}');
+         }
+       }
        throw Exception('Failed to fetch credibility score.');
      }
   }

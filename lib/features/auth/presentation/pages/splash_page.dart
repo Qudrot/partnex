@@ -69,7 +69,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       }
 
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
@@ -79,13 +79,14 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             },
             transitionDuration: const Duration(milliseconds: 400),
           ),
+          (route) => false,
         );
       }
     } else {
       if (kDebugMode) print('SPLASH: No token → navigating to Login');
 
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
@@ -95,6 +96,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             },
             transitionDuration: const Duration(milliseconds: 400),
           ),
+          (route) => false,
         );
       }
     }

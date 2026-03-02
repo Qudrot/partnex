@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_dropdown_field.dart';
@@ -14,16 +15,23 @@ import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/analysis_state_page.dart';
+import 'package:partnex/core/services/ui_service.dart';
 
 class BusinessProfilePage extends StatefulWidget {
   final bool isDocumentUpload;
   final bool isEditing;
+  /// Alias accepted from ProfileManagementPage for clarity
+  final bool isEditMode;
 
   const BusinessProfilePage({
     super.key,
     this.isDocumentUpload = false,
     this.isEditing = false,
+    this.isEditMode = false,
   });
+
+  /// Combined flag — true if either `isEditing` or `isEditMode` are set
+  bool get _inEditMode => isEditing || isEditMode;
 
   @override
   State<BusinessProfilePage> createState() => _BusinessProfilePageState();
@@ -100,7 +108,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => uiService.goBack(),
         ),
         title: Text(
           'Business Profile',
@@ -118,12 +126,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, authState) {
             if (authState is SmeProfileSubmittedSuccess) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AnalysisStatePage(),
-                ),
-              );
+              uiService.navigateTo(const AnalysisStatePage());
             }
           },
           builder: (context, authState) {
@@ -134,15 +137,15 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
             // Progress Indicator
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 4.0,
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
               ),
               child: Column(
                 children: [
                   ProgressIndicatorWidget(progress: widget.isDocumentUpload ? 0.66 : 0.20),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    widget.isDocumentUpload ? 'Step 2 of 3' : 'Step 1 of 5',
+                    widget._inEditMode ? 'Edit Mode' : (widget.isDocumentUpload ? 'Step 2 of 3' : 'Step 1 of 5'),
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       color: AppColors.slate600,
                       fontWeight: FontWeight.w500,
@@ -171,7 +174,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                       CustomDropdownField(
                         label: 'Industry/Sector',
                         placeholder: 'Select industry...',
@@ -183,7 +186,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           });
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                       CustomInputField(
                         label: 'Location',
                         placeholder: 'e.g., Lagos, Nigeria',
@@ -209,7 +212,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                       CustomInputField(
                         label: 'Number of Employees',
                         placeholder: 'e.g., 25',
@@ -223,7 +226,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                     ],
                   ),
                 ),
@@ -232,26 +235,25 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
 
             // Navigation Buttons
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
                 children: [
                   Expanded(
                     child: CustomButton(
                       text: 'Previous',
                       variant: ButtonVariant.secondary,
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => uiService.goBack(),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.smd),
                   Expanded(
                     child: CustomButton(
-                      text: widget.isEditing ? 'Save Changes' : (widget.isDocumentUpload ? 'Submit' : 'Next'),
+                      text: widget._inEditMode ? 'Save Changes' : (widget.isDocumentUpload ? 'Submit' : 'Next'),
                       variant: ButtonVariant.primary,
                       isDisabled: !_isFormValid || isSubmitting,
                       isLoading: isSubmitting,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Save state to Cubit
                           context.read<SmeProfileCubit>().updateBusinessProfile(
                             businessName: _nameController.text,
                             industry: _selectedIndustry!,
@@ -259,22 +261,12 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             yearsOfOperation: int.parse(_yearsController.text),
                             numberOfEmployees: int.parse(_employeesController.text),
                           );
-                          if (widget.isEditing) {
-                            Navigator.pop(context);
+                          if (widget._inEditMode) {
+                            uiService.goBack();
                           } else if (widget.isDocumentUpload) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ReviewConfirmPage(isDocumentUpload: true),
-                              ),
-                            );
+                            uiService.navigateTo(const ReviewConfirmPage(isDocumentUpload: true));
                           } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RevenueExpensesPage(),
-                              ),
-                            );
+                            uiService.navigateTo(const RevenueExpensesPage());
                           }
                         }
                       },

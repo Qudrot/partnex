@@ -491,7 +491,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                         child: CustomButton(
                           text: widget.isUpdatingRecord
                               ? 'Generate New Score'
-                              : 'Confirm & Submit Profile',
+                              : 'Generate Score',
                           variant: ButtonVariant.primary,
                           isLoading: isSubmitting,
                           isDisabled: !_isConfirmed || isSubmitting,
