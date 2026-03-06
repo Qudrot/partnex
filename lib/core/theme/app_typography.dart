@@ -75,4 +75,11 @@ class AppTypography {
       color: AppColors.neutralBlack,
     ),
   );
+
+  static final TextStyle bodySmaller = GoogleFonts.inter(
+    fontSize: 11,
+    height: 1.3,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralBlack,
+  );
 }

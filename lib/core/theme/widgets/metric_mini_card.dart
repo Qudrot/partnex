@@ -52,10 +52,9 @@ class MetricMiniCard extends StatelessWidget {
           ),
           Text(
             status,
-            style: AppTypography.textTheme.labelSmall?.copyWith(
+            style: AppTypography.textTheme.labelMedium?.copyWith(
               color: statusColor,
               fontWeight: FontWeight.w600,
-              fontSize: 14,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

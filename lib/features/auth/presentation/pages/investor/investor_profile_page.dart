@@ -10,6 +10,7 @@ import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
 import 'package:partnex/features/auth/presentation/pages/login_page.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
 
 class InvestorProfilePage extends StatefulWidget {
   const InvestorProfilePage({super.key});
@@ -187,23 +188,18 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
             const SizedBox(height: AppSpacing.xxxxl),
 
             Center(
-              child: TextButton.icon(
+              child: CustomButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(LogoutEvent());
                   uiService.clearAndNavigateTo(const LoginPage());
                 },
+                variant: ButtonVariant.tertiary,
                 icon: const Icon(
                   LucideIcons.logOut,
                   size: 16,
                   color: AppColors.dangerRed,
                 ),
-                label: Text(
-                  'Log Out',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.dangerRed,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                text: 'Log Out',
               ),
             ),
           ],
@@ -330,38 +326,17 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
           const SizedBox(height: AppSpacing.md),
 
           // CTA Section
-          ElevatedButton(
-            onPressed: _isLoading ? null : _handleCompleteProfile,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.trustBlue,
-              disabledBackgroundColor: AppColors.slate300,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.smd),
-              elevation: 0,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _isLoading ? 'Loading...' : 'Complete Profile',
-                  style: AppTypography.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: _isLoading ? AppColors.slate500 : AppColors.neutralWhite,
-                  ),
-                ),
-                if (!_isLoading) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  const Icon(
+          CustomButton(
+            text: _isLoading ? 'Loading...' : 'Complete Profile',
+            onPressed: _handleCompleteProfile,
+            isLoading: _isLoading,
+            icon: _isLoading
+                ? null
+                : const Icon(
                     LucideIcons.arrowRight,
                     size: AppSpacing.md,
                     color: AppColors.neutralWhite,
                   ),
-                ],
-              ],
-            ),
           ),
 
           // Progress Section

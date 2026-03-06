@@ -61,8 +61,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
   }
 
   bool get _validateHistory {
-    if (_repaymentHistoryController.text.isEmpty) return false;
-    return true;
+    return true; // Repayment history is optional
   }
 
   bool get _isFormValid {
@@ -327,14 +326,14 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       const SizedBox(height: 16),
 
                       CustomInputField(
-                        label: 'Repayment History',
+                        label: 'Repayment History (Optional)',
                         placeholder:
                             'e.g., No missed repayments, defaulted in 2021',
                         controller: _repaymentHistoryController,
                         onChanged: _onFieldChanged,
                         maxLines: 2,
                         validator: (val) {
-                          if (val == null || val.isEmpty) return 'Required';
+                          // Repayment behavior is optional
                           return null;
                         },
                       ),

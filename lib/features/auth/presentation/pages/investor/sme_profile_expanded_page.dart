@@ -439,16 +439,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                               statusColor: widget.sme.expenseRatioColor,
                             ),
                             MetricMiniCard(
-                              label: 'Liabilities',
-                              value: widget.sme.liabilitiesRatioText,
-                              status: widget.sme.liabilitiesRatioSignal,
-                              statusColor: widget.sme.liabilitiesRatioColor,
+                              label: 'Profit Margin',
+                              value: widget.sme.profitMarginText,
+                              status: widget.sme.profitMarginSignal,
+                              statusColor: widget.sme.profitMarginColor,
                             ),
                             MetricMiniCard(
-                              label: 'Debt Service',
-                              value: widget.sme.debtServiceText,
-                              status: widget.sme.debtServiceSignal,
-                              statusColor: widget.sme.debtServiceColor,
+                              label: 'Impact Score',
+                              value: widget.sme.impactScore.toStringAsFixed(1),
+                              status: widget.sme.impactScoreSignal,
+                              statusColor: widget.sme.impactScoreColor,
                             ),
                           ],
                         );
@@ -529,26 +529,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 44,
-                        child: ElevatedButton(
-                          onPressed: _openMessageSheet,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.trustBlue,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Message SME',
-                            style: AppTypography.textTheme.labelLarge?.copyWith(
-                              color: AppColors.neutralWhite,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                      child: CustomButton(
+                        text: 'Message SME',
+                        onPressed: _openMessageSheet,
+                        variant: ButtonVariant.primary,
                       ),
                     ),
                     // const SizedBox(width: 12),

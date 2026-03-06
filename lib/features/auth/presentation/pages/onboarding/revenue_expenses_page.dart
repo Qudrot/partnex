@@ -5,6 +5,7 @@ import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnex/core/theme/widgets/custom_currency_field.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/liabilities_history_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
@@ -198,58 +199,23 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
-                  TextFormField(
+                  CustomInputField(
+                    label: '',
                     controller: yearCtrl,
+                    placeholder: 'e.g., 2024',
                     keyboardType: TextInputType.number,
                     maxLength: 4,
                     onChanged: _onFieldChanged,
                     validator: (val) {
                       if (isOptional &&
-                          (amountCtrl.text.isEmpty || amountCtrl.text == '0'))
+                          (amountCtrl.text.isEmpty || amountCtrl.text == '0')) {
                         return null;
-                      if (val == null || val.isEmpty || val.length != 4)
+                      }
+                      if (val == null || val.isEmpty || val.length != 4) {
                         return 'Valid year';
+                      }
                       return null;
                     },
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
-                      color: AppColors.slate900,
-                    ),
-                    decoration: InputDecoration(
-                      counterText: "",
-                      hintText: 'e.g., 2024',
-                      hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate400,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.neutralWhite,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.smd,
-                        vertical: AppSpacing.sm,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        borderSide: const BorderSide(color: AppColors.slate200),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        borderSide: const BorderSide(color: AppColors.slate200),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        borderSide: const BorderSide(
-                          color: AppColors.trustBlue,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        borderSide: const BorderSide(
-                          color: AppColors.dangerRed,
-                          width: 2,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -404,7 +370,14 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         // NEW DELETE BUTTON AT THE BOTTOM
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
+                          child: CustomButton(
+                            text: 'Delete Year 3',
+                            variant: ButtonVariant.danger,
+                            icon: const Icon(
+                              LucideIcons.trash2,
+                              size: AppSpacing.md,
+                              color: AppColors.neutralWhite,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _showYear3 = false;
@@ -413,30 +386,18 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                 _onFieldChanged('');
                               });
                             },
-                            icon: const Icon(
-                              LucideIcons.trash2,
-                              size: AppSpacing.md,
-                              color: AppColors.dangerRed,
-                            ),
-                            label: Text(
-                              'Delete Year 3',
-                              style: AppTypography.textTheme.labelMedium
-                                  ?.copyWith(
-                                    color: AppColors.dangerRed,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 0,
-                                vertical: AppSpacing.sm,
-                              ),
-                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.smd),
                       ] else ...[
-                        TextButton.icon(
+                        CustomButton(
+                          text: 'Add Another Year',
+                          variant: ButtonVariant.secondary,
+                          icon: const Icon(
+                            LucideIcons.plus,
+                            size: AppSpacing.md,
+                            color: AppColors.trustBlue,
+                          ),
                           onPressed: () {
                             setState(() {
                               _showYear3 = true;
@@ -444,34 +405,6 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                   .toString();
                             });
                           },
-                          icon: const Icon(
-                            LucideIcons.plus,
-                            size: AppSpacing.md,
-                            color: AppColors.trustBlue,
-                          ),
-                          label: Text(
-                            'Add Another Year',
-                            style: AppTypography.textTheme.labelLarge?.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.trustBlue,
-                            ),
-                          ),
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                              side: const BorderSide(
-                                color: AppColors.trustBlue,
-                                width: 1,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.smd,
-                              vertical: AppSpacing.smd,
-                            ),
-                            minimumSize: const Size(0, 40),
-                          ),
                         ),
                       ],
                       const SizedBox(height: AppSpacing.xl),

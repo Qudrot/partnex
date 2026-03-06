@@ -6,6 +6,8 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/core/services/ui_service.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
 
 class ComparisonWatchlistPage extends StatefulWidget {
   const ComparisonWatchlistPage({super.key});
@@ -245,17 +247,12 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            TextButton(
+            CustomButton(
+              text: 'Go to Watchlist',
+              variant: ButtonVariant.tertiary,
               onPressed: () {
                 _tabController.animateTo(0); // Switch to Watchlist tab
               },
-              child: Text(
-                'Go to Watchlist',
-                style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.trustBlue,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ),
           ],
         ),
@@ -296,15 +293,10 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          TextButton(
+          CustomButton(
+            text: 'Explore Companies',
+            variant: ButtonVariant.tertiary,
             onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Explore Companies',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.trustBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
         ],
       ),
@@ -321,33 +313,25 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          TextButton.icon(
-            onPressed: () {},
+          CustomButton(
+            text: 'Share',
+            variant: ButtonVariant.tertiary,
             icon: const Icon(
               LucideIcons.share2,
               size: 16,
               color: AppColors.trustBlue,
             ),
-            label: Text(
-              'Share',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.trustBlue,
-              ),
-            ),
-          ),
-          TextButton.icon(
             onPressed: () {},
+          ),
+          CustomButton(
+            text: 'Export PDF',
+            variant: ButtonVariant.tertiary,
             icon: const Icon(
               LucideIcons.download,
               size: 16,
               color: AppColors.trustBlue,
             ),
-            label: Text(
-              'Export PDF',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.trustBlue,
-              ),
-            ),
+            onPressed: () {},
           ),
         ],
       ),

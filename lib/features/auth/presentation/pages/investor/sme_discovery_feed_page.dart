@@ -4,7 +4,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
-import 'package:partnex/core/theme/widgets/partnex_logo.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/theme/widgets/custom_input_field.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
@@ -162,16 +163,11 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
                     ],
                   ),
                 ),
-                TextButton(
+                CustomButton(
+                  text: 'Set Up',
+                  variant: ButtonVariant.tertiary,
                   onPressed: () => uiService.navigateTo(
                     const InvestorOnboardingPage(isEditing: true),
-                  ),
-                  child: Text(
-                    'Set Up',
-                    style: AppTypography.textTheme.labelSmall?.copyWith(
-                      color: AppColors.trustBlue,
-                      fontWeight: FontWeight.w700,
-                    ),
                   ),
                 ),
               ],
@@ -209,41 +205,21 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Container(
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.slate100,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.slate200),
+            child: CustomInputField(
+              label: '',
+              placeholder: 'Search by company name or industry...',
+              onChanged: (val) {
+                // Search logic
+              },
+              prefixIcon: const Icon(
+                LucideIcons.search,
+                size: 16,
+                color: AppColors.slate400,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Row(
-                children: [
-                  const Icon(
-                    LucideIcons.search,
-                    size: 16,
-                    color: AppColors.slate400,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText:
-                            'Search by company name, industry, or location...',
-                        hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.slate400,
-                          fontSize: 14,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.only(bottom: 14),
-                      ),
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate700,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
+              fillColor: Colors.transparent,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 0,
               ),
             ),
           ),

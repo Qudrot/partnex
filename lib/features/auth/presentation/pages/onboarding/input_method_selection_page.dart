@@ -114,17 +114,12 @@ class InputMethodSelectionPage extends StatelessWidget {
                         },
                       ),
                       const SizedBox(height: AppSpacing.xl),
-                      TextButton(
+                      CustomButton(
+                        text: 'Need help? Contact support',
+                        variant: ButtonVariant.tertiary,
                         onPressed: () {
                           // TODO: handle help/support
                         },
-                        child: Text(
-                          'Need help? Contact support',
-                          style: AppTypography.textTheme.bodySmall?.copyWith(
-                            color: AppColors.trustBlue,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
                       ),
                     ],
                   ),

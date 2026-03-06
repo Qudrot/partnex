@@ -222,17 +222,13 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               ],
             ),
             actions: [
-              TextButton.icon(
+              CustomButton(
+                text: 'Add new',
+                variant: ButtonVariant.tertiary,
                 icon: const Icon(
                   LucideIcons.plus,
                   size: 16,
                   color: AppColors.trustBlue,
-                ),
-                label: Text(
-                  'Add new',
-                  style: AppTypography.textTheme.labelMedium?.copyWith(
-                    color: AppColors.trustBlue,
-                  ),
                 ),
                 onPressed: () {
                   // SECURE FIX: Grab the current values from the state

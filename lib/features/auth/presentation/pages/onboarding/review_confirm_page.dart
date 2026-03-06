@@ -94,13 +94,10 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
             children: [
               Text(title, style: AppTypography.textTheme.headlineSmall?.copyWith(fontSize: 16, color: AppColors.slate900)),
               if (onEdit != null)
-                InkWell(
-                  onTap: onEdit,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                    child: Text(editLabel, style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.trustBlue, fontWeight: FontWeight.w600)),
-                  ),
+                CustomButton(
+                  text: editLabel,
+                  variant: ButtonVariant.tertiary,
+                  onPressed: onEdit,
                 ),
             ],
           ),
@@ -186,12 +183,80 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                           Container(
                             padding: const EdgeInsets.all(AppSpacing.smd),
                             margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                            decoration: BoxDecoration(color: AppColors.warningAmber.withOpacity(0.1), borderRadius: BorderRadius.circular(AppRadius.md), border: Border.all(color: AppColors.warningAmber)),
+                            decoration: BoxDecoration(color: AppColors.warningAmber.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.md), border: Border.all(color: AppColors.warningAmber)),
                             child: Row(children: [
                               const Icon(LucideIcons.alertTriangle, color: AppColors.warningAmber, size: 20),
                               const SizedBox(width: AppSpacing.smd),
                               Expanded(child: Text("Your statement only contained 1 year of data. The AI requires at least 2 years. Please tap 'Edit' below to add your previous year's revenue.", style: TextStyle(color: AppColors.warningAmber, fontSize: 13, fontWeight: FontWeight.w600))),
                             ]),
+                          ),
+
+                        if (widget.isDocumentUpload)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: AppSpacing.md, top: AppSpacing.xs),
+                            child: Container(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                color: AppColors.trustBlue.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(AppRadius.md),
+                                border: Border.all(color: AppColors.trustBlue.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(LucideIcons.fileText, color: AppColors.trustBlue, size: 20),
+                                  const SizedBox(width: AppSpacing.smd),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Extracted Financial Profile',
+                                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.slate900,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'The financial values below were intelligently extracted directly from your document and automatically chronologicalized by our AI engine.',
+                                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                                            color: AppColors.slate600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(LucideIcons.info, color: AppColors.trustBlue, size: 20),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: Text('Extraction Details', style: AppTypography.textTheme.headlineMedium),
+                                          content: Text(
+                                            'Source File: ${profileState.documentFileName ?? "Attached Statement"}\n\n'
+                                            'Calculation logic:\n'
+                                            'Our engine parses every isolated credit/debit row to compute your explicit 12-month trailing windows. Note that the system strictly filters and anchors your data down to the most recent 24 or 36 months to guarantee comparative consistency across the platform.',
+                                            style: AppTypography.textTheme.bodyMedium?.copyWith(height: 1.5),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(ctx),
+                                              child: const Text('Understood'),
+                                            ),
+                                          ],
+                                          backgroundColor: AppColors.neutralWhite,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
 
                         if (!widget.isUpdatingRecord)

@@ -133,6 +133,40 @@ class SmeCardData {
     return _criticalColor;
   }
 
+  double get profitMargin =>
+      annualRevenue > 0 ? ((annualRevenue - (monthlyExpenses * 12)) / annualRevenue) * 100 : 0;
+
+  String get profitMarginText {
+    if (annualRevenue <= 0) return 'N/A';
+    return '${profitMargin.toStringAsFixed(0)}%';
+  }
+
+  String get profitMarginSignal {
+    if (profitMargin >= 15) return 'Healthy';
+    if (profitMargin >= 0) return 'Moderate';
+    return 'Negative';
+  }
+
+  Color get profitMarginColor {
+    if (profitMargin >= 15) return AppColors.successGreen;
+    if (profitMargin >= 0) return AppColors.warningOrange;
+    return AppColors.dangerRed;
+  }
+
+  double get impactScore => score / 100.0;
+
+  String get impactScoreSignal {
+    if (impactScore >= 0.8) return 'Excellent';
+    if (impactScore >= 0.5) return 'Good';
+    return 'Low';
+  }
+
+  Color get impactScoreColor {
+    if (impactScore >= 0.8) return AppColors.trustBlue;
+    if (impactScore >= 0.5) return AppColors.successGreen;
+    return AppColors.dangerRed;
+  }
+
   Color get scoreColor {
     final lowerRisk = riskLevel.toLowerCase();
     if (lowerRisk.contains('low') || score >= 80)

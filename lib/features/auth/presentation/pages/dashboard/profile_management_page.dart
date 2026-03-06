@@ -298,22 +298,17 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
 
                   const SizedBox(height: AppSpacing.xl),
                   Center(
-                    child: TextButton.icon(
-                      onPressed: () {
-                        context.read<AuthBloc>().add(LogoutEvent());
-                      },
+                    child: CustomButton(
+                      text: 'Log Out',
+                      variant: ButtonVariant.tertiary,
                       icon: const Icon(
                         LucideIcons.logOut,
                         size: 16,
                         color: AppColors.slate600,
                       ),
-                      label: Text(
-                        'Log Out',
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.slate600,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      onPressed: () {
+                        context.read<AuthBloc>().add(LogoutEvent());
+                      },
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),

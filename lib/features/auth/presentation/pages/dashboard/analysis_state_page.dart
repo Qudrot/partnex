@@ -16,6 +16,7 @@ import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_p
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
 
 class AnalysisStatePage extends StatefulWidget {
   final bool isDocumentUpload;
@@ -235,13 +236,10 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
+                    CustomButton(
+                      text: 'Go Back',
                       onPressed: () => uiService.goBack(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.slate900,
-                        minimumSize: const Size(200, 48),
-                      ),
-                      child: const Text('Go Back'),
+                      variant: ButtonVariant.secondary,
                     ),
                   ] else ...[
                     const Center(child: NumberStreamAnimation()),
@@ -599,7 +597,7 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
     final value = _random.nextInt(90) + 10; // 10 to 99
     final sizes = [24.0, 32.0, 48.0, 64.0, 72.0];
     final fontSize = sizes[_random.nextInt(sizes.length)];
-    final weights = [FontWeight.w600, FontWeight.w700, FontWeight.w800, FontWeight.w900, FontWeight.bold];
+    final weights = [FontWeight.w400, FontWeight.w500, FontWeight.w600, FontWeight.w700, FontWeight.w800, FontWeight.w900, FontWeight.bold];
     final fontWeight = weights[_random.nextInt(weights.length)];
 
     final color = _colors[_random.nextInt(_colors.length)];

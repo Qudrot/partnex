@@ -21,7 +21,6 @@ import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/analysis_state_page.dart';
-import 'package:partnex/core/services/ui_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CsvUploadPage extends StatefulWidget {
@@ -49,6 +48,14 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
       );
 
       if (result != null) {
+        // Start loading state and clear previous errors
+        setState(() {
+          _isUploading = true;
+          _isError = false;
+          _errorMessage = '';
+          _isSuccess = false;
+        });
+
         final file = result.files.single;
         setState(() => _fileName = file.name);
 
@@ -62,12 +69,29 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         }
 
         if (mounted) {
-          context.read<SmeProfileCubit>().processCsv(csvString, file.name);
+          final cubit = context.read<SmeProfileCubit>();
+          
+          // 1. FAIL FAST: Wait for the Cubit to validate the 24-month rule
+          await cubit.processCsv(csvString, file.name);
 
-          // We still want to parse locally ONLY for the preview table,
-          // but we do NOT wait for it to block navigation.
+          // 2. CHECK RESULT: Did it fail the 24-month check?
+          if (cubit.state.csvProcessingStatus == CsvProcessingStatus.error) {
+            setState(() {
+              _isUploading = false;
+              _isError = true;
+              _errorMessage = cubit.state.csvErrorMessage ?? 'Invalid statement provided.';
+              _isSuccess = false;
+              _parsedData = []; // Clear any preview data
+            });
+            
+            // Error is displayed inside the container directly, omitting redundant snackbar
+            return; // Stop execution right here! Do not proceed.
+          }
+
+          // 3. SUCCESS: Only build the preview table if the 24-month check passed
           final rows = CsvCodec().decoder.convert(csvString);
           setState(() {
+            _isUploading = false;
             _parsedData = rows;
             _isSuccess = rows.isNotEmpty;
           });
@@ -75,10 +99,12 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
       }
     } catch (e) {
       if (mounted) {
-        uiService.showSnackBar(
-          'We couldn\'t read your financial statement. Please check the file format.',
-          isError: true,
-        );
+        setState(() {
+          _isUploading = false;
+          _isError = true;
+          _errorMessage = 'We couldn\'t read your financial statement. Please check the file format.';
+        });
+        uiService.showSnackBar(_errorMessage, isError: true);
       }
     }
   }

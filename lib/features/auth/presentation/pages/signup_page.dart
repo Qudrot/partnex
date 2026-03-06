@@ -11,9 +11,6 @@ import 'package:partnex/features/auth/presentation/blocs/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
 import 'package:partnex/features/auth/presentation/pages/login_page.dart';
 import 'package:partnex/core/services/ui_service.dart';
-import 'package:partnex/features/auth/data/models/user_model.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
-import 'package:partnex/features/auth/presentation/pages/onboarding/input_method_selection_page.dart';
 
 class SignupPage extends StatefulWidget {
   final String? emailPrefill;
@@ -141,8 +138,6 @@ class _SignupPageState extends State<SignupPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const SizedBox(height: AppSpacing.sm),
-                          // const PartnexLogo(size: 48, variant: PartnexLogoVariant.brandCombo),
-                          // const SizedBox(height: 16),
                           Text(
                             'Join Africa\'s leading SME credibility platform',
                             textAlign: TextAlign.center,

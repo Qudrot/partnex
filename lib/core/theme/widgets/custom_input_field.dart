@@ -10,11 +10,15 @@ class CustomInputField extends StatelessWidget {
   final bool obscureText;
   final TextEditingController? controller;
   final Widget? suffixIcon;
+  final Widget? prefixIcon;
   final String? Function(String?)? validator;
   final int? maxLines;
+  final int? maxLength;
   final void Function(String)? onChanged;
   final Iterable<String>? autofillHints;
   final TextInputType? keyboardType;
+  final Color? fillColor;
+  final EdgeInsetsGeometry? contentPadding;
 
   const CustomInputField({
     super.key,
@@ -24,11 +28,15 @@ class CustomInputField extends StatelessWidget {
     this.obscureText = false,
     this.controller,
     this.suffixIcon,
+    this.prefixIcon,
     this.validator,
     this.maxLines = 1,
+    this.maxLength,
     this.onChanged,
     this.autofillHints,
     this.keyboardType,
+    this.fillColor,
+    this.contentPadding,
   });
 
   @override
@@ -46,6 +54,7 @@ class CustomInputField extends StatelessWidget {
           onChanged: onChanged,
           autofillHints: autofillHints,
           keyboardType: keyboardType,
+          maxLength: maxLength,
           style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.slate900,
           ),
@@ -59,17 +68,18 @@ class CustomInputField extends StatelessWidget {
               color: AppColors.dangerRed,
             ),
             filled: true,
-            fillColor: WidgetStateColor.resolveWith((Set<WidgetState> states) {
+            fillColor: fillColor ?? WidgetStateColor.resolveWith((Set<WidgetState> states) {
               if (states.contains(WidgetState.error) || states.contains(WidgetState.focused)) {
                 return AppColors.slate50;
               }
               return AppColors.slate100;
             }),
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: contentPadding ?? const EdgeInsets.symmetric(
               vertical: 12,
               horizontal: 16,
             ),
             suffixIcon: suffixIcon,
+            prefixIcon: prefixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: const BorderSide(color: AppColors.slate200),

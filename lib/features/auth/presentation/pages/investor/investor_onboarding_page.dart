@@ -70,12 +70,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is InvestorProfileSubmittedSuccess) {
-          uiService.showSnackBar(
-            'Your investor profile has been successfully updated.',
-          );
-          _navigateToFeed();
-        } else if (state is InvestorProfileSubmissionError) {
+        if (state is InvestorProfileSubmissionError) {
           uiService.showSnackBar(state.message, isError: true);
         }
       },

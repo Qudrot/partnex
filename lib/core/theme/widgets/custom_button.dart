@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
   final ButtonVariant variant;
   final bool isLoading;
   final bool isDisabled;
+  final Widget? icon;
 
   const CustomButton({
     super.key,
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
     this.variant = ButtonVariant.primary,
     this.isLoading = false,
     this.isDisabled = false,
+    this.icon,
   });
 
   @override
@@ -73,12 +75,19 @@ class CustomButton extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : Text(
-              text,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: isDisabled ? AppColors.slate400 : AppColors.neutralWhite,
-                fontWeight: FontWeight.w600,
-              ),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                Text(
+                  text,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: isDisabled ? AppColors.slate400 : AppColors.neutralWhite,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -117,12 +126,19 @@ class CustomButton extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : Text(
-              text,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate900,
-                fontWeight: FontWeight.w600,
-              ),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                Text(
+                  text,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.slate900,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -160,12 +176,19 @@ class CustomButton extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : Text(
-              text,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.trustBlue,
-                fontWeight: FontWeight.w600,
-              ),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                Text(
+                  text,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.trustBlue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -207,12 +230,19 @@ class CustomButton extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : Text(
-              text,
-              style: AppTypography.textTheme.bodyLarge?.copyWith(
-                color: AppColors.neutralWhite,
-                fontWeight: FontWeight.w600,
-              ),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                Text(
+                  text,
+                  style: AppTypography.textTheme.bodyLarge?.copyWith(
+                    color: AppColors.neutralWhite,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
     );
   }
