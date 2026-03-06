@@ -74,12 +74,33 @@ class AppTypography {
       letterSpacing: 0.11, // 0.01em * 11
       color: AppColors.neutralBlack,
     ),
+    labelSmall: GoogleFonts.inter(
+      fontSize: 10,
+      height: 1.2,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0,
+      color: AppColors.neutralBlack,
+    ),
   );
 
   static final TextStyle bodySmaller = GoogleFonts.inter(
     fontSize: 11,
     height: 1.3,
     fontWeight: FontWeight.w400,
+    color: AppColors.neutralBlack,
+  );
+
+  static final TextStyle labelSmaller = GoogleFonts.inter(
+    fontSize: 10,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: AppColors.neutralBlack,
+  );
+
+  static final TextStyle displayHero = GoogleFonts.inter(
+    fontSize: 112,
+    height: 1.1,
+    fontWeight: FontWeight.w900,
     color: AppColors.neutralBlack,
   );
 }

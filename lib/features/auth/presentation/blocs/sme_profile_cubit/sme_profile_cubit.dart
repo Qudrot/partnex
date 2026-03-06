@@ -41,6 +41,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
       annualRevenueAmount3: annualRevenueAmount3,
       monthlyAvgRevenue: monthlyAvgRevenue,
       monthlyAvgExpenses: monthlyAvgExpenses,
+      dataSource: DataSource.selfReported,
     ));
   }
 
@@ -61,6 +62,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
       priorFundingSource: priorFundingSource,
       fundingYear: fundingYear,
       repaymentHistory: repaymentHistory,
+      dataSource: DataSource.selfReported,
     ));
   }
 
@@ -116,6 +118,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
         outstandingLoans: (result['totalDebt'] as double),
         priorFundingSource: "Extracted from CSV",
         csvProcessingStatus: CsvProcessingStatus.success,
+        dataSource: DataSource.uploaded,
       ));
     } catch (e) {
       emit(state.copyWith(

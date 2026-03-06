@@ -4,6 +4,9 @@
 class AppSpacing {
   AppSpacing._();
 
+  /// 6 dp — tiny gap
+  static const double xxs = 6.0;
+
   /// 4 dp — extra-small gap e.g. icon + label
   static const double xs = 4.0;
 
@@ -38,12 +41,30 @@ class AppSpacing {
   static const double icon80 = 80.0;
 }
 
+/// Design tokens for borders and standard sizing.
+class AppSizes {
+  AppSizes._();
+
+  static const double borderThin = 1.0;
+  static const double borderMedium = 1.5;
+  
+  static const double buttonHeight = 44.0;
+
+  static const double iconSm = 14.0;
+  static const double iconSmd = 20.0;
+  static const double iconMd = 24.0;
+  static const double iconLg = 32.0;
+}
+
 /// Design tokens for border radii.
 class AppRadius {
   AppRadius._();
 
   /// 4 dp — subtle rounding (badges, chips)
   static const double sm = 4.0;
+
+  /// 6 dp — standard button rounding
+  static const double button = 6.0;
 
   /// 8 dp — standard card / input rounding
   static const double md = 8.0;

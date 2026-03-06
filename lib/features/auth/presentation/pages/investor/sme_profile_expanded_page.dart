@@ -6,7 +6,7 @@ import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/driver_card.dart';
 import 'package:partnex/core/theme/widgets/metric_mini_card.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
+import 'package:partnex/core/theme/widgets/data_source_badge.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 
 
@@ -23,9 +23,6 @@ class MessageSmeBottomSheet extends StatefulWidget {
 class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
   @override
   Widget build(BuildContext context) {
-    final message =
-        "Hi ${widget.companyName}, I'm interested in learning more about your business and potential investment opportunities. Your credibility score caught my attention. Let's connect!";
-
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.neutralWhite,
@@ -286,11 +283,11 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          width: 48,
-                          height: 48,
+                          width: AppSpacing.xxxxl,
+                          height: AppSpacing.xxxxl,
                           decoration: BoxDecoration(
                             color: AppColors.trustBlue,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(color: AppColors.slate200),
                           ),
                           child: Center(
@@ -336,12 +333,12 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                   const SizedBox(height: 24),
 
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                    padding: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: AppColors.slate50,
                       border: Border.all(color: AppColors.slate200),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,18 +384,18 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                         ?.copyWith(
                                           color: AppColors.slate900,
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 13,
                                         ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppSpacing.xs),
                                   Text(
                                     'Generated today at ${TimeOfDay.now().format(context)}',
                                     style: AppTypography.textTheme.bodySmall
                                         ?.copyWith(
                                           color: AppColors.slate500,
-                                          fontSize: 12,
                                         ),
                                   ),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  DataSourceBadge(source: widget.sme.dataSource),
                                 ],
                               ),
                             ),

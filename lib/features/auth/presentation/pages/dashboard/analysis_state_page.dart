@@ -403,17 +403,18 @@ class _FloatingMetricsBackgroundState extends State<FloatingMetricsBackground> {
 
     // Assign Colors based on Partnex Signal Rules
     Color color = AppColors.slate400;
-    if (text.contains('+') ||
-        text == 'Healthy' ||
+    if (text == 'High' ||
+        text == 'Medium' ||
         text == 'Low Risk' ||
-        text == 'On Time')
-      color = AppColors.successGreen.withOpacity(0.3);
-    else if (text.contains('-') || text == '89%')
-      color = AppColors.dangerRed.withOpacity(0.3);
-    else if (text == 'Moderate' || text == '60%')
-      color = AppColors.warningOrange.withOpacity(0.3);
-    else
-      color = AppColors.trustBlue.withOpacity(0.2); // Default numbers
+        text == 'On Time') {
+      color = AppColors.successGreen.withValues(alpha: 0.3);
+    } else if (text.contains('-') || text == '89%') {
+      color = AppColors.dangerRed.withValues(alpha: 0.3);
+    } else if (text == 'Moderate' || text == '60%') {
+      color = AppColors.warningOrange.withValues(alpha: 0.3);
+    } else {
+      color = AppColors.trustBlue.withValues(alpha: 0.2); // Default numbers
+    }
 
     setState(() {
       _items.add(
@@ -595,18 +596,18 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
     
     // Randomize visual properties
     final value = _random.nextInt(90) + 10; // 10 to 99
-    final sizes = [24.0, 32.0, 48.0, 64.0, 72.0];
+    final sizes = [28.0, 36.0, 48.0, 64.0, 80.0, 96.0, 112.0];
     final fontSize = sizes[_random.nextInt(sizes.length)];
-    final weights = [FontWeight.w400, FontWeight.w500, FontWeight.w600, FontWeight.w700, FontWeight.w800, FontWeight.w900, FontWeight.bold];
+    final weights = [FontWeight.w600, FontWeight.w700, FontWeight.w800, FontWeight.w900, FontWeight.bold];
     final fontWeight = weights[_random.nextInt(weights.length)];
 
     final color = _colors[_random.nextInt(_colors.length)];
     final angle = (_random.nextDouble() * 0.8) - 0.4; // -0.4 to 0.4 radians
 
     // Randomize movement path (within reasonable bounds of a 120x120 box)
-    // -1.5 to 1.5 bounds mapped across the entire container space
-    final startX = (_random.nextDouble() * 3) - 1.5;
-    final startY = (_random.nextDouble() * 3) - 1.5;
+    // -1.8 to 1.8 bounds to ensure we span the edges
+    final startX = (_random.nextDouble() * 3.6) - 1.8;
+    final startY = (_random.nextDouble() * 3.6) - 1.8;
     
     // End coordinate drifts away from start coordinate
     final endX = startX + ((_random.nextDouble() * 1.5) - 0.75);
@@ -620,8 +621,8 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
           fontSize: fontSize,
           startX: startX,
           startY: startY,
-          endX: endX.clamp(-1.6, 1.6),
-          endY: endY.clamp(-1.6, 1.6),
+          endX: endX.clamp(-1.9, 1.9),
+          endY: endY.clamp(-1.9, 1.9),
           angle: angle,
           color: color,
           fontWeight: fontWeight,
@@ -652,11 +653,14 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
       height: 120,
       decoration: BoxDecoration(
         color: AppColors.neutralWhite, // Brighter box
-        borderRadius: BorderRadius.circular(20), // Softer corners
-        border: Border.all(color: AppColors.slate200, width: 2),
+        borderRadius: BorderRadius.circular(AppRadius.xl), // Softer corners
+        border: Border.all(
+          color: AppColors.slate200,
+          width: AppSizes.borderMedium,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.trustBlue.withOpacity(0.08),
+              color: AppColors.trustBlue.withValues(alpha: 0.1),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -744,7 +748,7 @@ class _AnimatedNumberItemState extends State<_AnimatedNumberItem>
                 angle: widget.data.angle,
                 child: Text(
                   widget.data.value,
-                  style: AppTypography.textTheme.headlineLarge?.copyWith(
+                  style: AppTypography.displayHero.copyWith(
                     fontWeight: widget.data.fontWeight,
                     fontSize: widget.data.fontSize,
                     color: widget.data.color,

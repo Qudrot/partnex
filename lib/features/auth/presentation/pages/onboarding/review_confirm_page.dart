@@ -197,14 +197,18 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             child: Container(
                               padding: const EdgeInsets.all(AppSpacing.md),
                               decoration: BoxDecoration(
-                                color: AppColors.trustBlue.withOpacity(0.05),
+                                color: AppColors.trustBlue.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(AppRadius.md),
-                                border: Border.all(color: AppColors.trustBlue.withOpacity(0.3)),
+                                border: Border.all(color: AppColors.trustBlue.withValues(alpha: 0.3), width: AppSizes.borderThin),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(LucideIcons.fileText, color: AppColors.trustBlue, size: 20),
+                                  const Icon(
+                                    LucideIcons.fileText,
+                                    color: AppColors.trustBlue,
+                                    size: AppSizes.iconSmd,
+                                  ),
                                   const SizedBox(width: AppSpacing.smd),
                                   Expanded(
                                     child: Column(
@@ -217,9 +221,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                             color: AppColors.slate900,
                                           ),
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: AppSpacing.xs),
                                         Text(
-                                          'The financial values below were intelligently extracted directly from your document and automatically chronologicalized by our AI engine.',
+                                          'The financial values below were intelligently extracted directly from your document.',
                                           style: AppTypography.textTheme.bodySmall?.copyWith(
                                             color: AppColors.slate600,
                                           ),
@@ -228,7 +232,11 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(LucideIcons.info, color: AppColors.trustBlue, size: 20),
+                                    icon: const Icon(
+                                      LucideIcons.info,
+                                      color: AppColors.trustBlue,
+                                      size: AppSizes.iconSmd,
+                                    ),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () {
@@ -249,7 +257,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                             ),
                                           ],
                                           backgroundColor: AppColors.neutralWhite,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(AppRadius.xl),
+                                          ),
                                         ),
                                       );
                                     },
@@ -280,6 +290,8 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             'Year ${profileState.annualRevenueYear2} Revenue': missingYear2 
                                 ? 'MISSING (Required for AI)' 
                                 : '₦${profileState.annualRevenueAmount2.toStringAsFixed(0)}',
+                            if (profileState.annualRevenueAmount3 != null && profileState.annualRevenueAmount3! > 0)
+                              'Year ${profileState.annualRevenueYear3} Revenue': '₦${profileState.annualRevenueAmount3!.toStringAsFixed(0)}',
                             'Monthly Expenses': '₦${profileState.monthlyAvgExpenses.toStringAsFixed(0)}',
                           },
                           onEdit: widget.isDocumentUpload ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RevenueExpensesPage(isEditing: true))),

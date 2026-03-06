@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partnex/core/theme/app_colors.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
 
 class SmeCardData {
   final String id;
@@ -15,6 +16,7 @@ class SmeCardData {
   final int score;
   final String riskLevel;
   final DateTime generatedAt;
+  final DataSource dataSource;
 
   // Computed fields for UI:
   String get employeesText => '$numberOfEmployees employees';
@@ -190,6 +192,7 @@ class SmeCardData {
     required this.score,
     required this.riskLevel,
     required this.generatedAt,
+    this.dataSource = DataSource.selfReported,
   });
 
   factory SmeCardData.fromMap(Map<String, dynamic> map) {
@@ -256,6 +259,10 @@ class SmeCardData {
           map['riskLevel']?.toString() ??
           'Unknown',
       generatedAt: DateTime.tryParse(map['created_at']?.toString() ?? '') ?? DateTime.now(),
+      dataSource: DataSource.values.firstWhere(
+        (e) => e.name == (map['data_source'] ?? map['dataSource'] ?? 'selfReported'),
+        orElse: () => DataSource.selfReported,
+      ),
     );
   }
 }

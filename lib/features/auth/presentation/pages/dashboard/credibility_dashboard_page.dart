@@ -5,6 +5,7 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/metric_mini_card.dart'; // <-- Added Import
+import 'package:partnex/core/theme/widgets/data_source_badge.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/profile_management_page.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/sme_discovery_feed_page.dart';
@@ -46,7 +47,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
       case MetricStatus.concerning:
         return AppColors.dangerRed;
       case MetricStatus.critical:
-        return AppColors.criticalRed;
+        return AppColors.dangerRed;
     }
     return AppColors.slate600;
   }
@@ -179,6 +180,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
         final formattedDate = DateFormat(
           'MMM d, yyyy h:mm a',
         ).format(scoreData.calculatedAt);
+
+        final profileState = context.watch<SmeProfileCubit>().state;
 
         return Scaffold(
           backgroundColor: AppColors.neutralWhite,

@@ -372,11 +372,11 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                           alignment: Alignment.centerLeft,
                           child: CustomButton(
                             text: 'Delete Year 3',
-                            variant: ButtonVariant.danger,
+                            variant: ButtonVariant.dangerOutline,
                             icon: const Icon(
                               LucideIcons.trash2,
                               size: AppSpacing.md,
-                              color: AppColors.neutralWhite,
+                              color: AppColors.dangerRed,
                             ),
                             onPressed: () {
                               setState(() {

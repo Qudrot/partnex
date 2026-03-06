@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum CsvProcessingStatus { initial, processing, success, error }
+enum DataSource { uploaded, selfReported }
 
 class SmeProfileState extends Equatable {
   // Step 1: Business Profile
@@ -45,6 +46,7 @@ class SmeProfileState extends Equatable {
   // CSV Processing Status
   final CsvProcessingStatus csvProcessingStatus;
   final String? csvErrorMessage;
+  final DataSource dataSource;
 
   const SmeProfileState({
     this.businessName = '',
@@ -78,6 +80,7 @@ class SmeProfileState extends Equatable {
     this.areDocumentsConsistent = false,
     this.csvProcessingStatus = CsvProcessingStatus.initial,
     this.csvErrorMessage,
+    this.dataSource = DataSource.selfReported,
   });
 
   SmeProfileState copyWith({
@@ -112,6 +115,7 @@ class SmeProfileState extends Equatable {
     bool? areDocumentsConsistent,
     CsvProcessingStatus? csvProcessingStatus,
     String? csvErrorMessage,
+    DataSource? dataSource,
   }) {
     return SmeProfileState(
       businessName: businessName ?? this.businessName,
@@ -145,6 +149,7 @@ class SmeProfileState extends Equatable {
       areDocumentsConsistent: areDocumentsConsistent ?? this.areDocumentsConsistent,
       csvProcessingStatus: csvProcessingStatus ?? this.csvProcessingStatus,
       csvErrorMessage: csvErrorMessage ?? this.csvErrorMessage,
+      dataSource: dataSource ?? this.dataSource,
     );
   }
 
@@ -179,6 +184,7 @@ class SmeProfileState extends Equatable {
       'areDocumentsRecent': areDocumentsRecent,
       'areDocumentsComplete': areDocumentsComplete,
       'areDocumentsConsistent': areDocumentsConsistent,
+      'dataSource': dataSource.name,
     };
   }
 
@@ -212,6 +218,7 @@ class SmeProfileState extends Equatable {
       areDocumentsRecent: map['areDocumentsRecent'] ?? false,
       areDocumentsComplete: map['areDocumentsComplete'] ?? false,
       areDocumentsConsistent: map['areDocumentsConsistent'] ?? false,
+      dataSource: DataSource.values.firstWhere((e) => e.name == (map['dataSource'] ?? 'selfReported'), orElse: () => DataSource.selfReported),
     );
   }
 
@@ -247,5 +254,6 @@ class SmeProfileState extends Equatable {
         areDocumentsConsistent,
         csvProcessingStatus,
         csvErrorMessage,
+        dataSource,
       ];
 }
