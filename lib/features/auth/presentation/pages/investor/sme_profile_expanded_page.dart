@@ -353,7 +353,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                           child: Center(
                             child: Text(
                               _initials,
-                              style: const TextStyle(
+                              style: AppTypography.textTheme.bodyLarge?.copyWith(
                                 color: AppColors.neutralWhite,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 18,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
-import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_currency_field.dart';
@@ -192,11 +191,13 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                         controller: _totalLiabilitiesController,
                         onChanged: _onFieldChanged,
                         validator: (val) {
-                          if (val == null || val.isEmpty)
+                          if (val == null || val.isEmpty) {
                             return 'Please enter a valid liability amount';
+                          }
                           final num = double.tryParse(val.replaceAll(',', ''));
-                          if (num == null || num < 0)
+                          if (num == null || num < 0) {
                             return 'Please enter a valid liability amount';
+                          }
                           return null;
                         },
                       ),
@@ -208,11 +209,13 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                         controller: _outstandingLoansController,
                         onChanged: _onFieldChanged,
                         validator: (val) {
-                          if (val == null || val.isEmpty)
+                          if (val == null || val.isEmpty) {
                             return 'Please enter a valid loan amount';
+                          }
                           final num = double.tryParse(val.replaceAll(',', ''));
-                          if (num == null || num < 0)
+                          if (num == null || num < 0) {
                             return 'Please enter a valid loan amount';
+                          }
                           return null;
                         },
                       ),
@@ -257,13 +260,15 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                               onChanged: _onFieldChanged,
                               validator: (val) {
                                 if (_hasPriorFunding == true) {
-                                  if (val == null || val.isEmpty)
+                                  if (val == null || val.isEmpty) {
                                     return 'Please enter a valid funding amount';
+                                  }
                                   final num = double.tryParse(
                                     val.replaceAll(',', ''),
                                   );
-                                  if (num == null || num <= 0)
+                                  if (num == null || num <= 0) {
                                     return 'Please enter a valid funding amount';
+                                  }
                                 }
                                 return null;
                               },
@@ -279,8 +284,9 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                                 if (_hasPriorFunding == true) {
                                   if (val == null ||
                                       val.isEmpty ||
-                                      val.length > 100)
+                                      val.length > 100) {
                                     return 'Please enter a valid funding source';
+                                  }
                                 }
                                 return null;
                               },
@@ -293,14 +299,16 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                               onChanged: _onFieldChanged,
                               validator: (val) {
                                 if (_hasPriorFunding == true) {
-                                  if (val == null || val.isEmpty)
+                                  if (val == null || val.isEmpty) {
                                     return 'Please enter a valid year';
+                                  }
                                   final num = int.tryParse(val);
                                   final currentYear = DateTime.now().year;
                                   if (num == null ||
                                       num < 2000 ||
-                                      num > currentYear)
+                                      num > currentYear) {
                                     return 'Please enter a valid year';
+                                  }
                                 }
                                 return null;
                               },

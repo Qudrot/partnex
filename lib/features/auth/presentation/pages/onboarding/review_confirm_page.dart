@@ -187,7 +187,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             child: Row(children: [
                               const Icon(LucideIcons.alertTriangle, color: AppColors.warningAmber, size: 20),
                               SizedBox(width: AppSpacing.smd),
-                              Expanded(child: Text("Your statement only contained 1 year of data. The AI requires at least 2 years. Please tap 'Edit' below to add your previous year's revenue.", style: TextStyle(color: AppColors.warningAmber, fontSize: 13, fontWeight: FontWeight.w600))),
+                              Expanded(child: Text("Your statement only contained 1 year of data. The AI requires at least 2 years. Please tap 'Edit' below to add your previous year's revenue.", style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.warningAmber, fontSize: 13, fontWeight: FontWeight.w600))),
                             ]),
                           ),
 
@@ -282,20 +282,37 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             onEdit: widget.isDocumentUpload ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => BusinessProfilePage(isDocumentUpload: widget.isDocumentUpload, isEditing: true))),
                           ),
 
-                        // ALWAYS show the Revenue & Expenses block, even for CSVs, so they can verify!
-                        _buildSummarySection(
-                          title: 'Revenue & Expenses',
-                          data: {
-                            'Year ${profileState.annualRevenueYear1} Revenue': '₦${profileState.annualRevenueAmount1.toStringAsFixed(0)}',
-                            'Year ${profileState.annualRevenueYear2} Revenue': missingYear2 
-                                ? 'MISSING (Required for AI)' 
-                                : '₦${profileState.annualRevenueAmount2.toStringAsFixed(0)}',
+                        // Build sorted revenue data for display
+                        () {
+                          final revHistory = [
+                            {'year': profileState.annualRevenueYear1, 'amount': profileState.annualRevenueAmount1},
+                            {'year': profileState.annualRevenueYear2, 'amount': profileState.annualRevenueAmount2, 'isYear2': true},
                             if (profileState.annualRevenueYear3 != null && (profileState.annualRevenueAmount3 ?? 0) > 0)
-                              'Year ${profileState.annualRevenueYear3} Revenue': '₦${(profileState.annualRevenueAmount3 ?? 0).toStringAsFixed(0)}',
-                            'Monthly Expenses': '₦${profileState.monthlyAvgExpenses.toStringAsFixed(0)}',
-                          },
-                          onEdit: widget.isDocumentUpload ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RevenueExpensesPage(isEditing: true))),
-                        ),
+                              {'year': profileState.annualRevenueYear3!, 'amount': profileState.annualRevenueAmount3!},
+                          ];
+                          // Sort DESC (most recent first)
+                          revHistory.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
+                          
+                          final Map<String, dynamic> revSummary = {};
+                          for (var item in revHistory) {
+                            final year = item['year'] as int;
+                            final amount = item['amount'] as double;
+                            final isYear2 = item['isYear2'] == true;
+                            
+                            String amountStr = '₦${amount.toStringAsFixed(amount % 1 == 0 ? 0 : 1)}';
+                            if (isYear2 && amount <= 0) {
+                              amountStr = 'MISSING (Required for AI)';
+                            }
+                            revSummary['Year $year Revenue'] = amountStr;
+                          }
+                          revSummary['Monthly Expenses'] = '₦${profileState.monthlyAvgExpenses.toStringAsFixed(profileState.monthlyAvgExpenses % 1 == 0 ? 0 : 1)}';
+
+                          return _buildSummarySection(
+                            title: 'Revenue & Expenses',
+                            data: revSummary,
+                            onEdit: widget.isDocumentUpload ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RevenueExpensesPage(isEditing: true))),
+                          );
+                        }(),
 
                         // Only show Liabilities block if it was Manual Entry (or if we extracted liabilities)
                         if (!widget.isDocumentUpload || profileState.totalLiabilities > 0)

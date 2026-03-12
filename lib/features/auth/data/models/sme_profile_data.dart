@@ -235,10 +235,12 @@ class SmeCardData {
 
   Color get scoreColor {
     final lowerRisk = riskLevel.toLowerCase();
-    if (lowerRisk.contains('low') || score >= 80)
+    if (lowerRisk.contains('low') || score >= 80) {
       return AppColors.successGreen;
-    if (lowerRisk.contains('medium') || score >= 50)
+    }
+    if (lowerRisk.contains('medium') || score >= 50) {
       return AppColors.warningAmber;
+    }
     return AppColors.dangerRed;
   }
 

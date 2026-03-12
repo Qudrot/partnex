@@ -387,18 +387,23 @@ class ApiAuthRepository implements AuthRepository {
         }
         return 0.0;
       }
-
+      
       return CredibilityScore(
         id: DateTime.now().millisecondsSinceEpoch.toString(), 
         organisationId: scoreData['sme_id']?.toString() ?? 'unknown_sme',
         totalScore: extractScoreSafe(scoreData is Map ? scoreData : {}),
         riskLevel: rLevel,
         topContributingFactors: [],
-        generalExplanation: explanationText, // Fixed variable!
+        generalExplanation: explanationText,
         modelVersion: scoreData['model_version']?.toString() ?? 'fallback-v1',
         calculatedAt: DateTime.now(),
-        impactScore: (scoreData['impact_score'] as num?)?.toDouble() ?? 0.7,
+        
+        // 🚨 THE SMART EXTRACTOR: Look inside explanation -> model_inputs first!
+        impactScore: (scoreData['explanation']?['model_inputs']?['impact_score'] as num?)?.toDouble() 
+                  ?? (scoreData['impact_score'] as num?)?.toDouble() 
+                  ?? 0.7,
       );
+
 
     } catch (e) {
       if (kDebugMode) {
@@ -584,7 +589,6 @@ class ApiAuthRepository implements AuthRepository {
         // Fallback: search dynamically for any key containing 'score' with a numeric value
         for (var entry in data.entries) {
           if (entry.key.toString().toLowerCase().contains('score')) {
-             // Avoid selecting impact_score as totalScore
              if (entry.key.toString().toLowerCase() == 'impact_score') continue;
              if (entry.value is num) return (entry.value as num).toDouble();
              final parsed = double.tryParse(entry.value.toString());
@@ -603,6 +607,9 @@ class ApiAuthRepository implements AuthRepository {
         generalExplanation: scoreData['explanation_json']?.toString(),
         modelVersion: scoreData['model_version']?.toString() ?? 'fallback-v1',
         calculatedAt: DateTime.now(),
+        impactScore: (scoreData['explanation']?['model_inputs']?['impact_score'] as num?)?.toDouble() 
+                  ?? (scoreData['impact_score'] as num?)?.toDouble() 
+                  ?? 0.7,
       );
 
 
@@ -712,5 +719,16 @@ class ApiAuthRepository implements AuthRepository {
       }
     }
     return [];
+  }
+
+  @override
+  Future<Map<String, dynamic>> getCachedSmeProfile() async {
+    try {
+      final cachedStr = await _secureStorage.read(key: 'cached_sme_profile');
+      if (cachedStr != null && cachedStr.isNotEmpty) {
+        return jsonDecode(cachedStr) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return {};
   }
 }

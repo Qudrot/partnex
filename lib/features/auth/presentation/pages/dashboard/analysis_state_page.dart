@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
-import 'package:partnex/core/theme/widgets/partnex_logo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
@@ -37,8 +35,6 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
   // Sync Locks to ensure the transition doesn't happen too fast
   bool _minimumTimeElapsed = false;
   bool _apiComplete = false;
-  dynamic _finalScoreData;
-
   int get _totalSteps => widget.isDocumentUpload ? 4 : 3;
 
   @override
@@ -70,21 +66,23 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
         }
 
         if (widget.isDocumentUpload) {
-          if (_progress < 25)
+          if (_progress < 25) {
             _step = 1;
-          else if (_progress < 50)
+          } else if (_progress < 50) {
             _step = 2;
-          else if (_progress < 75)
+          } else if (_progress < 75) {
             _step = 3;
-          else
+          } else {
             _step = 4;
+          }
         } else {
-          if (_progress < 33)
+          if (_progress < 33) {
             _step = 1;
-          else if (_progress < 66)
+          } else if (_progress < 66) {
             _step = 2;
-          else
+          } else {
             _step = 3;
+          }
         }
       });
     });
@@ -141,7 +139,6 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
   void _markApiComplete(ScoreCubit scoreCubit, dynamic score) {
     if (!mounted) return;
     _apiComplete = true;
-    _finalScoreData = score;
     scoreCubit.loadScore(score); // Load it in the background immediately
 
     // Jump progress to 95% while we wait for the 4.5s timer to finish
@@ -390,7 +387,9 @@ class _FloatingMetricsBackgroundState extends State<FloatingMetricsBackground> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 4; i++) _spawnItem(i); // Initial burst
+    for (int i = 0; i < 4; i++) {
+      _spawnItem(i); // Initial burst
+    }
     _spawnTimer = Timer.periodic(const Duration(milliseconds: 1200), (timer) {
       if (_items.length < 8) _spawnItem(0); // Keep max 8 on screen
     });
@@ -567,7 +566,7 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
 
   final List<Color> _colors = [
     AppColors.trustBlue,
-    AppColors.trustBlue.withOpacity(0.5),
+    AppColors.trustBlue.withValues(alpha: 0.5),
     AppColors.warningOrange,
     AppColors.successGreen,
     AppColors.slate600,

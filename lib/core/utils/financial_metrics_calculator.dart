@@ -7,8 +7,47 @@ class FinancialMetricsCalculator {
     // ---------------------------------------------------------
     // BASE VARIABLES (Safeguarded against division by zero)
     // ---------------------------------------------------------
-    final double revenueY1 = profile.annualRevenueAmount1 > 0 ? profile.annualRevenueAmount1 : 1; 
-    final double revenueY2 = profile.annualRevenueAmount2 > 0 ? profile.annualRevenueAmount2 : 1;
+    // 1. GATHER & SORT REVENUE HISTORY (Descending: Most Recent First)
+    final int currentYear = DateTime.now().year;
+    
+    // Attempt to gather revenue with fallbacks for missing year metadata
+    final List<Map<String, dynamic>> revData = [];
+    
+    if (profile.annualRevenueAmount1 > 0) {
+      revData.add({
+        'year': profile.annualRevenueYear1 > 0 ? profile.annualRevenueYear1 : currentYear,
+        'amount': profile.annualRevenueAmount1
+      });
+    }
+    if (profile.annualRevenueAmount2 > 0) {
+      revData.add({
+        'year': profile.annualRevenueYear2 > 0 ? profile.annualRevenueYear2 : currentYear - 1,
+        'amount': profile.annualRevenueAmount2
+      });
+    }
+    if (profile.annualRevenueAmount3 != null && profile.annualRevenueAmount3! > 0) {
+      revData.add({
+        'year': (profile.annualRevenueYear3 ?? 0) > 0 ? profile.annualRevenueYear3! : currentYear - 2,
+        'amount': profile.annualRevenueAmount3!
+      });
+    }
+
+    // 2. FALLBACK: If no annual data, use monthly avg revenue
+    if (revData.isEmpty && (profile.monthlyAvgRevenue ?? 0) > 0) {
+      revData.add({
+        'year': currentYear,
+        'amount': profile.monthlyAvgRevenue! * 12,
+      });
+    }
+
+    // Sort by year DESC (e.g., 2024, 2023, 2022)
+    revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
+
+    // Safeguarded pointers (revenueY1 is always the latest year)
+    final double revenueY1 = revData.isNotEmpty ? (revData[0]['amount'] as double) : 1.0;
+    final double revenueY2 = revData.length > 1 ? (revData[1]['amount'] as double) : revenueY1;
+    final double revenueY3 = revData.length > 2 ? (revData[2]['amount'] as double) : revenueY2;
+
     final double annualExpenses = profile.monthlyAvgExpenses * 12;
     final double liabilities = profile.totalLiabilities;
     final int employees = profile.numberOfEmployees > 0 ? profile.numberOfEmployees : 1;
@@ -17,12 +56,14 @@ class FinancialMetricsCalculator {
     // ---------------------------------------------------------
     // CATEGORY 1: REVENUE METRICS
     // ---------------------------------------------------------
-    final double yoyGrowth = ((revenueY1 - revenueY2) / revenueY2) * 100;
+    // YoY Growth: (Recent - Previous) / Previous
+    final double yoyGrowth = ((revenueY1 - revenueY2) / (revenueY2 > 0 ? revenueY2 : 1.0)) * 100;
     
-    // CAGR (Matches YoY if only 2 years, otherwise smooths over 3)
+    // CAGR (Matches YoY if 2 years, smooths over 3 if available)
     double cagr = yoyGrowth; 
-    if (profile.annualRevenueAmount3 != null && profile.annualRevenueAmount3! > 0) {
-      cagr = (pow(revenueY1 / profile.annualRevenueAmount3!, 1 / 2) - 1) * 100;
+    if (revData.length >= 3) {
+      // CAGR over 2 periods (3 years): (Ending / Starting)^(1/2) - 1
+      cagr = (pow(revenueY1 / (revenueY3 > 0 ? revenueY3 : 1.0), 0.5) - 1) * 100;
     }
     
     final double revenuePerEmployee = revenueY1 / employees;
@@ -82,21 +123,21 @@ class FinancialMetricsCalculator {
       ScoreDriver(
         name: "Revenue Growth & Stability",
         scoreValue: revenueScore,
-        rawDisplayValue: "${yoyGrowth >= 0 ? '+' : ''}${yoyGrowth.toStringAsFixed(1)}% YoY",
+        rawDisplayValue: "${yoyGrowth >= 0 ? '+' : ''}${yoyGrowth.toStringAsFixed(yoyGrowth % 1 == 0 ? 0 : 1)}% YoY",
         status: revenueStatus,
         weight: 0.25,
       ),
       ScoreDriver(
         name: "Profitability & Expense Management",
         scoreValue: profitScore,
-        rawDisplayValue: "${profitMargin.toStringAsFixed(1)}% margin",
+        rawDisplayValue: "${profitMargin.toStringAsFixed(profitMargin % 1 == 0 ? 0 : 1)}% margin",
         status: profitStatus,
         weight: 0.20,
       ),
       ScoreDriver(
         name: "Debt Management & Leverage",
         scoreValue: debtScore,
-        rawDisplayValue: "${liabilitiesToRevenueRatio.toStringAsFixed(1)}% of revenue",
+        rawDisplayValue: "${liabilitiesToRevenueRatio.toStringAsFixed(liabilitiesToRevenueRatio % 1 == 0 ? 0 : 1)}% of revenue",
         status: debtStatus,
         weight: 0.20,
       ),

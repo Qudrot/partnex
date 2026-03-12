@@ -12,12 +12,10 @@ import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
-import 'package:partnex/features/auth/presentation/pages/onboarding/business_profile_page.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/analysis_state_page.dart';
@@ -194,14 +192,14 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                       strokeWidth: 2,
                       dashPattern: [6, 6],
                     ),
-                    child: Container(
+                    child: SizedBox(
                       height: 200,
                       width: double.infinity,
                       child: BlocBuilder<SmeProfileCubit, SmeProfileState>(
                         builder: (context, state) {
                           if (state.csvProcessingStatus ==
                               CsvProcessingStatus.processing) {
-                            return const Center(
+                            return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -211,7 +209,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                                   SizedBox(height: AppSpacing.md),
                                   Text(
                                     'Processing in background...',
-                                    style: TextStyle(color: AppColors.slate600),
+                                    style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
                                   ),
                                 ],
                               ),

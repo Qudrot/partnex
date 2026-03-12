@@ -65,7 +65,9 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
   bool get _isFormValid {
     if (_investorType == null || _investmentRange == null) return false;
     if ((_investorType == 'Fund / Institution' || _investorType == 'Corporate') && 
-        _companyController.text.trim().isEmpty) return false;
+        _companyController.text.trim().isEmpty) {
+      return false;
+    }
     return true;
   }
 
@@ -322,7 +324,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
         margin: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.smd),
         padding: const EdgeInsets.all(AppSpacing.smd),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.successGreen.withOpacity(0.05) : AppColors.neutralWhite,
+          color: isSelected ? AppColors.successGreen.withValues(alpha: 0.05) : AppColors.neutralWhite,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: isSelected ? AppColors.successGreen : AppColors.slate200,

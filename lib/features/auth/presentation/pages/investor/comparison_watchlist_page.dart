@@ -7,7 +7,6 @@ import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_ex
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
-import 'package:partnex/core/theme/widgets/custom_input_field.dart';
 
 class ComparisonWatchlistPage extends StatefulWidget {
   const ComparisonWatchlistPage({super.key});

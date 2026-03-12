@@ -5,14 +5,12 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/metric_mini_card.dart'; // <-- Added Import
-import 'package:partnex/core/theme/widgets/data_source_badge.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/profile_management_page.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/sme_discovery_feed_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
-import 'package:partnex/features/auth/data/models/credibility_score.dart';
 import 'package:partnex/features/auth/data/models/financial_metrics.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/input_method_selection_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart'; 
@@ -49,9 +47,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
       case MetricStatus.critical:
         return AppColors.dangerRed;
     }
-    return AppColors.slate600;
   }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScoreCubit, ScoreState>(
@@ -107,7 +103,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.trustBlue.withOpacity(0.1),
+                        color: AppColors.trustBlue.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -180,8 +176,6 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
         final formattedDate = DateFormat(
           'MMM d, yyyy h:mm a',
         ).format(scoreData.calculatedAt);
-
-        final profileState = context.watch<SmeProfileCubit>().state;
 
         return Scaffold(
           backgroundColor: AppColors.neutralWhite,
@@ -348,7 +342,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                         // Card 1 - Replaced with custom widget
                         MetricMiniCard(
                           label: 'Revenue Trend',
-                          value: '${state.financialMetrics!.yoyGrowth > 0 ? '+' : ''}${state.financialMetrics!.yoyGrowth.toStringAsFixed(0)}% YoY',
+                          value: '${state.financialMetrics!.yoyGrowth > 0 ? '+' : ''}${state.financialMetrics!.yoyGrowth.toStringAsFixed(state.financialMetrics!.yoyGrowth % 1 == 0 ? 0 : 1)}% YoY',
                           status: state.financialMetrics!.yoyGrowth >= 15
                               ? 'Positive'
                               : (state.financialMetrics!.yoyGrowth >= 0
@@ -363,7 +357,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                         // Card 2 - Replaced with custom widget
                         MetricMiniCard(
                           label: 'Expense Ratio',
-                          value: '${state.financialMetrics!.expenseRatio.toStringAsFixed(0)}%',
+                          value: '${state.financialMetrics!.expenseRatio.toStringAsFixed(state.financialMetrics!.expenseRatio % 1 == 0 ? 0 : 1)}%',
                           status: state.financialMetrics!.expenseRatio <= 60
                               ? 'Healthy'
                               : (state.financialMetrics!.expenseRatio <= 75
@@ -378,7 +372,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                         // Card 3 - Replaced with custom widget
                         MetricMiniCard(
                           label: 'Profit Margin',
-                          value: '${state.financialMetrics!.profitMargin.toStringAsFixed(0)}%',
+                          value: '${state.financialMetrics!.profitMargin.toStringAsFixed(state.financialMetrics!.profitMargin % 1 == 0 ? 0 : 1)}%',
                           status: state.financialMetrics!.profitMargin >= 15
                               ? 'Healthy'
                               : (state.financialMetrics!.profitMargin >= 0
@@ -501,7 +495,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             Container(
               padding: EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
-                color: AppColors.trustBlue.withOpacity(0.1),
+                color: AppColors.trustBlue.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

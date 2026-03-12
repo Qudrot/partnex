@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'dart:convert';
 
 void main() async {
   final dio = Dio(BaseOptions(baseUrl: 'https://partnex-backend.onrender.com'));

@@ -42,4 +42,7 @@ abstract class AuthRepository {
 
   // Retrieves the dashboard feed of SMEs along with their latest credibility score
   Future<List<Map<String, dynamic>>> getInvestorSmes();
+
+  // Retrieves the locally cached SME profile (raw map)
+  Future<Map<String, dynamic>> getCachedSmeProfile();
 }

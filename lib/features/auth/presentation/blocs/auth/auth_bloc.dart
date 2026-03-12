@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
-import 'package:partnex/features/auth/data/models/user_model.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';

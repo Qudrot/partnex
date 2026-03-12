@@ -8,12 +8,10 @@ import 'package:partnex/core/theme/widgets/custom_dropdown_field.dart';
 import 'package:partnex/core/theme/widgets/custom_input_field.dart';
 import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/input_method_selection_page.dart';
-import 'package:partnex/features/auth/presentation/pages/onboarding/revenue_expenses_page.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/review_confirm_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/analysis_state_page.dart';
 import 'package:partnex/core/services/ui_service.dart';
@@ -184,8 +182,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             validator: (val) {
                               if (val == null ||
                                   val.length < 2 ||
-                                  val.length > 100)
+                                  val.length > 100) {
                                 return 'Business name must be between 2 and 100 characters';
+                              }
                               return null;
                             },
                           ),
@@ -226,8 +225,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             controller: _locationController,
                             onChanged: _onFieldChanged,
                             validator: (val) {
-                              if (val == null || val.isEmpty)
+                              if (val == null || val.isEmpty) {
                                 return 'Please enter a valid location';
+                              }
                               return null;
                             },
                           ),
@@ -240,8 +240,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             validator: (val) {
                               if (val == null || val.isEmpty) return 'Required';
                               final num = int.tryParse(val);
-                              if (num == null || num < 0 || num > 100)
+                              if (num == null || num < 0 || num > 100) {
                                 return 'Please enter a valid number between 0 and 100';
+                              }
                               return null;
                             },
                           ),
@@ -254,8 +255,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                             validator: (val) {
                               if (val == null || val.isEmpty) return 'Required';
                               final num = int.tryParse(val);
-                              if (num == null || num < 0 || num > 10000)
+                              if (num == null || num < 0 || num > 10000) {
                                 return 'Please enter a valid number';
+                              }
                               return null;
                             },
                           ),

@@ -25,9 +25,9 @@ class DiscoveryCubit extends Cubit<DiscoveryState> {
     try {
       final dataList = await authRepository.getInvestorSmes();
       
-      if (kDebugMode && dataList.isNotEmpty) {
-        print('DISCOVERY FEED FIRST ITEM: ${dataList.first}');
-      }
+      // if (kDebugMode && dataList.isNotEmpty) {
+      //   print('DISCOVERY FEED FIRST ITEM: ${dataList.first}');
+      // }
       
       // Explicitly typed to avoid JS runtime type mismatch on Flutter Web
       final List<SmeCardData> mappedSmes = [
@@ -35,7 +35,7 @@ class DiscoveryCubit extends Cubit<DiscoveryState> {
       ];
       emit(DiscoveryLoaded(smes: mappedSmes));
     } catch (e) {
-      if (kDebugMode) print('DiscoveryCubit Error: $e');
+      // if (kDebugMode) print('DiscoveryCubit Error: $e');
       
       // Clean up Exception prefix if it's there
       String errorMessage = e.toString();

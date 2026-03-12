@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:partnex/main.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth_bloc.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/features/auth/presentation/pages/login_page.dart';
 import 'package:partnex/features/auth/presentation/pages/signup_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
@@ -208,10 +208,7 @@ void main() {
         MaterialApp(
           home: Builder(
             builder: (_) {
-              if (state is DiscoveryLoaded) {
-                return Text('${state.smes.length} SMEs');
-              }
-              return const Text('Empty');
+              return Text('${state.smes.length} SMEs');
             },
           ),
         ),

@@ -6,13 +6,10 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/custom_input_field.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_profile_page.dart';
 import 'package:partnex/features/auth/presentation/pages/login_page.dart';
 import 'package:partnex/core/services/ui_service.dart';
@@ -41,10 +38,6 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
 
   void _navigateToProfile(SmeCardData sme) {
     context.read<DiscoveryCubit>().viewSmeProfile(sme);
-  }
-
-  void _navigateToEvidence() {
-    context.read<DiscoveryCubit>().viewDeepDiveEvidence();
   }
 
   @override

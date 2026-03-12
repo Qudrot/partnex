@@ -5,7 +5,6 @@ void main() {
   const int iconSize = 1024;
   
   // Colors
-  final img.Color white = img.ColorRgb8(255, 255, 255);
   final img.Color trustBlue = img.ColorRgb8(0, 102, 204);
   final img.Color slate900 = img.ColorRgb8(15, 23, 42);
   final img.Color transparent = img.ColorRgba8(0, 0, 0, 0);
@@ -26,30 +25,30 @@ void main() {
     img.fillRect(canvas, x1: pillarX1, y1: pillarY1, x2: pillarX2, y2: pillarY2, color: slate900, radius: 40);
 
     // Draw the Loop lines
-    final int UThickness = (innerSize * 0.08).toInt();
+    final int uThickness = (innerSize * 0.08).toInt();
 
     // Inner U
     final int innerUx1 = startX + padding + (innerSize * 0.38).toInt();
-    final int innerUy1 = startY + padding + (innerSize * 0.32).toInt() - (UThickness ~/ 2);
+    final int innerUy1 = startY + padding + (innerSize * 0.32).toInt() - (uThickness ~/ 2);
     final int innerUx2 = startX + padding + (innerSize * 0.60).toInt();
-    final int innerUy2 = startY + padding + (innerSize * 0.48).toInt() + (UThickness ~/ 2);
+    final int innerUy2 = startY + padding + (innerSize * 0.48).toInt() + (uThickness ~/ 2);
     
-    img.fillRect(canvas, x1: innerUx1, y1: innerUy1, x2: innerUx2, y2: innerUy2, color: trustBlue, radius: UThickness);
+    img.fillRect(canvas, x1: innerUx1, y1: innerUy1, x2: innerUx2, y2: innerUy2, color: trustBlue, radius: uThickness);
     img.fillRect(canvas, 
-      x1: innerUx1, y1: innerUy1 + UThickness, x2: innerUx2 - UThickness, y2: innerUy2 - UThickness, 
-      color: transparent, radius: UThickness ~/ 2
+      x1: innerUx1, y1: innerUy1 + uThickness, x2: innerUx2 - uThickness, y2: innerUy2 - uThickness, 
+      color: transparent, radius: uThickness ~/ 2
     );
     
     // Outer U
     final int outerUx1 = startX + padding + (innerSize * 0.38).toInt();
-    final int outerUy1 = startY + padding + (innerSize * 0.16).toInt() - (UThickness ~/ 2);
+    final int outerUy1 = startY + padding + (innerSize * 0.16).toInt() - (uThickness ~/ 2);
     final int outerUx2 = startX + padding + (innerSize * 0.65).toInt();
-    final int outerUy2 = startY + padding + (innerSize * 0.64).toInt() + (UThickness ~/ 2);
+    final int outerUy2 = startY + padding + (innerSize * 0.64).toInt() + (uThickness ~/ 2);
     
-    img.fillRect(canvas, x1: outerUx1, y1: outerUy1, x2: outerUx2, y2: outerUy2, color: trustBlue, radius: UThickness * 2);
+    img.fillRect(canvas, x1: outerUx1, y1: outerUy1, x2: outerUx2, y2: outerUy2, color: trustBlue, radius: uThickness * 2);
     img.fillRect(canvas, 
-      x1: outerUx1, y1: outerUy1 + UThickness, x2: outerUx2 - UThickness, y2: outerUy2 - UThickness, 
-      color: transparent, radius: UThickness * 2 - UThickness
+      x1: outerUx1, y1: outerUy1 + uThickness, x2: outerUx2 - uThickness, y2: outerUy2 - uThickness, 
+      color: transparent, radius: uThickness * 2 - uThickness
     );
   }
 

@@ -90,11 +90,13 @@ class CustomButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(
-                  text,
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: isDisabled ? AppColors.slate400 : AppColors.neutralWhite,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: isDisabled ? AppColors.slate400 : AppColors.neutralWhite,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -144,11 +146,13 @@ class CustomButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(
-                  text,
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate900,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.slate900,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -197,11 +201,13 @@ class CustomButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(
-                  text,
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.trustBlue,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.trustBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -254,11 +260,13 @@ class CustomButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(
-                  text,
-                  style: AppTypography.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.neutralWhite,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.textTheme.bodyLarge?.copyWith(
+                      color: AppColors.neutralWhite,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -319,11 +327,13 @@ class CustomButton extends StatelessWidget {
                   ),
                   const SizedBox(width: 8)
                 ],
-                Text(
-                  text,
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.dangerRed,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.dangerRed,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

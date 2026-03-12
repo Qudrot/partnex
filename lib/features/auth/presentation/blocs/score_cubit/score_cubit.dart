@@ -15,23 +15,30 @@ class ScoreCubit extends Cubit<ScoreState> {
   Future<void> fetchDashboardData() async {
     emit(ScoreLoading());
     try {
-      final smeProfile = await authRepository.getMySmeProfile();
+      // 1. Fetch data from backend
+      final serverProfile = await authRepository.getMySmeProfile();
       final score = await authRepository.getMyScore();
       
-      // We don't want to reset the SmeProfileCubit here, as it might
-      // hold unsaved local changes or CSV-extracted data.
-      // The dashboard will show what's on the server.
+      // 2. Fetch data from local cache (raw UI map)
+      final cachedProfile = await authRepository.getCachedSmeProfile();
       
-      final profileState = SmeProfileState.fromMap(smeProfile);
+      // 3. AGGRESSIVE MERGE: Construct a state from cache first, then overlay server data.
+      // This ensures that any fields the server is missing (but were submitted) are preserved.
+      final Map<String, dynamic> mergedProfile = {...cachedProfile, ...serverProfile};
       
-      // Sync to SmeProfileCubit so "Add new" has base data
-      if (smeProfileCubit.state.businessName.isEmpty) {
-        smeProfileCubit.updateFromMap(smeProfile);
-      }
+      final profileState = SmeProfileState.fromMap(mergedProfile);
       
+      // 4. Sync to SmeProfileCubit for "Add new" flow
+      smeProfileCubit.updateFromMap(mergedProfile);
+      
+      // 5. Calculate metrics from the unified state
       final metrics = FinancialMetricsCalculator.calculate(profileState);
       
-      emit(ScoreLoadedSuccess(score: score, smeProfile: smeProfile, financialMetrics: metrics));
+      emit(ScoreLoadedSuccess(
+        score: score, 
+        smeProfile: mergedProfile, 
+        financialMetrics: metrics
+      ));
     } catch (e) {
       emit(ScoreError(message: e.toString()));
     }

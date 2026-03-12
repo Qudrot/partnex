@@ -256,11 +256,15 @@ class ScoreDriversDetailPage extends StatelessWidget {
 
   String _getDriverExplanation(String driverName, FinancialMetrics metrics) {
     if (driverName.contains('Revenue Growth')) {
-      return 'Measures your business\'s revenue trajectory. You have a ${metrics.yoyGrowth.toStringAsFixed(1)}% YoY growth rate. Consistent growth is key to credibility.';
+      final val = metrics.yoyGrowth.toStringAsFixed(metrics.yoyGrowth % 1 == 0 ? 0 : 1);
+      return 'Measures your business\'s revenue trajectory. You have a $val% YoY growth rate. Consistent growth is key to credibility.';
     } else if (driverName.contains('Profitability')) {
-      return 'Measures your ability to generate profit. Your expense ratio is ${metrics.expenseRatio.toStringAsFixed(1)}% with a profit margin of ${metrics.profitMargin.toStringAsFixed(1)}%.';
+      final exp = metrics.expenseRatio.toStringAsFixed(metrics.expenseRatio % 1 == 0 ? 0 : 1);
+      final prof = metrics.profitMargin.toStringAsFixed(metrics.profitMargin % 1 == 0 ? 0 : 1);
+      return 'Measures your ability to generate profit. Your expense ratio is $exp% with a profit margin of $prof%.';
     } else if (driverName.contains('Debt')) {
-      return 'Measures your debt relative to revenue. Your liabilities-to-revenue ratio is ${metrics.liabilitiesToRevenueRatio.toStringAsFixed(1)}%.';
+      final lib = metrics.liabilitiesToRevenueRatio.toStringAsFixed(metrics.liabilitiesToRevenueRatio % 1 == 0 ? 0 : 1);
+      return 'Measures your debt relative to revenue. Your liabilities-to-revenue ratio is $lib%.';
     } else if (driverName.contains('Efficiency')) {
       return 'Measures operational output. You are generating ₦${(metrics.revenuePerEmployee / 1000000).toStringAsFixed(2)}M in revenue per employee.';
     } else if (driverName.contains('Maturity')) {

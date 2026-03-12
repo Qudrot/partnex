@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:partnex/core/theme/app_colors.dart';
-import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/features/auth/data/models/credibility_score.dart';
 

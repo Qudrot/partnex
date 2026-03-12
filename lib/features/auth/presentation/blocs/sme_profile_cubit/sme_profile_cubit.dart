@@ -175,10 +175,15 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
             rowStrs.any((s) => s.contains("debit") || s.contains("withdrawal"))) {
           headerRowIndex = i;
           for (int j = 0; j < rowStrs.length; j++) {
-            if (rowStrs[j].contains("credit") || rowStrs[j].contains("deposit")) creditIdx = j;
-            else if (rowStrs[j].contains("debit") || rowStrs[j].contains("withdrawal")) debitIdx = j;
-            else if (rowStrs[j].contains("narration") || rowStrs[j].contains("desc")) descIdx = j;
-            else if (rowStrs[j].contains("date") || rowStrs[j].contains("time")) dateIdx = j;
+            if (rowStrs[j].contains("credit") || rowStrs[j].contains("deposit")) {
+              creditIdx = j;
+            } else if (rowStrs[j].contains("debit") || rowStrs[j].contains("withdrawal")) {
+              debitIdx = j;
+            } else if (rowStrs[j].contains("narration") || rowStrs[j].contains("desc")) {
+              descIdx = j;
+            } else if (rowStrs[j].contains("date") || rowStrs[j].contains("time")) {
+              dateIdx = j;
+            }
           }
           break;
         }

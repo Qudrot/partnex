@@ -233,35 +233,80 @@ class SmeProfileState extends Equatable {
   }
 
   factory SmeProfileState.fromMap(Map<String, dynamic> map) {
+    // Helper to extract double values from multiple possible keys and handle strings
+    double? extractDouble(List<String> keys, double? defaultValue) {
+      for (var key in keys) {
+        if (map[key] != null) {
+          final val = map[key];
+          if (val is num) return val.toDouble();
+          if (val is String) {
+            // Strip currency symbols, commas, and whitespace
+            final clean = val.replaceAll(RegExp(r'[^\d.-]'), '').trim();
+            final parsed = double.tryParse(clean);
+            if (parsed != null) return parsed;
+          }
+        }
+      }
+      return defaultValue;
+    }
+
+    // Helper to extract int values
+    int? extractInt(List<String> keys, int? defaultValue) {
+      for (var key in keys) {
+        if (map[key] != null) {
+          final val = map[key];
+          if (val is num) return val.toInt();
+          if (val is String) {
+            final clean = val.replaceAll(RegExp(r'[^\d.-]'), '').trim();
+            final parsed = double.tryParse(clean)?.toInt(); // Handle 2024.0 as int
+            if (parsed != null) return parsed;
+          }
+        }
+      }
+      return defaultValue;
+    }
+
     return SmeProfileState(
-      businessName: map['businessName'] ?? '',
-      industry: map['industry'] ?? '',
+      businessName: map['businessName'] ?? map['business_name'] ?? map['name'] ?? '',
+      industry: map['industry'] ?? map['industry_sector'] ?? map['sector'] ?? '',
       location: map['location'] ?? '',
-      yearsOfOperation: map['yearsOfOperation'] ?? 0,
-      numberOfEmployees: map['numberOfEmployees'] ?? 0,
-      annualRevenueYear1: map['annualRevenueYear1'] ?? 0,
-      annualRevenueAmount1: (map['annualRevenueAmount1'] ?? 0).toDouble(),
-      annualRevenueYear2: map['annualRevenueYear2'] ?? 0,
-      annualRevenueAmount2: (map['annualRevenueAmount2'] ?? 0).toDouble(),
-      annualRevenueYear3: map['annualRevenueYear3'],
-      annualRevenueAmount3: map['annualRevenueAmount3']?.toDouble(),
-      monthlyAvgRevenue: map['monthlyAvgRevenue']?.toDouble(),
-      monthlyAvgExpenses: (map['monthlyAvgExpenses'] ?? 0).toDouble(),
-      totalLiabilities: (map['totalLiabilities'] ?? 0).toDouble(),
-      outstandingLoans: (map['outstandingLoans'] ?? 0).toDouble(),
-      hasPriorFunding: map['hasPriorFunding'],
-      priorFundingAmount: map['priorFundingAmount']?.toDouble(),
-      priorFundingSource: map['priorFundingSource'],
-      fundingYear: map['fundingYear'],
-      repaymentHistory: map['repaymentHistory'],
-      onTimePayments: map['onTimePayments'] ?? 0,
-      latePayments: map['latePayments'] ?? 0,
-      latePaymentsOver30Days: map['latePaymentsOver30Days'] ?? 0,
-      latePaymentsOver60Days: map['latePaymentsOver60Days'] ?? 0,
-      numDocumentsSubmitted: map['numDocumentsSubmitted'] ?? 0,
-      areDocumentsRecent: map['areDocumentsRecent'] ?? false,
-      areDocumentsComplete: map['areDocumentsComplete'] ?? false,
-      areDocumentsConsistent: map['areDocumentsConsistent'] ?? false,
+      yearsOfOperation: extractInt(['yearsOfOperation', 'years_of_operation', 'years_operation', 'years'], 0) ?? 0,
+      numberOfEmployees: extractInt(['numberOfEmployees', 'number_of_employees', 'employees_count', 'employees'], 0) ?? 0,
+      
+      // REVENUE YEARS
+      annualRevenueYear1: extractInt(['annualRevenueYear1', 'annual_revenue_year_1', 'revenue_year_1', 'year_1'], 0) ?? 0,
+      annualRevenueYear2: extractInt(['annualRevenueYear2', 'annual_revenue_year_2', 'revenue_year_2', 'year_2'], 0) ?? 0,
+      annualRevenueYear3: extractInt(['annualRevenueYear3', 'annual_revenue_year_3', 'revenue_year_3', 'year_3'], null),
+      
+      // REVENUE AMOUNTS (Resilient keys)
+      annualRevenueAmount1: extractDouble(['annualRevenueAmount1', 'annual_revenue_amount_1', 'revenue_amount_1', 'annual_revenue_1', 'revenue_1', 'amount_1', 'revenue'], 0) ?? 0.0,
+      annualRevenueAmount2: extractDouble(['annualRevenueAmount2', 'annual_revenue_amount_2', 'revenue_amount_2', 'annual_revenue_2', 'revenue_2', 'amount_2'], 0) ?? 0.0,
+      annualRevenueAmount3: extractDouble(['annualRevenueAmount3', 'annual_revenue_amount_3', 'revenue_amount_3', 'annual_revenue_3', 'revenue_3', 'amount_3'], 0) ?? 0.0,
+      
+      monthlyAvgRevenue: (() {
+        final val = extractDouble(['monthlyAvgRevenue', 'monthly_revenue', 'avg_revenue', 'monthly_avg_revenue'], null);
+        return (val != null && val > 0) ? val : null;
+      })(),
+      monthlyAvgExpenses: extractDouble(['monthlyAvgExpenses', 'monthly_expenses', 'expenses', 'monthly_avg_expenses', 'expens'], 0) ?? 0.0,
+      totalLiabilities: extractDouble(['totalLiabilities', 'existing_liabilities', 'liabilities_total', 'liabilities', 'debt', 'loans'], 0) ?? 0.0,
+      outstandingLoans: extractDouble(['outstandingLoans', 'outstanding_loans'], 0) ?? 0.0,
+      
+      hasPriorFunding: map['hasPriorFunding'] ?? map['has_prior_funding'],
+      priorFundingAmount: (() {
+        final val = extractDouble(['priorFundingAmount', 'prior_funding_amount'], null);
+        return (val != null && val > 0) ? val : null;
+      })(),
+      priorFundingSource: map['priorFundingSource'] ?? map['prior_funding_source'],
+      fundingYear: extractInt(['fundingYear', 'funding_year'], null),
+      repaymentHistory: map['repaymentHistory'] ?? map['repayment_history'],
+      onTimePayments: extractInt(['onTimePayments', 'on_time_payments'], 0) ?? 0,
+      latePayments: extractInt(['latePayments', 'late_payments'], 0) ?? 0,
+      latePaymentsOver30Days: extractInt(['latePaymentsOver30Days', 'late_payments_over_30_days'], 0) ?? 0,
+      latePaymentsOver60Days: extractInt(['latePaymentsOver60Days', 'late_payments_over_60_days'], 0) ?? 0,
+      numDocumentsSubmitted: extractInt(['numDocumentsSubmitted', 'num_documents_submitted'], 0) ?? 0,
+      areDocumentsRecent: map['areDocumentsRecent'] ?? map['are_documents_recent'] ?? false,
+      areDocumentsComplete: map['areDocumentsComplete'] ?? map['are_documents_complete'] ?? false,
+      areDocumentsConsistent: map['areDocumentsConsistent'] ?? map['are_documents_consistent'] ?? false,
       dataSource: DataSource.values.firstWhere((e) => e.name == (map['dataSource'] ?? 'selfReported'), orElse: () => DataSource.selfReported),
       bio: map['bio'] ?? '',
       websiteUrl: map['websiteUrl'] ?? map['website'] ?? '',
@@ -273,6 +318,8 @@ class SmeProfileState extends Equatable {
       email: map['email'] ?? '',
     );
   }
+
+  factory SmeProfileState.empty() => const SmeProfileState();
 
   @override
   List<Object?> get props => [

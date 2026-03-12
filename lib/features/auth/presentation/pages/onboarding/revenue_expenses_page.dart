@@ -247,8 +247,9 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     ),
                     validator: (val) {
                       if (isOptional &&
-                          (val == null || val.isEmpty || val == '0'))
+                          (val == null || val.isEmpty || val == '0')) {
                         return null;
+                      }
                       if (val == null || val.isEmpty) return 'Valid amount';
                       return null;
                     },
@@ -470,8 +471,9 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         ),
                         warningText: _expenseWarning,
                         validator: (val) {
-                          if (val == null || val.isEmpty)
+                          if (val == null || val.isEmpty) {
                             return 'Please enter a valid expense amount';
+                          }
                           return null;
                         },
                       ),
@@ -505,7 +507,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                           ?.copyWith(color: AppColors.slate600),
                                     ),
                                     Text(
-                                      '${_profitMargin!.toStringAsFixed(1)}%',
+                                      '${_profitMargin!.toStringAsFixed(_profitMargin! % 1 == 0 ? 0 : 1)}%',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
@@ -525,7 +527,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                           ?.copyWith(color: AppColors.slate600),
                                     ),
                                     Text(
-                                      '${_expenseRatio!.toStringAsFixed(1)}%',
+                                      '${_expenseRatio!.toStringAsFixed(_expenseRatio! % 1 == 0 ? 0 : 1)}%',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
@@ -549,7 +551,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                           ?.copyWith(color: AppColors.slate600),
                                     ),
                                     Text(
-                                      'NGN ${_annualProfit!.toStringAsFixed(0).replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), ',')}',
+                                      'NGN ${_annualProfit!.toStringAsFixed(_annualProfit! % 1 == 0 ? 0 : 1).replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), ',')}',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
