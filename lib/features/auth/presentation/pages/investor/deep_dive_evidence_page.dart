@@ -35,14 +35,15 @@ class DeepDiveEvidencePage extends StatelessWidget {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(
-              LucideIcons.download,
-              size: 20,
-              color: AppColors.slate900,
+          if (sme.dataSource != DataSource.selfReported)
+            IconButton(
+              icon: const Icon(
+                LucideIcons.download,
+                size: 20,
+                color: AppColors.slate900,
+              ),
+              onPressed: () {},
             ),
-            onPressed: () {},
-          ),
         ],
       ),
       body: SafeArea(
@@ -78,7 +79,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.neutralWhite.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(30),
                           border: Border.all(color: sme.scoreColor),
                         ),
                         child: Text(
@@ -93,7 +94,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${sme.companyName} demonstrates ${sme.riskLevel.toLowerCase()} risk based on current ${sme.dataSource == DataSource.selfReported ? 'self-reported' : 'bank-verified'} indicators. ${sme.bio ?? ""}',
+                    '${sme.companyName} demonstrates ${sme.riskLevel.toLowerCase()} risk based on current ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} indicators. ${sme.bio ?? ""}',
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       color: AppColors.slate700,
                       fontSize: 12,
@@ -105,145 +106,136 @@ class DeepDiveEvidencePage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Evidence Sections (Expandable)
-            _buildEvidenceSection(
-              title: 'Revenue Consistency',
-              contribution: sme.revenueTrendText,
-              contributionColor: sme.revenueTrendColor,
-              evidenceExplanation:
-                  'Revenue trajectory based on ${sme.dataSource == DataSource.selfReported ? 'manual entry' : 'bank statement analysis'}.',
-              chartPlaceholderText:
-                  '[Trend: ${sme.revenueTrendSignal} | Avg: ₦${(sme.annualRevenue / 12).toStringAsFixed(0)}]',
-              metrics: [
-                {'YoY Trajectory': sme.revenueTrendText},
-                {'Annual Revenue': '₦${NumberFormat('#,###').format(sme.annualRevenue)}'},
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildEvidenceSection(
-              title: 'Expense Ratio',
-              contribution: sme.expenseRatioText,
-              contributionColor: sme.expenseRatioColor,
-              evidenceExplanation:
-                  'Operating efficiency and profit margin calculated from ${sme.dataSource == DataSource.selfReported ? 'self-reported expenses' : 'detected outflows'}.',
-              chartPlaceholderText:
-                  '[Profit Margin: ${sme.profitMargin.toStringAsFixed(1)}%]',
-              metrics: [
-                {'Monthly Expenses': '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'},
-                {'Profit Margin': '${sme.profitMargin.toStringAsFixed(1)}%'},
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildEvidenceSection(
-              title: 'Repayment Behavior',
-              contribution: sme.liabilitiesRatioText,
-              contributionColor: sme.liabilitiesRatioColor,
-              evidenceExplanation:
-                  'Debt obligations and repayment history as ${sme.dataSource == DataSource.selfReported ? 'declared by the SME' : 'verified via bank records'}.',
-              chartPlaceholderText:
-                  '[Liabilities Ratio: ${sme.liabilitiesRatio.toStringAsFixed(1)}%]',
-              metrics: [
-                {'Total Liabilities': '₦${NumberFormat('#,###').format(sme.liabilities)}'},
-                {'Risk Signal': sme.liabilitiesRatioSignal},
-              ],
-            ),
-
-            const SizedBox(height: 32),
-
-            // Financial Statements
-            Text(
-              'Financial Statements',
-              style: AppTypography.textTheme.headlineSmall?.copyWith(
-                color: AppColors.slate900,
-                fontSize: 16,
+            if (sme.allowSharing) ...[
+              // Evidence Sections (Expandable)
+              _buildEvidenceSection(
+                title: 'Revenue Consistency',
+                contribution: sme.revenueTrendText,
+                contributionColor: sme.revenueTrendColor,
+                evidenceExplanation:
+                    'Revenue trajectory based on ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} analysis.',
+                chartPlaceholderText:
+                    '[Trend: ${sme.revenueTrendSignal} | Avg: ₦${(sme.annualRevenue / 12).toStringAsFixed(0)}]',
+                metrics: [
+                  {'YoY Trajectory': sme.revenueTrendText},
+                  {'Annual Revenue': '₦${NumberFormat('#,###').format(sme.annualRevenue)}'},
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            _buildFinancialTableGroup(
-              'Key Financial Metrics (Self-Reported)',
-              ['Metric', 'Amount'],
-              [
-                ['Annual Revenue', '₦${NumberFormat('#,###').format(sme.annualRevenue)}'],
-                ['Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'],
-                ['Total Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'],
-                ['Net Profit (Est)', '₦${NumberFormat('#,###').format(sme.annualRevenue - (sme.monthlyExpenses * 12))}'],
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildFinancialTableGroup(
-              'Balance Sheet',
-              ['Metric', 'Current', 'Non-Current', 'Total'],
-              [
-                ['Assets', '400,000', '800,000', '1,200,000'],
-                ['Liabilities', '150,000', '250,000', '400,000'],
-                ['Equity', '250,000', '550,000', '800,000'],
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildFinancialTableGroup(
-              'Cash Flow',
-              ['Metric', 'Year 1', 'Year 2', 'Year 3'],
-              [
-                ['Operating', '80,000', '110,000', '150,000'],
-                ['Investing', '(50,000)', '(60,000)', '(80,000)'],
-                ['Financing', '0', '0', '0'],
-              ],
-            ),
-
-            const SizedBox(height: 32),
-
-            // Supporting Documents
-            Text(
-              'Supporting Documents',
-              style: AppTypography.textTheme.headlineSmall?.copyWith(
-                color: AppColors.slate900,
-                fontSize: 16,
+              const SizedBox(height: 12),
+              _buildEvidenceSection(
+                title: 'Expense Ratio',
+                contribution: sme.expenseRatioText,
+                contributionColor: sme.expenseRatioColor,
+                evidenceExplanation:
+                    'Operating efficiency and profit margin calculated from ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} outflows.',
+                chartPlaceholderText:
+                    '[Profit Margin: ${sme.profitMargin.toStringAsFixed(1)}%]',
+                metrics: [
+                  {'Monthly Expenses': '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'},
+                  {'Profit Margin': '${sme.profitMargin.toStringAsFixed(1)}%'},
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            if (sme.dataSource != DataSource.selfReported) ...[
-              if (sme.allowSharing) ...[
+              const SizedBox(height: 12),
+              _buildEvidenceSection(
+                title: 'Repayment Behavior',
+                contribution: sme.liabilitiesRatioText,
+                contributionColor: sme.liabilitiesRatioColor,
+                evidenceExplanation:
+                    'Debt obligations and repayment history as ${sme.dataSource == DataSource.selfReported ? 'declared by the SME' : 'verified via Bank data'}.',
+                chartPlaceholderText:
+                    '[Liabilities Ratio: ${sme.liabilitiesRatio.toStringAsFixed(1)}%]',
+                metrics: [
+                  {'Total Liabilities': '₦${NumberFormat('#,###').format(sme.liabilities)}'},
+                  {'Risk Signal': sme.liabilitiesRatioSignal},
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Financial Statements
+              Text(
+                'Financial Statements',
+                style: AppTypography.textTheme.headlineSmall?.copyWith(
+                  color: AppColors.slate900,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildFinancialTableGroup(
+                'Key Financial Metrics (${sme.dataSource == DataSource.selfReported ? 'Manual Data' : 'Bank Data'})',
+                ['Metric', 'Amount'],
+                [
+                  ['Annual Revenue', '₦${NumberFormat('#,###').format(sme.annualRevenue)}'],
+                  ['Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'],
+                  ['Total Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'],
+                  ['Net Profit (Est)', '₦${NumberFormat('#,###').format(sme.annualRevenue - (sme.monthlyExpenses * 12))}'],
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Supporting Documents
+              Text(
+                'Supporting Documents',
+                style: AppTypography.textTheme.headlineSmall?.copyWith(
+                  color: AppColors.slate900,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              if (sme.dataSource != DataSource.selfReported) ...[
                 _buildDocumentCard(
                   title: 'Bank Statement (Extracted)',
                   metadata: 'Verified • ${DateFormat('MMM d, yyyy').format(sme.generatedAt)}',
                   iconData: LucideIcons.fileText,
                 ),
               ] else ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.slate100,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: AppColors.slate200),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(LucideIcons.lock, size: 20, color: AppColors.slate400),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'The SME has turned off direct document viewing/downloading.',
-                          style: AppTypography.textTheme.bodySmall?.copyWith(
-                            color: AppColors.slate600,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'This profile is based on manual data entry. No bank statements were provided for auto-extraction.',
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.slate500,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ],
             ] else ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'This profile is based on manual data entry. No bank statements were provided for auto-extraction.',
-                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                    color: AppColors.slate500,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
+              // Privacy Lock State
+               Container(
+                 margin: const EdgeInsets.only(top: 8),
+                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                 decoration: BoxDecoration(
+                   color: AppColors.slate50,
+                   borderRadius: BorderRadius.circular(8),
+                   border: Border.all(color: AppColors.slate200),
+                 ),
+                 child: Column(
+                   children: [
+                     const Icon(LucideIcons.lock, size: 36, color: AppColors.slate400),
+                     const SizedBox(height: 16),
+                     Text(
+                       'Financial Data is Private',
+                       style: AppTypography.textTheme.bodyLarge?.copyWith(
+                         fontWeight: FontWeight.w600,
+                         color: AppColors.slate900,
+                       ),
+                       textAlign: TextAlign.center,
+                     ),
+                     const SizedBox(height: 8),
+                     Text(
+                       '${sme.companyName} has chosen to keep their detailed financial records private at this time. If you are interested in exploring further, please initiate a conversation to request access.',
+                       style: AppTypography.textTheme.bodyMedium?.copyWith(
+                         color: AppColors.slate600,
+                         height: 1.5,
+                       ),
+                       textAlign: TextAlign.center,
+                     ),
+                   ],
+                 ),
+               ),
             ],
 
             const SizedBox(height: 32),

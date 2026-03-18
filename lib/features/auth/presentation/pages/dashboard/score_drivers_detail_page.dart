@@ -10,8 +10,12 @@ import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
 import 'package:partnex/features/auth/data/models/financial_metrics.dart';
 
+import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
+import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
+
 class ScoreDriversDetailPage extends StatelessWidget {
-  const ScoreDriversDetailPage({super.key});
+  final SmeCardData? sme;
+  const ScoreDriversDetailPage({super.key, this.sme});
 
   DriverRiskLevel _mapRiskLevel(MetricStatus status) {
     switch (status) {
@@ -67,16 +71,13 @@ class ScoreDriversDetailPage extends StatelessWidget {
       ),
       body: BlocBuilder<ScoreCubit, ScoreState>(
         builder: (context, state) {
-          if (state is! ScoreLoadedSuccess || state.financialMetrics == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.trustBlue),
-            );
-          }
+          final sc = sme?.score ?? (state is ScoreLoadedSuccess ? state.score.totalScore : 0);
+          final rLevel = sme?.riskLevel.toUpperCase() ?? (state is ScoreLoadedSuccess ? state.score.riskLevel.name.toUpperCase() : 'UNKNOWN');
+          final rankedDrivers = sme?.drivers ?? (state is ScoreLoadedSuccess ? state.financialMetrics?.rankedDrivers ?? [] : []);
 
-          final metrics = state.financialMetrics!;
-          final sc = state.score.totalScore;
-          final rLevel = state.score.riskLevel.name.toUpperCase();
-          final rankedDrivers = metrics.rankedDrivers;
+          if (sme == null && (state is! ScoreLoadedSuccess || state.financialMetrics == null)) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.trustBlue));
+          }
 
           return SafeArea(
             child: ListView(
@@ -89,7 +90,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Your Score: ${sc.toInt()}',
+                      'Score: ${sc.toInt()}',
                       style: AppTypography.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.slate900,
@@ -98,17 +99,12 @@ class ScoreDriversDetailPage extends StatelessWidget {
                     ),
                     SizedBox(width: AppSpacing.smd),
                     Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
                         color: (rLevel == 'LOW')
                             ? AppColors.successGreen
-                            : (rLevel == 'MEDIUM'
-                                  ? AppColors.warningOrange
-                                  : AppColors.dangerRed),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                            : (rLevel == 'MEDIUM' ? AppColors.warningOrange : AppColors.dangerRed),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
                         '$rLevel RISK',
@@ -133,25 +129,39 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                ...rankedDrivers
-                    .take(3)
-                    .map(
-                      (driver) => DriverCard(
-                        driverName: driver.name,
-                        riskLevel: _mapRiskLevel(driver.status),
-                        percentage: driver.scoreValue,
-                        impactPoints: _calculateImpactPoints(
-                          driver.status,
-                          driver.scoreValue,
-                          driver.weight,
-                        ),
-                        description: _getDriverExplanation(
-                          driver.name,
-                          metrics,
-                        ),
-                        initiallyExpanded: rankedDrivers.indexOf(driver) == 0,
-                      ),
-                    ),
+                ...rankedDrivers.take(3).map((driver) {
+                  final String name = (driver is DriverMetric)
+                      ? driver.name
+                      : (driver as ScoreDriver).name;
+                  final DriverRiskLevel risk = (driver is DriverMetric)
+                      ? driver.riskLevel
+                      : _mapRiskLevel((driver as ScoreDriver).status);
+                  final double pct = (driver is DriverMetric)
+                      ? driver.percentage
+                      : (driver as ScoreDriver).scoreValue;
+                  final double impact = (driver is DriverMetric)
+                      ? driver.impactPoints
+                      : _calculateImpactPoints(
+                          (driver as ScoreDriver).status,
+                          (driver as ScoreDriver).scoreValue,
+                          (driver as ScoreDriver).weight,
+                        );
+                  final String desc = (driver is DriverMetric)
+                      ? driver.description
+                      : _getDriverExplanation(
+                          (driver as ScoreDriver).name,
+                          (state as ScoreLoadedSuccess).financialMetrics!,
+                        );
+
+                  return DriverCard(
+                    driverName: name,
+                    riskLevel: risk,
+                    percentage: pct,
+                    impactPoints: impact,
+                    description: desc,
+                    initiallyExpanded: rankedDrivers.indexOf(driver) == 0,
+                  );
+                }),
 
                 const SizedBox(height: 24),
 
@@ -167,26 +177,40 @@ class ScoreDriversDetailPage extends StatelessWidget {
                       ),
                     ),
                     tilePadding: EdgeInsets.zero,
-                    children: rankedDrivers
-                        .skip(3)
-                        .map(
-                          (driver) => DriverCard(
-                            driverName: driver.name,
-                            riskLevel: _mapRiskLevel(driver.status),
-                            percentage: driver.scoreValue,
-                            impactPoints: _calculateImpactPoints(
-                              driver.status,
-                              driver.scoreValue,
-                              driver.weight,
-                            ),
-                            description: _getDriverExplanation(
-                              driver.name,
-                              metrics,
-                            ),
-                            initiallyExpanded: false,
-                          ),
-                        )
-                        .toList(),
+                    childrenPadding: EdgeInsets.zero,
+                    children: rankedDrivers.skip(3).map((driver) {
+                      final String name = (driver is DriverMetric)
+                          ? driver.name
+                          : (driver as ScoreDriver).name;
+                      final DriverRiskLevel risk = (driver is DriverMetric)
+                          ? driver.riskLevel
+                          : _mapRiskLevel((driver as ScoreDriver).status);
+                      final double pct = (driver is DriverMetric)
+                          ? driver.percentage
+                          : (driver as ScoreDriver).scoreValue;
+                      final double impact = (driver is DriverMetric)
+                          ? driver.impactPoints
+                          : _calculateImpactPoints(
+                              (driver as ScoreDriver).status,
+                              (driver as ScoreDriver).scoreValue,
+                              (driver as ScoreDriver).weight,
+                            );
+                      final String desc = (driver is DriverMetric)
+                          ? driver.description
+                          : _getDriverExplanation(
+                              (driver as ScoreDriver).name,
+                              (state as ScoreLoadedSuccess).financialMetrics!,
+                            );
+
+                      return DriverCard(
+                        driverName: name,
+                        riskLevel: risk,
+                        percentage: pct,
+                        impactPoints: impact,
+                        description: desc,
+                        initiallyExpanded: false,
+                      );
+                    }).toList(),
                   ),
                 ),
 
@@ -201,14 +225,35 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                ..._generateRecommendations(metrics),
+                if (sme == null) ..._generateRecommendations((state as ScoreLoadedSuccess).financialMetrics!),
 
                 const SizedBox(height: 32),
-                CustomButton(
-                  text: 'Back to Dashboard',
-                  variant: ButtonVariant.primary,
-                  onPressed: () => Navigator.pop(context),
-                ),
+                if (sme != null) ...[
+                  CustomButton(
+                    text: 'Message SME',
+                    variant: ButtonVariant.primary,
+                    isFullWidth: true,
+                    onPressed: () {
+                      // Logic for messaging SME (bottom sheet)
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  CustomButton(
+                    text: 'Deep dive',
+                    variant: ButtonVariant.secondary,
+                    isFullWidth: true,
+                    onPressed: () => context
+                        .read<DiscoveryCubit>()
+                        .viewDeepDiveEvidence(sme!),
+                  ),
+                ] else ...[
+                  CustomButton(
+                    text: 'Back to Dashboard',
+                    variant: ButtonVariant.primary,
+                    isFullWidth: true,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
                 const SizedBox(height: 24),
               ],
             ),

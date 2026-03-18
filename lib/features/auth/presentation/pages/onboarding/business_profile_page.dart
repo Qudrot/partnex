@@ -51,6 +51,14 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
 
   String? _selectedIndustry;
 
+  late String _initialName;
+  late String _initialLocation;
+  late String _initialYears;
+  late String _initialEmployees;
+  late String _initialPhone;
+  String? _initialSelectedIndustry;
+  late String _initialOtherIndustry;
+
   final List<String> _industries = [
     'Manufacturing',
     'Retail & E-commerce',
@@ -64,13 +72,26 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     'Other',
   ];
 
+  bool get _hasChanges {
+    return _nameController.text != _initialName ||
+        _locationController.text != _initialLocation ||
+        _yearsController.text != _initialYears ||
+        _employeesController.text != _initialEmployees ||
+        _phoneController.text != _initialPhone ||
+        _selectedIndustry != _initialSelectedIndustry ||
+        _otherIndustryController.text != _initialOtherIndustry;
+  }
+
   bool get _isFormValid {
     // Basic validation to enable Next button
-    return _nameController.text.length >= 2 &&
+    final isValid = _nameController.text.length >= 2 &&
         _locationController.text.isNotEmpty &&
         _yearsController.text.isNotEmpty &&
         _employeesController.text.isNotEmpty &&
         (_selectedIndustry != 'Other' || _otherIndustryController.text.isNotEmpty);
+
+    if (widget._inEditMode) return isValid && _hasChanges;
+    return isValid;
   }
 
   void _onFieldChanged(String value) {
@@ -105,6 +126,15 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     if (phone.isNotEmpty) {
       _phoneController.text = phone;
     }
+
+    // Capture initial values for pristine checking in edit mode
+    _initialName = _nameController.text;
+    _initialLocation = _locationController.text;
+    _initialYears = _yearsController.text;
+    _initialEmployees = _employeesController.text;
+    _initialPhone = _phoneController.text;
+    _initialSelectedIndustry = _selectedIndustry;
+    _initialOtherIndustry = _otherIndustryController.text;
   }
 
   @override
@@ -126,7 +156,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         elevation: 0,
         leading: widget._inEditMode
             ? IconButton(
-                icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+                icon: const Icon(LucideIcons.x, color: AppColors.slate900),
                 onPressed: () => uiService.goBack(),
               )
             : null,
@@ -294,14 +324,16 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   padding: EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: CustomButton(
-                          text: 'Previous',
-                          variant: ButtonVariant.secondary,
-                          onPressed: () => uiService.goBack(),
+                      if (!widget._inEditMode) ...[
+                        Expanded(
+                          child: CustomButton(
+                            text: 'Previous',
+                            variant: ButtonVariant.secondary,
+                            onPressed: () => uiService.goBack(),
+                          ),
                         ),
-                      ),
-                      SizedBox(width: AppSpacing.smd),
+                        SizedBox(width: AppSpacing.smd),
+                      ],
                       Expanded(
                         child: CustomButton(
                           text: widget._inEditMode

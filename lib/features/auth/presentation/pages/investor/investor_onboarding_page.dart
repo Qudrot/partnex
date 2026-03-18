@@ -324,10 +324,10 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
         margin: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.smd),
         padding: const EdgeInsets.all(AppSpacing.smd),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.successGreen.withValues(alpha: 0.05) : AppColors.neutralWhite,
+          color: isSelected ? AppColors.trustBlue.withValues(alpha: 0.05) : AppColors.neutralWhite,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
-            color: isSelected ? AppColors.successGreen : AppColors.slate200,
+            color: isSelected ? AppColors.trustBlue : AppColors.slate200,
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -339,7 +339,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.successGreen : AppColors.slate300,
+                  color: isSelected ? AppColors.trustBlue : AppColors.slate300,
                   width: 2,
                 ),
               ),
@@ -350,7 +350,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                         height: 10,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.successGreen,
+                          color: AppColors.trustBlue,
                         ),
                       ),
                     )

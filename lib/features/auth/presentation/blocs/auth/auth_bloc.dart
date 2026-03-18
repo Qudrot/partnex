@@ -3,6 +3,7 @@ import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
+import 'package:partnex/features/auth/data/models/user_model.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -33,6 +34,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: user.email,
         position: user.position,
       );
+
+      if (user.role == UserRole.sme) {
+        try {
+          final profileMap = await authRepository.getMySmeProfile();
+          if (profileMap.isNotEmpty) {
+            smeProfileCubit.updateFromMap(profileMap);
+          }
+        } catch (_) {
+          // Ignore error if profile hasn't been created yet
+        }
+      } else if (user.role == UserRole.investor) {
+        try {
+          final profileMap = await authRepository.getMyInvestorProfile();
+          if (profileMap.isNotEmpty) {
+            final updatedUser = UserModel(
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              profilePicture: user.profilePicture,
+              profileCompleted: user.profileCompleted,
+              investorType: profileMap['role'] ?? profileMap['investorType'] ?? profileMap['investor_type'],
+              company: profileMap['company'] ?? profileMap['organization'],
+              investmentRange: profileMap['ticketSize'] ?? profileMap['typical_ticket_size'] ?? profileMap['investmentRange'],
+              sectors: profileMap['sectors'] != null 
+                  ? List<String>.from(profileMap['sectors']) 
+                  : (profileMap['preferred_sectors'] != null ? List<String>.from(profileMap['preferred_sectors']) : null),
+            );
+            emit(AuthAuthenticated(updatedUser));
+            return;
+          }
+        } catch (_) {}
+      }
 
       emit(AuthAuthenticated(user));
     } catch (e) {
@@ -91,7 +125,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(InvestorProfileSubmitting());
     try {
       await authRepository.submitInvestorProfile(event.profileData);
+      
+      // Fetch the updated user seamlessly to restore auth state
+      final updatedUser = await authRepository.getCurrentUser();
+      
       emit(InvestorProfileSubmittedSuccess());
+      
+      if (updatedUser != null) {
+        // Force the local state to match reality: they just submitted, so profile IS completed
+        final forcedUser = updatedUser.copyWith(profileCompleted: true);
+        emit(AuthAuthenticated(forcedUser));
+      }
     } catch (e) {
       final msg = e.toString().replaceAll('Exception: ', '');
       emit(InvestorProfileSubmissionError(msg));

@@ -62,6 +62,7 @@ class SmeCardData {
   final int yearsOfOperation;
   final int numberOfEmployees;
   final double annualRevenue;
+  final double previousAnnualRevenue;
   final double monthlyExpenses;
   final double liabilities;
   final String fundingHistory;
@@ -101,6 +102,7 @@ class SmeCardData {
   static const Color _criticalColor = AppColors.dangerRed;
 
   double get _prevRevenue {
+    if (previousAnnualRevenue > 0) return previousAnnualRevenue;
     if (annualRevenue <= 0) return 0;
     if (score >= 80) return annualRevenue / 1.25;
     if (score >= 60) return annualRevenue / 1.10;
@@ -253,6 +255,7 @@ class SmeCardData {
     required this.yearsOfOperation,
     required this.numberOfEmployees,
     required this.annualRevenue,
+    this.previousAnnualRevenue = 0.0,
     required this.monthlyExpenses,
     required this.liabilities,
     required this.fundingHistory,
@@ -307,9 +310,25 @@ class SmeCardData {
           0,
       annualRevenue:
           double.tryParse(
-            map['annual_revenue_amount_1']?.toString() ??
+            map['annual_revenue_amount_2']?.toString() ??
+                map['annualRevenue2']?.toString() ??
+                map['revenue2']?.toString() ??
+                map['annual_revenue_amount_1']?.toString() ??
                 map['annualRevenue']?.toString() ??
+                map['revenue']?.toString() ??
                 '0',
+          ) ??
+          0.0,
+      previousAnnualRevenue:
+          double.tryParse(
+            (map['annual_revenue_amount_2'] != null ||
+                    map['annualRevenue2'] != null ||
+                    map['revenue2'] != null)
+                ? (map['annual_revenue_amount_1']?.toString() ??
+                    map['annualRevenue1']?.toString() ??
+                    map['revenue1']?.toString() ??
+                    '0')
+                : '0',
           ) ??
           0.0,
       monthlyExpenses:
@@ -332,11 +351,14 @@ class SmeCardData {
             map['currentCredibilityScore'] ??
             map['credibilityScore'] ??
             map['current_credibility_score'] ??
-            map['totalScore'],
+            map['totalScore'] ??
+            map['total_score'] ??
+            (map['credibility'] != null && map['credibility'] is Map ? map['credibility']['total_score'] ?? map['credibility']['score'] ?? map['credibility']['totalScore'] : null),
       ),
       riskLevel:
           map['risk_level']?.toString() ??
           map['riskLevel']?.toString() ??
+          (map['credibility'] != null && map['credibility'] is Map ? map['credibility']['risk_level']?.toString() ?? map['credibility']['riskLevel']?.toString() : null) ??
           'Unknown',
       generatedAt: DateTime.tryParse(map['created_at']?.toString() ?? '') ?? DateTime.now(),
       dataSource: DataSource.values.firstWhere(

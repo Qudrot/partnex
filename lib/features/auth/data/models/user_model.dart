@@ -38,5 +38,32 @@ class UserModel {
 
     factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
     Map<String, dynamic> toJson() => _$UserModelToJson(this);
-    
+
+    UserModel copyWith({
+        String? id,
+        String? email,
+        String? name,
+        UserRole? role,
+        String? profilePicture,
+        bool? profileCompleted,
+        String? position,
+        String? investorType,
+        String? company,
+        String? investmentRange,
+        List<String>? sectors,
+    }) {
+        return UserModel(
+            id: id ?? this.id,
+            email: email ?? this.email,
+            name: name ?? this.name,
+            role: role ?? this.role,
+            profilePicture: profilePicture ?? this.profilePicture,
+            profileCompleted: profileCompleted ?? this.profileCompleted,
+            position: position ?? this.position,
+            investorType: investorType ?? this.investorType,
+            company: company ?? this.company,
+            investmentRange: investmentRange ?? this.investmentRange,
+            sectors: sectors ?? this.sectors,
+        );
+    }
 }

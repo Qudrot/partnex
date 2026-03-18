@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/circular_score_ring.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/driver_card.dart';
 import 'package:partnex/core/theme/widgets/metric_mini_card.dart';
@@ -11,11 +12,9 @@ import 'package:partnex/core/theme/widgets/sme_bio_contact_card.dart';
 import 'package:partnex/core/utils/url_helper.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_full_bio_page.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnex/core/services/ui_service.dart';
-
 
 // ---------------------------------------------------------------------------
 // Message SME Bottom Sheet
@@ -95,10 +94,16 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
             const SizedBox(height: 16),
             Builder(
               builder: (context) {
-                final hasWhatsapp = widget.whatsappNumber != null && widget.whatsappNumber!.isNotEmpty;
-                final hasLinkedin = widget.linkedinUrl != null && widget.linkedinUrl!.isNotEmpty;
-                final hasTwitter = widget.twitterHandle != null && widget.twitterHandle!.isNotEmpty;
-                
+                final hasWhatsapp =
+                    widget.whatsappNumber != null &&
+                    widget.whatsappNumber!.isNotEmpty;
+                final hasLinkedin =
+                    widget.linkedinUrl != null &&
+                    widget.linkedinUrl!.isNotEmpty;
+                final hasTwitter =
+                    widget.twitterHandle != null &&
+                    widget.twitterHandle!.isNotEmpty;
+
                 if (hasWhatsapp || hasLinkedin || hasTwitter) {
                   return Column(
                     children: [
@@ -109,28 +114,36 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                               child: _buildSocialOption(
                                 'WhatsApp',
                                 'assets/icons/whatsapp.png',
-                                onTap: () => UrlHelper.launchWhatsApp(widget.whatsappNumber!),
+                                onTap: () => UrlHelper.launchWhatsApp(
+                                  widget.whatsappNumber!,
+                                ),
                               ),
                             ),
-                          if (hasWhatsapp && (hasLinkedin || hasTwitter)) const SizedBox(width: 12),
+                          if (hasWhatsapp && (hasLinkedin || hasTwitter))
+                            const SizedBox(width: 12),
                           if (hasLinkedin)
                             Expanded(
                               child: _buildSocialOption(
                                 'LinkedIn',
                                 'assets/icons/linkedin.png',
-                                onTap: () => UrlHelper.launchWebsite(widget.linkedinUrl!),
+                                onTap: () => UrlHelper.launchWebsite(
+                                  widget.linkedinUrl!,
+                                ),
                               ),
                             ),
-                          if (hasLinkedin && hasTwitter) const SizedBox(width: 12),
+                          if (hasLinkedin && hasTwitter)
+                            const SizedBox(width: 12),
                           if (hasTwitter)
                             Expanded(
                               child: _buildSocialOption(
                                 'Twitter',
                                 'assets/icons/twitter.png',
-                                onTap: () => UrlHelper.launchWebsite('https://twitter.com/${widget.twitterHandle!.replaceAll('@', '')}'),
+                                onTap: () => UrlHelper.launchWebsite(
+                                  'https://twitter.com/${widget.twitterHandle!.replaceAll('@', '')}',
+                                ),
                               ),
                             ),
-                          
+
                           // Empty space filler if less than 3 socials
                           if (!hasWhatsapp && !hasLinkedin) const Spacer(),
                           if (!hasWhatsapp && !hasTwitter) const Spacer(),
@@ -177,7 +190,11 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
     );
   }
 
-  Widget _buildSocialOption(String label, String assetPath, {required VoidCallback onTap}) {
+  Widget _buildSocialOption(
+    String label,
+    String assetPath, {
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -210,7 +227,12 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
     );
   }
 
-  Widget _buildDirectContact(String label, String value, IconData icon, {required VoidCallback onTap}) {
+  Widget _buildDirectContact(
+    String label,
+    String value,
+    IconData icon, {
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -223,24 +245,24 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            Text(
-              label,
-              style: AppTypography.textTheme.labelSmall?.copyWith(
-                color: AppColors.slate600,
-                fontSize: 12,
-              ),
-            ),
-            Text(
-              value,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate900,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+                Text(
+                  label,
+                  style: AppTypography.textTheme.labelSmall?.copyWith(
+                    color: AppColors.slate600,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.slate900,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
         ),
       ),
     );
@@ -340,11 +362,12 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                           child: Center(
                             child: Text(
                               _initials,
-                              style: AppTypography.textTheme.bodyLarge?.copyWith(
-                                color: AppColors.neutralWhite,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 18,
-                              ),
+                              style: AppTypography.textTheme.bodyLarge
+                                  ?.copyWith(
+                                    color: AppColors.neutralWhite,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                  ),
                             ),
                           ),
                         ),
@@ -371,21 +394,29 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                       color: AppColors.slate600,
                                     ),
                               ),
-                              if (widget.sme.website != null && widget.sme.website!.isNotEmpty) ...[
+                              if (widget.sme.website != null &&
+                                  widget.sme.website!.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 InkWell(
                                   onTap: () {},
                                   child: Row(
                                     children: [
-                                      const Icon(LucideIcons.globe, size: 12, color: AppColors.trustBlue),
+                                      const Icon(
+                                        LucideIcons.globe,
+                                        size: 12,
+                                        color: AppColors.trustBlue,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         widget.sme.website!,
-                                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                          fontSize: 13,
-                                          color: AppColors.trustBlue,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                        style: AppTypography
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              fontSize: 13,
+                                              color: AppColors.trustBlue,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -421,23 +452,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Container(
-                              width: 64,
-                              height: 64,
-                              decoration: BoxDecoration(
-                                color: widget.sme.scoreColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${widget.sme.score}',
-                                  style: AppTypography.textTheme.displayLarge
-                                      ?.copyWith(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.neutralWhite,
-                                      ),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ScoreDriversDetailPage(sme: widget.sme),
                                 ),
+                              ),
+                              child: CircularScoreRing(
+                                score: widget.sme.score,
+                                size: 140,
                               ),
                             ),
                             SizedBox(width: AppSpacing.md),
@@ -457,12 +481,12 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                   Text(
                                     'Generated today at ${TimeOfDay.now().format(context)}',
                                     style: AppTypography.textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: AppColors.slate500,
-                                        ),
+                                        ?.copyWith(color: AppColors.slate500),
                                   ),
                                   SizedBox(height: AppSpacing.sm),
-                                  DataSourceBadge(source: widget.sme.dataSource),
+                                  DataSourceBadge(
+                                    source: widget.sme.dataSource,
+                                  ),
                                 ],
                               ),
                             ),
@@ -522,35 +546,35 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
 
                   SizedBox(height: AppSpacing.xl),
 
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                      child: SmeBioContactCard(
-                        bio: widget.sme.bio,
-                        contactPersonName: widget.sme.contactPersonName,
-                        contactPersonTitle: widget.sme.contactPersonTitle,
-                        smeId: widget.sme.id,
-                        smeName: widget.sme.companyName,
-                        onReadMore: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => InvestorFullBioPage(
-                                smeName: widget.sme.companyName,
-                                bio: widget.sme.bio,
-                                contactPersonName: widget.sme.contactPersonName,
-                                contactPersonTitle: widget.sme.contactPersonTitle,
-                                whatsappNumber: widget.sme.whatsappNumber,
-                                linkedinUrl: widget.sme.linkedinUrl,
-                                twitterHandle: widget.sme.twitterHandle,
-                                email: widget.sme.email,
-                                phoneNumber: widget.sme.phoneNumber,
-                                website: widget.sme.website,
-                              ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    child: SmeBioContactCard(
+                      bio: widget.sme.bio,
+                      contactPersonName: widget.sme.contactPersonName,
+                      contactPersonTitle: widget.sme.contactPersonTitle,
+                      smeId: widget.sme.id,
+                      smeName: widget.sme.companyName,
+                      onReadMore: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InvestorFullBioPage(
+                              smeName: widget.sme.companyName,
+                              bio: widget.sme.bio,
+                              contactPersonName: widget.sme.contactPersonName,
+                              contactPersonTitle: widget.sme.contactPersonTitle,
+                              whatsappNumber: widget.sme.whatsappNumber,
+                              linkedinUrl: widget.sme.linkedinUrl,
+                              twitterHandle: widget.sme.twitterHandle,
+                              email: widget.sme.email,
+                              phoneNumber: widget.sme.phoneNumber,
+                              website: widget.sme.website,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
+                  ),
 
                   SizedBox(height: AppSpacing.md),
 
@@ -594,7 +618,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
             ),
 
             Container(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.smd),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.smd,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.neutralWhite,
                 border: Border(top: BorderSide(color: AppColors.slate200)),
@@ -607,64 +634,24 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                 ],
               ),
               child: SafeArea(
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: CustomButton(
-                        text: 'Message SME',
-                        onPressed: _openMessageSheet,
-                        variant: ButtonVariant.primary,
-                      ),
+                    CustomButton(
+                      text: 'Message SME',
+                      onPressed: _openMessageSheet,
+                      variant: ButtonVariant.primary,
+                      isFullWidth: true,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SizedBox(
-                        height: 44,
-                        child: ElevatedButton(
-                          onPressed: () => context
-                              .read<DiscoveryCubit>()
-                              .viewDeepDiveEvidence(widget.sme),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.slate100,
-                            elevation: 0,
-                            side: BorderSide(color: AppColors.slate300),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Deep Dive',
-                            style: AppTypography.textTheme.labelLarge?.copyWith(
-                              color: AppColors.slate900,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
+                    const SizedBox(height: 12),
+                    CustomButton(
+                      text: 'Deep dive',
+                      onPressed: () => context
+                          .read<DiscoveryCubit>()
+                          .viewDeepDiveEvidence(widget.sme),
+                      variant: ButtonVariant.secondary,
+                      isFullWidth: true,
                     ),
-                    // const SizedBox(width: 12),
-                    // SizedBox(
-                    //   width: 44,
-                    //   height: 44,
-                    //   child: IconButton(
-                    //     onPressed: _toggleWatchlist,
-                    //     icon: Icon(
-                    //       _isWatchlisted ? Icons.favorite : LucideIcons.heart,
-                    //       color: _isWatchlisted
-                    //           ? AppColors.dangerRed
-                    //           : AppColors.slate600,
-                    //       size: 20,
-                    //     ),
-                    //     style: IconButton.styleFrom(
-                    //       backgroundColor: AppColors.slate100,
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(8),
-                    //         side: BorderSide(color: AppColors.slate300),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

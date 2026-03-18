@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/circular_score_ring.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/core/theme/widgets/metric_mini_card.dart'; // <-- Added Import
 import 'package:partnex/features/auth/presentation/pages/dashboard/score_drivers_detail_page.dart';
@@ -184,39 +185,27 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             elevation: 0,
             automaticallyImplyLeading: false,
             titleSpacing: 16,
-            centerTitle: false,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ProfileManagementPage(),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  child: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.xs),
-                    child: Icon(
-                      LucideIcons.menu,
-                      size: 24,
-                      color: AppColors.slate900,
-                    ),
-                  ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(
+                LucideIcons.menu,
+                size: 24,
+                color: AppColors.slate900,
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileManagementPage(),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Credibility Score',
-                    style: AppTypography.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.slate900,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
+              ),
+            ),
+            title: Text(
+              'Credibility Score',
+              style: AppTypography.textTheme.headlineMedium?.copyWith(
+                color: AppColors.slate900,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             actions: [
               CustomButton(
@@ -271,31 +260,9 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                               builder: (_) => ScoreDriversDetailPage(),
                             ),
                           ),
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: riskColor,
-                              shape: BoxShape.circle,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.1),
-                                  blurRadius: 12,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                scoreData.totalScore.toInt().toString(),
-                                style: AppTypography.textTheme.displayLarge
-                                    ?.copyWith(
-                                      fontSize: 56,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.neutralWhite,
-                                    ),
-                              ),
-                            ),
+                          child: CircularScoreRing(
+                            score: scoreData.totalScore.toInt(),
+                            size: 190.0,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -306,7 +273,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                           ),
                           decoration: BoxDecoration(
                             color: riskColor,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                           child: Text(
                             riskLevelString,
@@ -431,7 +398,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                               padding: EdgeInsets.only(bottom: 12),
                               child: _buildDriverBar(
                                 driverName: driver.name,
-                                percentage: driver.scoreValue / 100,
+                                percentage: (driver.scoreValue.clamp(0.0, 100.0)) / 100.0,
+                                displayValue: driver.rawDisplayValue,
                                 statusColor: _getStatusColor(driver.status),
                               ),
                             );
@@ -538,6 +506,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
   Widget _buildDriverBar({
     required String driverName,
     required double percentage,
+    required String displayValue,
     required Color statusColor,
   }) {
     return Container(
@@ -574,7 +543,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               ),
               const SizedBox(width: 12),
               Text(
-                '${(percentage * 100).toInt()}%',
+                displayValue,
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                   color: AppColors.slate900,
                   fontWeight: FontWeight.w600,

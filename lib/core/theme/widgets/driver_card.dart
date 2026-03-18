@@ -228,7 +228,7 @@ class _DriverCardState extends State<DriverCard> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: _badgeBackgroundColor,
-                                      borderRadius: BorderRadius.circular(4),
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
                                     child: Text(
                                       _riskLevelLabel,

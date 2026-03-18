@@ -45,4 +45,7 @@ abstract class AuthRepository {
 
   // Retrieves the locally cached SME profile (raw map)
   Future<Map<String, dynamic>> getCachedSmeProfile();
+
+  // Retrieves the locally cached Investor profile (raw map)
+  Future<Map<String, dynamic>> getMyInvestorProfile();
 }

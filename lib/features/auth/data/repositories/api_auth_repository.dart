@@ -450,11 +450,11 @@ class ApiAuthRepository implements AuthRepository {
       // Map your Flutter UI data to the exact TiDB database columns
       final Map<String, dynamic> payload = {
         "full_name": data['name'] ?? data['fullName'] ?? "Investor", 
-        "organization": data['organization'],
-        "location": data['location'],
-        "investor_type": data['role'], // Your UI saves the type as 'role'
+        "organization": data['company'] ?? data['organization'],
+        "location": data['location'] ?? "Not explicitly listed",
+        "investor_type": data['investorType'] ?? data['role'], // Your UI saves the type as 'investorType'
         "preferred_sectors": data['sectors'],
-        "typical_ticket_size": data['ticketSize']
+        "typical_ticket_size": data['investmentRange'] ?? data['ticketSize']
       };
 
       await apiClient.dio.post(
@@ -499,6 +499,26 @@ class ApiAuthRepository implements AuthRepository {
       final profileCompletedStr = await _secureStorage.read(key: 'profile_completed');
       final isProfileCompleted = profileCompletedStr == 'true';
 
+      String? investorType;
+      String? company;
+      String? investmentRange;
+      List<String>? sectors;
+
+      if (parsedRole == UserRole.investor) {
+        try {
+          final cachedStr = await _secureStorage.read(key: 'cached_investor_profile');
+          if (cachedStr != null && cachedStr.isNotEmpty) {
+            final Map<String, dynamic> data = jsonDecode(cachedStr);
+            investorType = data['role'] ?? data['investorType'];
+            company = data['company'] ?? data['organization'];
+            investmentRange = data['ticketSize'] ?? data['investmentRange'];
+            if (data['sectors'] is List) {
+              sectors = List<String>.from(data['sectors']);
+            }
+          }
+        } catch (_) {}
+      }
+
       // We don't have personal data stored locally by default from just login/signup 
       // besides the token, but we can reconstruct a basic UserModel to satisfy the AuthBloc's router.
       // Ideally this would make a GET /api/auth/me call, but returning this avoids an extra network hop blocking app startup.
@@ -509,6 +529,10 @@ class ApiAuthRepository implements AuthRepository {
         role: parsedRole,
         profilePicture: "",
         profileCompleted: isProfileCompleted,
+        investorType: investorType,
+        company: company,
+        investmentRange: investmentRange,
+        sectors: sectors,
       );
     } catch (e) {
       if (kDebugMode) print('Error retrieving user session: $e');
@@ -710,6 +734,17 @@ class ApiAuthRepository implements AuthRepository {
   Future<Map<String, dynamic>> getCachedSmeProfile() async {
     try {
       final cachedStr = await _secureStorage.read(key: 'cached_sme_profile');
+      if (cachedStr != null && cachedStr.isNotEmpty) {
+        return jsonDecode(cachedStr) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  @override
+  Future<Map<String, dynamic>> getMyInvestorProfile() async {
+    try {
+      final cachedStr = await _secureStorage.read(key: 'cached_investor_profile');
       if (cachedStr != null && cachedStr.isNotEmpty) {
         return jsonDecode(cachedStr) as Map<String, dynamic>;
       }

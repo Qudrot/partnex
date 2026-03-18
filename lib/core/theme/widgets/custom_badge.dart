@@ -30,7 +30,7 @@ class CustomBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         text.toUpperCase(),
@@ -53,7 +53,7 @@ class NeutralBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.slate100,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         text.toUpperCase(),

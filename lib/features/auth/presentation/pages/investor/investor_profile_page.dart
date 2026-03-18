@@ -10,7 +10,6 @@ import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
-import 'package:partnex/features/auth/data/repositories/mock_sme_data.dart'; // <-- Mock Data Import
 import 'package:partnex/features/auth/presentation/pages/dashboard/faq_page.dart';
 
 class InvestorProfilePage extends StatefulWidget {
@@ -83,74 +82,30 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: AppColors.trustBlue.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            LucideIcons.userCheck,
-                            color: AppColors.trustBlue,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          'Verified Investor',
-                          style: AppTypography.textTheme.headlineSmall?.copyWith(
-                            color: AppColors.slate900,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      height: 1,
-                      width: double.infinity,
-                      color: AppColors.slate100,
-                    ),
-                    const SizedBox(height: 24),
-                    
                     if (authState is AuthAuthenticated) ...[
-                      _buildProfileDetail(
-                        LucideIcons.briefcase, 
-                        'Investor Type', 
-                        authState.user.investorType ?? MockSmeData.getMockInvestorProfile()['investorType'],
-                      ),
-                      if (authState.user.company != null && authState.user.company!.isNotEmpty)
+                      if (authState.user.investorType != null)
+                        _buildProfileDetail(
+                          LucideIcons.briefcase, 
+                          'Investor Type', 
+                          authState.user.investorType!,
+                        ),
+                      if (authState.user.investorType != 'Individual Investor' && authState.user.company != null && authState.user.company!.isNotEmpty)
                         _buildProfileDetail(
                           LucideIcons.building2, 
                           'Company', 
                           authState.user.company!,
-                        )
-                      else 
-                        _buildProfileDetail(
-                          LucideIcons.building2, 
-                          'Company', 
-                          MockSmeData.getMockInvestorProfile()['company'],
                         ),
-                      _buildProfileDetail(
-                        LucideIcons.dollarSign, 
-                        'Investment Range', 
-                        authState.user.investmentRange ?? MockSmeData.getMockInvestorProfile()['investmentRange'],
-                      ),
+                      if (authState.user.investmentRange != null)
+                        _buildProfileDetail(
+                          LucideIcons.dollarSign, 
+                          'Investment Range', 
+                          authState.user.investmentRange!,
+                        ),
                       if (authState.user.sectors != null && authState.user.sectors!.isNotEmpty)
                         _buildProfileDetail(
                           LucideIcons.layoutGrid, 
                           'Interests', 
                           authState.user.sectors!.join(', '),
-                        )
-                      else
-                        _buildProfileDetail(
-                          LucideIcons.layoutGrid, 
-                          'Interests', 
-                          (MockSmeData.getMockInvestorProfile()['sectors'] as List<String>).join(', '),
                         ),
                     ],
                   ],
@@ -339,27 +294,11 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
   }
 
   String get _title {
-    switch (widget.variant) {
-      case 'partial':
-        return "You're Almost There!";
-      case 'returning':
-        return 'Finish Your Profile';
-      case 'first-time':
-      default:
-        return 'Complete Your Profile';
-    }
+    return 'Your profile is incomplete!';
   }
 
   String get _copyText {
-    switch (widget.variant) {
-      case 'partial':
-        return 'Complete your profile to unlock full platform features and better matching.';
-      case 'returning':
-        return 'Finish your profile to increase visibility and attract more relevant SME opportunities.';
-      case 'first-time':
-      default:
-        return 'Get started by completing your investor profile. This helps SMEs understand your investment strategy and experience.';
-    }
+    return 'Tell us what you are looking for so we can recommend the best SMEs.';
   }
 
   @override

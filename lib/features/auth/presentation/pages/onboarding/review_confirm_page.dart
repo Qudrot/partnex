@@ -202,18 +202,12 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                 borderRadius: BorderRadius.circular(AppRadius.md),
                                 border: Border.all(color: AppColors.trustBlue.withValues(alpha: 0.3), width: AppSizes.borderThin),
                               ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    LucideIcons.fileText,
-                                    color: AppColors.trustBlue,
-                                    size: AppSizes.iconSmd,
-                                  ),
-                                  SizedBox(width: AppSpacing.smd),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Extracted Financial Profile',
@@ -222,25 +216,15 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                             color: AppColors.slate900,
                                           ),
                                         ),
-                                        SizedBox(height: AppSpacing.xs),
-                                        Text(
-                                          'The financial values below were intelligently extracted directly from your document.',
-                                          style: AppTypography.textTheme.bodySmall?.copyWith(
-                                            color: AppColors.slate600,
+                                        IconButton(
+                                          icon: const Icon(
+                                            LucideIcons.info,
+                                            color: AppColors.trustBlue,
+                                            size: AppSizes.iconSmd,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      LucideIcons.info,
-                                      color: AppColors.trustBlue,
-                                      size: AppSizes.iconSmd,
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    onPressed: () {
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          onPressed: () {
                                       showDialog(
                                         context: context,
                                         builder: (ctx) => AlertDialog(
@@ -267,6 +251,15 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                   ),
                                 ],
                               ),
+                                    SizedBox(height: AppSpacing.xs),
+                                    Text(
+                                      'The financial values below were intelligently extracted directly from your document.',
+                                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                                        color: AppColors.slate600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             ),
                           ),
 

@@ -310,9 +310,9 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                           const Icon(
                             LucideIcons.lock,
                             size: 16,
-                            color: AppColors.successGreen,
+                            color: AppColors.slate600,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               'Your data is secure and encrypted. We never share your information.',

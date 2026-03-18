@@ -113,11 +113,11 @@ class FaqPage extends StatelessWidget {
       child: Theme(
         data: ThemeData(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          iconColor: AppColors.trustBlue,
+          iconColor: AppColors.slate900,
           collapsedIconColor: AppColors.slate400,
           childrenPadding: EdgeInsets.only(
-            left: AppSpacing.xl,
-            right: AppSpacing.xl,
+            left: AppSpacing.md,
+            right: AppSpacing.md,
             bottom: AppSpacing.xl,
           ),
           title: Text(
