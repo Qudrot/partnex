@@ -8,7 +8,7 @@ class ApiClient {
   late final Dio dio;
 
   /// The base URL for the backend.
-  static const String baseUrl = 'https://partnex-backend.onrender.com';
+  static const String baseUrl = 'https://partnex-backend-fnw4.onrender.com';
 
   /// In-memory token cache — survives hot-reloads within a single session.
   /// Populated by [setToken] immediately after login/signup.

@@ -137,7 +137,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                         children: [
                           // Question 1: Investor Type
                           Text(
-                            'What type of investor are you?',
+                            'What type of investor are you? *',
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -152,7 +152,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                           if (_investorType == 'Fund / Institution' || _investorType == 'Corporate') ...[
                             const SizedBox(height: AppSpacing.md),
                             CustomInputField(
-                              label: 'Company Name',
+                              label: 'Company Name *',
                               controller: _companyController,
                               placeholder: 'e.g., Acme Ventures',
                               onChanged: (_) => setState(() {}),
@@ -169,7 +169,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
 
                           // Question 2: Investment Range
                           Text(
-                            "What's your investment range?",
+                            "What's your investment range? *",
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

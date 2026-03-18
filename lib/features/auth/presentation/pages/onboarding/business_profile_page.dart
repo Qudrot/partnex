@@ -40,6 +40,7 @@ class BusinessProfilePage extends StatefulWidget {
 
 class _BusinessProfilePageState extends State<BusinessProfilePage> {
   final _formKey = GlobalKey<FormState>();
+  bool _navigateToAnalysis = false;
 
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
@@ -145,8 +146,16 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       body: SafeArea(
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, authState) {
+            if (!ModalRoute.of(context)!.isCurrent) return;
             if (authState is SmeProfileSubmittedSuccess) {
-              uiService.navigateTo(const AnalysisStatePage());
+              if (widget._inEditMode && !_navigateToAnalysis) {
+                uiService.showSnackBar('Your profile has been successfully updated.');
+                uiService.goBack();
+              } else {
+                uiService.navigateTo(const AnalysisStatePage());
+              }
+            } else if (authState is SmeProfileSubmissionError) {
+              uiService.showSnackBar(authState.message, isError: true);
             }
           },
           builder: (context, authState) {
@@ -176,7 +185,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                       child: Column(
                         children: [
                           CustomInputField(
-                            label: 'Business Name',
+                            label: 'Business Name *',
                             placeholder: 'e.g., Acme Manufacturing',
                             controller: _nameController,
                             onChanged: _onFieldChanged,
@@ -191,7 +200,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           ),
                           SizedBox(height: AppSpacing.lg),
                           CustomDropdownField(
-                            label: 'Industry/Sector',
+                            label: 'Industry/Sector *',
                             placeholder: 'Select industry...',
                             value: _selectedIndustry,
                             items: _industries,
@@ -207,7 +216,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           if (_selectedIndustry == 'Other') ...[
                             SizedBox(height: AppSpacing.lg),
                             CustomInputField(
-                              label: 'Specific Industry',
+                              label: 'Specific Industry *',
                               placeholder: 'e.g., Renewable Energy',
                               controller: _otherIndustryController,
                               onChanged: _onFieldChanged,
@@ -221,7 +230,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           ],
                           SizedBox(height: AppSpacing.lg),
                           CustomInputField(
-                            label: 'Location',
+                            label: 'Location *',
                             placeholder: 'e.g., Lagos, Nigeria',
                             controller: _locationController,
                             onChanged: _onFieldChanged,
@@ -234,7 +243,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           ),
                           SizedBox(height: AppSpacing.lg),
                           CustomInputField(
-                            label: 'Years of Operation',
+                            label: 'Years of Operation *',
                             placeholder: 'e.g., 5',
                             controller: _yearsController,
                             onChanged: _onFieldChanged,
@@ -249,7 +258,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                           ),
                           SizedBox(height: AppSpacing.lg),
                           CustomInputField(
-                            label: 'Number of Employees',
+                            label: 'Number of Employees *',
                             placeholder: 'e.g., 25',
                             controller: _employeesController,
                             onChanged: _onFieldChanged,
@@ -326,6 +335,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                               );
 
                               if (widget._inEditMode) {
+                                _navigateToAnalysis = meaningfulChanged;
                                 // Save to backend
                                 final newState = profileCubit.state;
                                 context.read<AuthBloc>().add(
@@ -334,13 +344,6 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                                     shouldGenerateScore: meaningfulChanged,
                                   ),
                                 );
-                                
-                                if (meaningfulChanged) {
-                                  // Navigating to AnalysisStatePage happens in the BlocListener
-                                } else {
-                                  uiService.showSnackBar('Your profile has been successfully updated.');
-                                  uiService.goBack();
-                                }
                               } else if (widget.isDocumentUpload) {
                                 uiService.navigateTo(
                                   const ReviewConfirmPage(

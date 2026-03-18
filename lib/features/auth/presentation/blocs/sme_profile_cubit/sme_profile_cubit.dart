@@ -290,6 +290,10 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
     // Note: businessName is usually the name field if identity is SME
   }
 
+  void updateSharingPolicy(bool allow) {
+    emit(state.copyWith(allowSharing: allow));
+  }
+
   void reset() {
     emit(const SmeProfileState());
   }

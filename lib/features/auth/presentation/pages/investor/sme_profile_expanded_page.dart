@@ -11,6 +11,10 @@ import 'package:partnex/core/theme/widgets/sme_bio_contact_card.dart';
 import 'package:partnex/core/utils/url_helper.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_full_bio_page.dart';
+import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
+import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnex/core/services/ui_service.dart';
 
 
 // ---------------------------------------------------------------------------
@@ -612,31 +616,33 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                         variant: ButtonVariant.primary,
                       ),
                     ),
-                    // const SizedBox(width: 12),
-                    // Expanded(
-                    //   child: SizedBox(
-                    //     height: 44,
-                    //     child: ElevatedButton(
-                    //       onPressed: _navigateToEvidence,
-                    //       style: ElevatedButton.styleFrom(
-                    //         backgroundColor: AppColors.slate100,
-                    //         elevation: 0,
-                    //         side: BorderSide(color: AppColors.slate300),
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(8),
-                    //         ),
-                    //       ),
-                    //       child: Text(
-                    //         'Deep Dive',
-                    //         style: AppTypography.textTheme.labelLarge?.copyWith(
-                    //           color: AppColors.slate900,
-                    //           fontSize: 14,
-                    //           fontWeight: FontWeight.w600,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: ElevatedButton(
+                          onPressed: () => context
+                              .read<DiscoveryCubit>()
+                              .viewDeepDiveEvidence(widget.sme),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.slate100,
+                            elevation: 0,
+                            side: BorderSide(color: AppColors.slate300),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Deep Dive',
+                            style: AppTypography.textTheme.labelLarge?.copyWith(
+                              color: AppColors.slate900,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     // const SizedBox(width: 12),
                     // SizedBox(
                     //   width: 44,

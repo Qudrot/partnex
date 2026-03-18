@@ -69,6 +69,7 @@ class SmeCardData {
   final String riskLevel;
   final DateTime generatedAt;
   final DataSource dataSource;
+  final bool allowSharing;
   
   final String? website;
   final String? bio;
@@ -259,6 +260,7 @@ class SmeCardData {
     required this.riskLevel,
     required this.generatedAt,
     this.dataSource = DataSource.selfReported,
+    this.allowSharing = true,
     this.website,
     this.bio,
     this.contactPersonName,
@@ -341,6 +343,7 @@ class SmeCardData {
         (e) => e.name == (map['data_source'] ?? map['dataSource'] ?? 'selfReported'),
         orElse: () => DataSource.selfReported,
       ),
+      allowSharing: map['allowSharing'] ?? map['allow_sharing'] ?? true,
       website: map['website']?.toString() ?? map['websiteUrl']?.toString(),
       bio: map['bio']?.toString() ?? map['description']?.toString(),
       contactPersonName: map['contact_person_name']?.toString() ?? map['contactPersonName']?.toString() ?? map['name']?.toString(),

@@ -111,6 +111,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!ModalRoute.of(context)!.isCurrent) return;
         if (state is SmeProfileSubmittedSuccess) {
           context.read<ScoreCubit>().loadScore(state.score);
           uiService.navigateTo(const AnalysisStatePage());

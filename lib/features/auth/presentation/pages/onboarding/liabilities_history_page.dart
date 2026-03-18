@@ -137,6 +137,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, authState) {
+        if (!ModalRoute.of(context)!.isCurrent) return;
         if (authState is SmeProfileSubmittedSuccess && widget.isEditing) {
           // If we were editing, we move to analysis page because everything here is meaningful
           uiService.navigateTo(const AnalysisStatePage());
@@ -200,7 +201,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       const SizedBox(height: 16),
 
                       CustomCurrencyField(
-                        label: 'Total Outstanding Liabilities',
+                        label: 'Total Outstanding Liabilities *',
                         placeholder: 'e.g., 200,000',
                         controller: _totalLiabilitiesController,
                         onChanged: _onFieldChanged,
@@ -218,7 +219,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       const SizedBox(height: 20),
 
                       CustomCurrencyField(
-                        label: 'Outstanding Loans',
+                        label: 'Outstanding Loans *',
                         placeholder: 'e.g., 100,000',
                         controller: _outstandingLoansController,
                         onChanged: _onFieldChanged,
@@ -257,7 +258,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       const SizedBox(height: 16),
 
                       CustomYesNoField(
-                        label: 'Have you received prior funding?',
+                        label: 'Have you received prior funding? *',
                         value: _hasPriorFunding,
                         onChanged: (val) {
                           setState(() => _hasPriorFunding = val);
@@ -268,7 +269,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                         Column(
                           children: [
                             CustomCurrencyField(
-                              label: 'Funding Amount',
+                              label: 'Funding Amount *',
                               placeholder: 'e.g., 100,000',
                               controller: _fundingAmountController,
                               onChanged: _onFieldChanged,
@@ -289,7 +290,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                             ),
                             const SizedBox(height: 20),
                             CustomInputField(
-                              label: 'Funding Source',
+                              label: 'Funding Source *',
                               placeholder:
                                   'e.g., Venture Capital, Angel Investor',
                               controller: _fundingSourceController,
@@ -307,7 +308,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                             ),
                             const SizedBox(height: 20),
                             CustomInputField(
-                              label: 'Year of Funding',
+                              label: 'Year of Funding *',
                               placeholder: 'e.g., 2022',
                               controller: _fundingYearController,
                               onChanged: _onFieldChanged,

@@ -168,7 +168,7 @@ class _SignupPageState extends State<SignupPage> {
                             SizedBox(height: AppSpacing.xl),
                             
                             CustomInputField(
-                              label: 'Full Name',
+                              label: 'Full Name *',
                               placeholder: 'John Doe',
                               controller: _nameController,
                               validator: (value) {
@@ -192,7 +192,7 @@ class _SignupPageState extends State<SignupPage> {
                             SizedBox(height: AppSpacing.md),
                             
                             CustomInputField(
-                              label: 'Email Address',
+                              label: 'Email Address *',
                               placeholder: 'you@example.com',
                               controller: _emailController,
                               validator: (value) {
@@ -209,7 +209,7 @@ class _SignupPageState extends State<SignupPage> {
                             SizedBox(height: AppSpacing.md),
                             
                             CustomInputField(
-                              label: 'Password',
+                              label: 'Password *',
                               placeholder: '········',
                               controller: _passwordController,
                               obscureText: _obscurePassword,
@@ -262,7 +262,7 @@ class _SignupPageState extends State<SignupPage> {
                             SizedBox(height: AppSpacing.md),
                           
                             CustomInputField(
-                              label: 'Confirm Password',
+                              label: 'Confirm Password *',
                               placeholder: '········',
                               controller: _confirmPasswordController,
                               obscureText: _obscureConfirmPassword,

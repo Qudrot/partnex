@@ -131,6 +131,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!ModalRoute.of(context)!.isCurrent) return;
         if (state is SmeProfileSubmittedSuccess) {
           context.read<ScoreCubit>().loadScore(state.score);
           Navigator.push(context, MaterialPageRoute(builder: (_) => const AnalysisStatePage()));

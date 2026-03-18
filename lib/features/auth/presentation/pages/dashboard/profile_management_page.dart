@@ -281,11 +281,12 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                         _ToggleTile(
                           title: 'Data Sharing with Investors',
                           subtitle:
-                              'Allow verified investors to view your score',
+                              'Allow verified investors to view and download your uploaded bank statements',
                           icon: LucideIcons.shield,
-                          value: _dataPrivacyEnabled,
-                          onChanged: (val) =>
-                              setState(() => _dataPrivacyEnabled = val),
+                          value: profileState.allowSharing,
+                          onChanged: (val) => context
+                              .read<SmeProfileCubit>()
+                              .updateSharingPolicy(val),
                         ),
                         Divider(height: 1, color: AppColors.slate200),
                         _ToggleTile(

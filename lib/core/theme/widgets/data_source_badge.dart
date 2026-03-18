@@ -22,7 +22,7 @@ class DataSourceBadge extends StatelessWidget {
     Color borderColor = AppColors.slate200;
 
     if (isUploaded || isBank) {
-      label = isBank ? 'Bank Data' : 'Uploaded Data';
+      label = 'Bank Data';
       icon = isBank ? LucideIcons.landmark : LucideIcons.fileCheck2;
       color = AppColors.trustBlue;
       bgColor = AppColors.trustBlue.withValues(alpha: 0.08);

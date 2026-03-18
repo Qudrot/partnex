@@ -4,8 +4,13 @@ import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 
+import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
+import 'package:intl/intl.dart';
+
 class DeepDiveEvidencePage extends StatelessWidget {
-  const DeepDiveEvidencePage({super.key});
+  final SmeCardData sme;
+  const DeepDiveEvidencePage({super.key, required this.sme});
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +53,8 @@ class DeepDiveEvidencePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.successGreen.withValues(alpha: 0.1),
-                border: Border.all(color: AppColors.successGreen),
+                color: sme.scoreColor.withValues(alpha: 0.1),
+                border: Border.all(color: sme.scoreColor),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Column(
@@ -67,19 +72,19 @@ class DeepDiveEvidencePage extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.neutralWhite.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: AppColors.successGreen),
+                          border: Border.all(color: sme.scoreColor),
                         ),
                         child: Text(
-                          'Low Risk',
+                          sme.riskLevel,
                           style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: AppColors.successGreen,
+                            color: sme.scoreColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -88,7 +93,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Acme Manufacturing demonstrates strong financial health, consistent revenue growth, and reliable payment behavior. Low risk profile suitable for investment.',
+                    '${sme.companyName} demonstrates ${sme.riskLevel.toLowerCase()} risk based on current ${sme.dataSource == DataSource.selfReported ? 'self-reported' : 'bank-verified'} indicators. ${sme.bio ?? ""}',
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       color: AppColors.slate700,
                       fontSize: 12,
@@ -103,43 +108,43 @@ class DeepDiveEvidencePage extends StatelessWidget {
             // Evidence Sections (Expandable)
             _buildEvidenceSection(
               title: 'Revenue Consistency',
-              contribution: '+15% impact on score',
+              contribution: sme.revenueTrendText,
+              contributionColor: sme.revenueTrendColor,
               evidenceExplanation:
-                  'Strong revenue consistency with low volatility across 3 years.',
+                  'Revenue trajectory based on ${sme.dataSource == DataSource.selfReported ? 'manual entry' : 'bank statement analysis'}.',
               chartPlaceholderText:
-                  '[Line Chart: Year 1: ₦500K, Year 2: ₦600K, Year 3: ₦750K]',
+                  '[Trend: ${sme.revenueTrendSignal} | Avg: ₦${(sme.annualRevenue / 12).toStringAsFixed(0)}]',
               metrics: [
-                {'YoY Growth': '+22%'},
-                {'Monthly Avg': '₦1.2M'},
+                {'YoY Trajectory': sme.revenueTrendText},
+                {'Annual Revenue': '₦${NumberFormat('#,###').format(sme.annualRevenue)}'},
               ],
             ),
             const SizedBox(height: 12),
             _buildEvidenceSection(
               title: 'Expense Ratio',
-              contribution: '-5% impact',
-              contributionColor: AppColors.dangerRed,
+              contribution: sme.expenseRatioText,
+              contributionColor: sme.expenseRatioColor,
               evidenceExplanation:
-                  'Operating expenses have grown slightly faster than revenue.',
+                  'Operating efficiency and profit margin calculated from ${sme.dataSource == DataSource.selfReported ? 'self-reported expenses' : 'detected outflows'}.',
               chartPlaceholderText:
-                  '[Pie Chart: COGS 40%, OpEx 35%, Admin 15%, Other 10%]',
+                  '[Profit Margin: ${sme.profitMargin.toStringAsFixed(1)}%]',
               metrics: [
-                {'Monthly Revenue': '₦1.2M'},
-                {'Monthly Expenses': '₦800K'},
-                {'Profit Margin': '33%'},
+                {'Monthly Expenses': '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'},
+                {'Profit Margin': '${sme.profitMargin.toStringAsFixed(1)}%'},
               ],
             ),
             const SizedBox(height: 12),
             _buildEvidenceSection(
               title: 'Repayment Behavior',
-              contribution: '+10% impact',
+              contribution: sme.liabilitiesRatioText,
+              contributionColor: sme.liabilitiesRatioColor,
               evidenceExplanation:
-                  'Perfect payment history; 24 of 24 payments on time.',
+                  'Debt obligations and repayment history as ${sme.dataSource == DataSource.selfReported ? 'declared by the SME' : 'verified via bank records'}.',
               chartPlaceholderText:
-                  '[Bar Chart: Timeline Jan-Dec 100% on time]',
+                  '[Liabilities Ratio: ${sme.liabilitiesRatio.toStringAsFixed(1)}%]',
               metrics: [
-                {'Total Obligations': '24'},
-                {'On-Time Payments': '24 (100%)'},
-                {'Reliability Score': '100/100'},
+                {'Total Liabilities': '₦${NumberFormat('#,###').format(sme.liabilities)}'},
+                {'Risk Signal': sme.liabilitiesRatioSignal},
               ],
             ),
 
@@ -155,14 +160,13 @@ class DeepDiveEvidencePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildFinancialTableGroup(
-              'Income Statement (Last 3 Years)',
-              ['Metric', 'Year 1', 'Year 2', 'Year 3'],
+              'Key Financial Metrics (Self-Reported)',
+              ['Metric', 'Amount'],
               [
-                ['Revenue', '500,000', '600,000', '750,000'],
-                ['COGS', '200,000', '240,000', '300,000'],
-                ['Gross Profit', '300,000', '360,000', '450,000'],
-                ['Op. Expenses', '150,000', '180,000', '210,000'],
-                ['Net Profit', '150,000', '180,000', '240,000'],
+                ['Annual Revenue', '₦${NumberFormat('#,###').format(sme.annualRevenue)}'],
+                ['Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'],
+                ['Total Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'],
+                ['Net Profit (Est)', '₦${NumberFormat('#,###').format(sme.annualRevenue - (sme.monthlyExpenses * 12))}'],
               ],
             ),
             const SizedBox(height: 24),
@@ -197,16 +201,50 @@ class DeepDiveEvidencePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildDocumentCard(
-              title: 'Bank Statement (Oct - Dec)',
-              metadata: '2.3 MB • Feb 20, 2026',
-              iconData: LucideIcons.fileText,
-            ),
-            _buildDocumentCard(
-              title: 'CAC Certificate',
-              metadata: '1.8 MB • Feb 18, 2026',
-              iconData: LucideIcons.image,
-            ),
+            if (sme.dataSource != DataSource.selfReported) ...[
+              if (sme.allowSharing) ...[
+                _buildDocumentCard(
+                  title: 'Bank Statement (Extracted)',
+                  metadata: 'Verified • ${DateFormat('MMM d, yyyy').format(sme.generatedAt)}',
+                  iconData: LucideIcons.fileText,
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.slate100,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.slate200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(LucideIcons.lock, size: 20, color: AppColors.slate400),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'The SME has turned off direct document viewing/downloading.',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.slate600,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ] else ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'This profile is based on manual data entry. No bank statements were provided for auto-extraction.',
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: AppColors.slate500,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
 
             const SizedBox(height: 32),
             CustomButton(

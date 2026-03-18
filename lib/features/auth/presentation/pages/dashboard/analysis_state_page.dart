@@ -162,7 +162,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
 
       Future.delayed(const Duration(milliseconds: 600), () {
         if (!mounted) return;
-        uiService.replaceWith(const CredibilityDashboardPage());
+        uiService.clearAndNavigateTo(const CredibilityDashboardPage());
       });
     }
   }
@@ -595,7 +595,7 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
     
     // Randomize visual properties
     final value = _random.nextInt(90) + 10; // 10 to 99
-    final sizes = [32.0, 16.0, 24.0, 8.0, 12.0, 12.0, 20.0];
+    final sizes = [32.0, 16.0, 24.0, 48.0, 20.0, 12.0, 40.0];
     final fontSize = sizes[_random.nextInt(sizes.length)];
     final weights = [FontWeight.w600, FontWeight.w700, FontWeight.w800, FontWeight.w900, FontWeight.bold];
     final fontWeight = weights[_random.nextInt(weights.length)];

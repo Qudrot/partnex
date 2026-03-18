@@ -9,7 +9,6 @@ import 'package:partnex/features/auth/data/models/user_model.dart';
 import 'package:partnex/features/auth/data/models/credibility_score.dart';
 import 'package:partnex/features/auth/data/repositories/auth_repository.dart';
 
-import 'package:partnex/features/auth/data/repositories/mock_sme_data.dart';
 
 /// The official repository that connects your Flutter UI to your
 /// local Express.js & MySQL backend.
@@ -445,24 +444,35 @@ class ApiAuthRepository implements AuthRepository {
         throw Exception('Your session has expired. Please sign in again to continue.');
       }
 
+      // 1. ADD THE LIVE API CALL
+      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
+      
+      // Map your Flutter UI data to the exact TiDB database columns
+      final Map<String, dynamic> payload = {
+        "full_name": data['name'] ?? data['fullName'] ?? "Investor", 
+        "organization": data['organization'],
+        "location": data['location'],
+        "investor_type": data['role'], // Your UI saves the type as 'role'
+        "preferred_sectors": data['sectors'],
+        "typical_ticket_size": data['ticketSize']
+      };
 
-      // Mocking the Backend Profile Save to unblock the UI
-      // In the future, this should be an apiClient.dio.post('/api/investor/profile')
-      if (kDebugMode) {
-        print('Mocking investor profile submission via secure storage: $data');
-      }
+      await apiClient.dio.post(
+        '/api/investor/profile',
+        data: payload,
+        options: authOptions,
+      );
 
-      // Save locally to simulate persistence
+      // 2. Keep the local secure storage saves for fast UI caching!
       await _secureStorage.write(key: 'investor_type', value: data['role']);
       await _secureStorage.write(key: 'preferred_sectors', value: jsonEncode(data['sectors']));
       await _secureStorage.write(key: 'typical_ticket_size', value: data['ticketSize']);
-      
-      // Update local role to investor
       await _secureStorage.write(key: 'user_role', value: 'investor');
       await _secureStorage.write(key: 'profile_completed', value: 'true');
       try {
         await _secureStorage.write(key: 'cached_investor_profile', value: jsonEncode(data));
       } catch (_) {}
+      
     } catch (e) {
       if (e is DioException) {
         throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'We couldn\'t save your profile preferences. Please try again.');
@@ -659,58 +669,27 @@ class ApiAuthRepository implements AuthRepository {
       if (token == null || token.isEmpty) {
         token = await _secureStorage.read(key: 'jwt_token');
       }
-      final authOptions = Options(
-        headers: {'Authorization': 'Bearer $token'},
-        validateStatus: (status) => true, // Allow us to handle 404/500 manually for fallbacks
-      );
-
-      final List<String> endpoints = [
-        '/api/smes',            // Based on original code logic
-        '/api/investor/smes',   // Intended endpoint
-        '/api/sme/all',         // Potential fallback
-        '/api/sme/list',        // Potential fallback
-        '/api/sme',             // Singular base
-        '/api/investors/smes',  // Plural investors
-      ];
-
-      for (String endpoint in endpoints) {
-        try {
-          if (kDebugMode) print('ApiClient: Probing endpoint: $endpoint');
-          final response = await apiClient.dio.get(endpoint, options: authOptions);
-          
-          if (response.statusCode == 200) {
-            if (kDebugMode) print('ApiClient: SUCCESS on $endpoint');
-            return _parseSmeResponse(response.data);
-          } else {
-            if (kDebugMode) {
-              print('ApiClient: FAILED $endpoint with ${response.statusCode}');
-              print('Response Body: ${response.data}');
-            }
-          }
-        } catch (e) {
-          if (kDebugMode) print('ApiClient: ERROR reaching $endpoint: $e');
-        }
+      if (token == null || token.isEmpty) {
+        throw Exception('Your session has expired. Please sign in again.');
       }
 
-      // -----------------------------------------------------------------------
-      // MOCK FALLBACK: Unblock investors if backend discovery is not ready
-      // -----------------------------------------------------------------------
-      if (kDebugMode) {
-        print('ApiClient: All discovery endpoints failed. ACTIVATING MOCK FALLBACK.');
+      final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
+
+      // Directly hit the correct Render endpoint
+      final response = await apiClient.dio.get('/api/investor/smes', options: authOptions);
+      
+      if (response.statusCode == 200) {
+        if (kDebugMode) print('Live SME Feed loaded successfully!');
+        return _parseSmeResponse(response.data);
+      } else {
+        throw Exception('Failed to load SMEs');
       }
-      return _getMockSmes();
 
     } catch (e) {
       if (kDebugMode) print('Sme Discovery Final Error: $e');
-      // If even mock generation somehow fails, return empty list rather than crashing
-      return [];
+      // Throw a real error so the UI shows an empty state/error instead of fake data
+      throw Exception('Unable to load SME feed. Please check your connection.');
     }
-  }
-
-  /// High-fidelity mock SMEs to provide a rich UI experience when the backend
-  /// is under development or unreachable.
-  List<Map<String, dynamic>> _getMockSmes() {
-    return MockSmeData.getMockSmes();
   }
 
   /// Helper to robustly parse various list formats from the backend

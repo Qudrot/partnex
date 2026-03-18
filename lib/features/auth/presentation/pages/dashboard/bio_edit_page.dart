@@ -95,6 +95,7 @@ class _BioEditPageState extends State<BioEditPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!ModalRoute.of(context)!.isCurrent) return;
         if (state is SmeProfileSubmittedSuccess) {
           setState(() => _isSaving = false);
           uiService.showSnackBar('Profile updated successfully');

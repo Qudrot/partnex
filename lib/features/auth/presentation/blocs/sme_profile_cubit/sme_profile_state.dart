@@ -47,6 +47,7 @@ class SmeProfileState extends Equatable {
   final CsvProcessingStatus csvProcessingStatus;
   final String? csvErrorMessage;
   final DataSource dataSource;
+  final bool allowSharing;
 
   // Bio & Social Links
   final String bio;
@@ -93,6 +94,7 @@ class SmeProfileState extends Equatable {
     this.csvProcessingStatus = CsvProcessingStatus.initial,
     this.csvErrorMessage,
     this.dataSource = DataSource.selfReported,
+    this.allowSharing = true,
     this.bio = '',
     this.websiteUrl = '',
     this.whatsappNumber = '',
@@ -144,6 +146,7 @@ class SmeProfileState extends Equatable {
     String? contactPosition,
     String? phoneNumber,
     String? email,
+    bool? allowSharing,
   }) {
     return SmeProfileState(
       businessName: businessName ?? this.businessName,
@@ -178,6 +181,7 @@ class SmeProfileState extends Equatable {
       csvProcessingStatus: csvProcessingStatus ?? this.csvProcessingStatus,
       csvErrorMessage: csvErrorMessage ?? this.csvErrorMessage,
       dataSource: dataSource ?? this.dataSource,
+      allowSharing: allowSharing ?? this.allowSharing,
       bio: bio ?? this.bio,
       websiteUrl: websiteUrl ?? this.websiteUrl,
       whatsappNumber: whatsappNumber ?? this.whatsappNumber,
@@ -221,6 +225,7 @@ class SmeProfileState extends Equatable {
       'areDocumentsComplete': areDocumentsComplete,
       'areDocumentsConsistent': areDocumentsConsistent,
       'dataSource': dataSource.name,
+      'allowSharing': allowSharing,
       'bio': bio,
       'websiteUrl': websiteUrl,
       'whatsappNumber': whatsappNumber,
@@ -354,6 +359,7 @@ class SmeProfileState extends Equatable {
         csvProcessingStatus,
         csvErrorMessage,
         dataSource,
+        allowSharing,
         bio,
         websiteUrl,
         whatsappNumber,

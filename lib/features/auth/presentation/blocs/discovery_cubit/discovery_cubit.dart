@@ -16,8 +16,8 @@ class DiscoveryCubit extends Cubit<DiscoveryState> {
     uiService.navigateTo(SmeProfileExpandedPage(sme: sme));
   }
 
-  void viewDeepDiveEvidence() {
-    uiService.navigateTo(const DeepDiveEvidencePage());
+  void viewDeepDiveEvidence(SmeCardData sme) {
+    uiService.navigateTo(DeepDiveEvidencePage(sme: sme));
   }
 
   Future<void> loadSmes() async {

@@ -208,7 +208,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Year',
+                    isOptional ? 'Year' : 'Year *',
                     style: AppTypography.textTheme.labelLarge?.copyWith(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -244,7 +244,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Revenue',
+                    isOptional ? 'Revenue' : 'Revenue *',
                     style: AppTypography.textTheme.labelLarge?.copyWith(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -294,6 +294,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, authState) {
+        if (!ModalRoute.of(context)!.isCurrent) return;
         if (authState is SmeProfileSubmittedSuccess && widget.isEditing) {
           // If we were editing, we move to analysis page because everything here is meaningful
           uiService.navigateTo(const AnalysisStatePage());
@@ -477,7 +478,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                       SizedBox(height: AppSpacing.md),
 
                       Text(
-                        'Monthly Expenses',
+                        'Monthly Expenses *',
                         style: AppTypography.textTheme.labelLarge?.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

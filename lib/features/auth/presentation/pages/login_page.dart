@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: AppSpacing.xl),
                               
                               CustomInputField(
-                                label: 'Email Address',
+                                label: 'Email Address *',
                                 placeholder: 'you@example.com',
                                 controller: _emailController,
                                 autofillHints: const [AutofillHints.email],
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: AppSpacing.md),
                               
                               CustomInputField(
-                                label: 'Password',
+                                label: 'Password *',
                                 placeholder: '········',
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
