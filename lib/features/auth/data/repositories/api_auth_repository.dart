@@ -20,7 +20,6 @@ class ApiAuthRepository implements AuthRepository {
   @override
   Future<UserModel> login({required String email, required String password}) async {
     try {
-      // Calls POST /auth/login on your local backend
       final response = await apiClient.dio.post(
         '/api/auth/login',
         data: {
@@ -29,21 +28,17 @@ class ApiAuthRepository implements AuthRepository {
         },
       );
 
-      // Your backend returns: { user: { id, email, role }, token: "..." }
-      // Log the full response to diagnose any token key mismatches
       if (kDebugMode) {
         print('LOGIN RESPONSE DATA: ${response.data}');
       }
 
       final userData = response.data['user'];
       
-      // We map the string role from the backend into our Flutter Enum
-      UserRole parsedRole = UserRole.sme; // Default fallback
+      UserRole parsedRole = UserRole.sme; 
       final lowerRole = userData['role']?.toString().toLowerCase();
       if (lowerRole == 'sme') parsedRole = UserRole.sme;
       if (lowerRole == 'investor') parsedRole = UserRole.investor;
 
-      // Parse profile completion
       bool isProfileCompleted = false;
       if (userData.containsKey('has_score')) {
           isProfileCompleted = userData['has_score'] == true || userData['has_score'] == 1;
@@ -51,14 +46,12 @@ class ApiAuthRepository implements AuthRepository {
           isProfileCompleted = userData['profile_completed'] == true || userData['profile_completed'] == 1;
       }
 
-      // Resilient token extraction: check multiple possible field names
       final token = response.data['token'] ??
           response.data['accessToken'] ??
           response.data['access_token'] ??
           response.data['jwt'];
 
       if (token != null && (token as String).isNotEmpty) {
-        // Clear all user-specific caches on new login to prevent "data leaks"
         await _secureStorage.delete(key: 'cached_credibility_score');
         await _secureStorage.delete(key: 'cached_sme_profile');
         await _secureStorage.delete(key: 'cached_investor_profile');
@@ -67,10 +60,8 @@ class ApiAuthRepository implements AuthRepository {
         await _secureStorage.write(key: 'user_role', value: parsedRole.name);
         apiClient.setToken(token);
 
-        // Double-check profile completion if it wasn't clear from login response
         if (!isProfileCompleted && parsedRole == UserRole.sme) {
           try {
-            // Since GET /api/sme/profile often 404s, try fetching the score instead
             await getMyScore();
             isProfileCompleted = true;
             if (kDebugMode) print('Login: Score fetched successfully. Profile is complete.');
@@ -98,7 +89,6 @@ class ApiAuthRepository implements AuthRepository {
     }
   }
 
-  /// UX-friendly error mapper for Dio exceptions
   dynamic _handleDioError(dynamic e) {
     if (e is DioException) {
       final d = e.response?.data;
@@ -143,7 +133,6 @@ class ApiAuthRepository implements AuthRepository {
     String? position,
   }) async {
     try {
-      // Calls POST /auth/register on your local backend
       final response = await apiClient.dio.post(
         '/api/auth/register',
         data: {
@@ -155,21 +144,17 @@ class ApiAuthRepository implements AuthRepository {
         },
       );
 
-      // Log the full response to diagnose any token key mismatches
       if (kDebugMode) {
         print('SIGNUP RESPONSE DATA: ${response.data}');
       }
 
-      // Same payload extraction as login
       final userData = response.data['user'];
       
-      // Parse role from backend (or fallback to what was requested)
       UserRole parsedRole = role.toLowerCase() == 'investor' ? UserRole.investor : UserRole.sme;
       final lowerBackendRole = userData['role']?.toString().toLowerCase();
       if (lowerBackendRole == 'sme') parsedRole = UserRole.sme;
       if (lowerBackendRole == 'investor') parsedRole = UserRole.investor;
 
-      // Resilient token extraction: check multiple possible field names
       final token = response.data['token'] ??
           response.data['accessToken'] ??
           response.data['access_token'] ??
@@ -199,23 +184,15 @@ class ApiAuthRepository implements AuthRepository {
   @override
   Future<CredibilityScore> submitSmeProfile(Map<String, dynamic> data, {bool shouldGenerateScore = true}) async {
     try {
-      // Resolve the token: prefer the static in-memory cache
-      // (set at login/signup), fall back to SecureStorage (app restarts).
       String? token = apiClient.getCachedToken();
       if (token == null || token.isEmpty) {
         token = await _secureStorage.read(key: 'jwt_token');
-      }
-
-      if (kDebugMode) {
-        print('submitSmeProfile token resolved: ${token != null ? '${token.substring(0, 20)}...' : 'NULL'}');
       }
 
       if (token == null || token.isEmpty) {
         throw Exception('Your session has expired. Please sign in again to continue.');
       }
 
-      // Build explicit auth options for every protected request.
-      // This is the most reliable approach — no interceptor dependency.
       final authOptions = Options(
         headers: {'Authorization': 'Bearer $token'},
         receiveTimeout: const Duration(seconds: 180),
@@ -245,7 +222,6 @@ class ApiAuthRepository implements AuthRepository {
         "phone_number": data['phoneNumber'],
       };
 
-      // Safely process and sort revenue years ascending (oldest first)
       List<Map<String, dynamic>> revData = [];
       if (data['annualRevenueYear1'] != null) {
         revData.add({'year': data['annualRevenueYear1'], 'amount': data['annualRevenueAmount1'] ?? 0});
@@ -257,7 +233,8 @@ class ApiAuthRepository implements AuthRepository {
         revData.add({'year': data['annualRevenueYear3'], 'amount': data['annualRevenueAmount3'] ?? 0});
       }
 
-      revData.sort((a, b) => (a['year'] as int).compareTo(b['year'] as int));
+      // THE FIX: Swap 'b' and 'a' so the newest year is always year_1
+revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
 
       if (revData.isNotEmpty) {
         payload["annual_revenue_year_1"] = revData[0]['year'];
@@ -277,12 +254,7 @@ class ApiAuthRepository implements AuthRepository {
       }
 
       try {
-        // 1. Try creating the profile first (POST)
-        await apiClient.dio.post(
-          '/api/sme/profile',
-          data: payload,
-          options: authOptions,
-        );
+        await apiClient.dio.post('/api/sme/profile', data: payload, options: authOptions);
       } catch (e) {
         if (e is DioException) {
           final statusCode = e.response?.statusCode;
@@ -291,40 +263,13 @@ class ApiAuthRepository implements AuthRepository {
               : e.response?.data?.toString().toLowerCase() ?? '';
           
           if (statusCode == 409 || statusCode == 400 || msg.contains('already exists')) {
-            if (kDebugMode) print('Profile exists, attempting UPDATE (PUT) instead...');
             try {
-              // 2. Fallback to PUT
-              await apiClient.dio.put(
-                '/api/sme/profile',
-                data: payload,
-                options: authOptions,
-              );
+              await apiClient.dio.put('/api/sme/profile', data: payload, options: authOptions);
             } catch (putError) {
               if (putError is DioException && putError.response?.statusCode == 404) {
-                 if (kDebugMode) print('PUT failed with 404, attempting PATCH instead...');
-                 // 3. Last resort: PATCH
                  try {
-                   await apiClient.dio.patch(
-                     '/api/sme/profile',
-                     data: payload,
-                     options: authOptions,
-                   );
-                 } catch (patchError) {
-                   if (patchError is DioException && patchError.response?.statusCode == 404) {
-                     if (kDebugMode) {
-                       print('PATCH also failed with 404.');
-                       print('Backend does not support profile updates. Proceeding to score generation with existing data.');
-                     }
-                     // We consume the error here and allow the execution to continue to score generation
-                   } else {
-                     rethrow;
-                   }
-                 }
-              } else if (putError is DioException && putError.response?.statusCode == 405) {
-                // Method Not Allowed
-                 if (kDebugMode) print('PUT 405 Method Not Allowed. Backend does not support updates. Proceeding to score generation.');
-              } else {
-                rethrow;
+                   await apiClient.dio.patch('/api/sme/profile', data: payload, options: authOptions);
+                 } catch (patchError) {}
               }
             }
           } else {
@@ -339,39 +284,19 @@ class ApiAuthRepository implements AuthRepository {
         await _secureStorage.write(key: 'cached_sme_profile', value: jsonEncode(data));
       } catch (_) {}
 
-      // 3. Run Credibility Score (Selective)
       if (!shouldGenerateScore) {
-        if (kDebugMode) {
-          print('SKIPPING SCORE GENERATION as requested. Fetching existing score.');
-        }
         final existingScore = await getMyScore();
-        // Cache the score for faster future loads
         await _secureStorage.write(key: 'cached_credibility_score', value: jsonEncode(existingScore.toJson()));
         return existingScore;
       }
 
-      if (kDebugMode) {
-        print('RUNNING SCORE GENERATION with payload: ${jsonEncode(payload)}');
-      }
-
-      final scoreResponse = await apiClient.dio.post(
-        '/api/score/run',
-        data: payload,
-        options: authOptions,
-      );
-      
+      final scoreResponse = await apiClient.dio.post('/api/score/run', data: payload, options: authOptions);
       final scoreData = scoreResponse.data;
-      if (kDebugMode) {
-        print('Model Version generated: ${scoreData['model_version']}');
-        print('RAW SCORE DATA: $scoreData');
-      }
 
-      // Extract risk level string and map to enum
       RiskLevel rLevel = RiskLevel.low;
       if (scoreData['risk_level'] == 'MEDIUM' || scoreData['risk_level'] == 'Medium Risk') rLevel = RiskLevel.medium;
       if (scoreData['risk_level'] == 'HIGH' || scoreData['risk_level'] == 'High Risk') rLevel = RiskLevel.high;
 
-      // Mark profile as completed locally
       await _secureStorage.write(key: 'profile_completed', value: 'true');
 
       final explanationData = scoreData['explanation'];
@@ -383,7 +308,6 @@ class ApiAuthRepository implements AuthRepository {
       }
    
       double extractScoreSafe(Map data) {
-        // Try known keys first
         final knownKeys = ['score', 'credibility_score', 'currentCredibilityScore', 'credibilityScore', 'current_credibility_score', 'totalScore', 'total_score', 'final_score', 'overall_score'];
         for (var key in knownKeys) {
           if (data[key] != null) {
@@ -392,7 +316,6 @@ class ApiAuthRepository implements AuthRepository {
             if (parsed != null) return parsed;
           }
         }
-        // Fallback: search dynamically for any key containing 'score' with a numeric value
         for (var entry in data.entries) {
           if (entry.key.toString().toLowerCase().contains('score')) {
             if (entry.value is num) return (entry.value as num).toDouble();
@@ -412,25 +335,15 @@ class ApiAuthRepository implements AuthRepository {
         generalExplanation: explanationText,
         modelVersion: scoreData['model_version']?.toString() ?? 'fallback-v1',
         calculatedAt: DateTime.now(),
-        // Look inside explanation -> model_inputs first!
         impactScore: (scoreData['explanation']?['model_inputs']?['impact_score'] as num?)?.toDouble() 
                   ?? (scoreData['impact_score'] as num?)?.toDouble() 
                   ?? 0.7,
       );
 
-      // Cache the new score
       await _secureStorage.write(key: 'cached_credibility_score', value: jsonEncode(newScore.toJson()));
-      
       return newScore;
 
     } catch (e) {
-      if (kDebugMode) {
-        print('Score Generation Error in submitSmeProfile: $e');
-        if (e is DioException) {
-           print('DioException [${e.response?.statusCode}] to ${e.requestOptions.uri}');
-           print('FULL ERROR DATA: ${e.response?.data}');
-        }
-      }
       if (e is DioException) {
         final data = e.response?.data;
         String errorMessage = 'Failed to generate credibility score.';
@@ -457,30 +370,21 @@ class ApiAuthRepository implements AuthRepository {
         throw Exception('Your session has expired. Please sign in again to continue.');
       }
 
-      // 1. ADD THE LIVE API CALL
       final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
-      
-      // Grab the user's real name so we don't overwrite it
       final currentUser = await getCurrentUser();
       final realName = data['name'] ?? data['fullName'] ?? currentUser?.name ?? "Investor";
       
-      // Map your Flutter UI data to the exact TiDB database columns
       final Map<String, dynamic> payload = {
         "full_name": realName, 
         "organization": data['company'] ?? data['organization'],
         "location": data['location'] ?? "Not explicitly listed",
-        "investor_type": data['investorType'] ?? data['role'], // Your UI saves the type as 'investorType'
+        "investor_type": data['investorType'] ?? data['role'],
         "preferred_sectors": data['sectors'],
         "typical_ticket_size": data['investmentRange'] ?? data['ticketSize']
       };
 
-      await apiClient.dio.post(
-        '/api/investor/profile',
-        data: payload,
-        options: authOptions,
-      );
+      await apiClient.dio.post('/api/investor/profile', data: payload, options: authOptions);
 
-      // 2. Keep the local secure storage saves for fast UI caching!
       await _secureStorage.write(key: 'investor_type', value: data['role']);
       await _secureStorage.write(key: 'preferred_sectors', value: jsonEncode(data['sectors']));
       await _secureStorage.write(key: 'typical_ticket_size', value: data['ticketSize']);
@@ -504,7 +408,6 @@ class ApiAuthRepository implements AuthRepository {
       final token = await _secureStorage.read(key: 'jwt_token');
       if (token == null || token.isEmpty) return null;
 
-      // Inject token into API client so auto-login restores session for future requests
       apiClient.setToken(token);
 
       final roleStr = await _secureStorage.read(key: 'user_role');
@@ -513,7 +416,6 @@ class ApiAuthRepository implements AuthRepository {
         parsedRole = UserRole.investor;
       }
 
-      // Proactively fetch the latest user data from backend to ensure real details
       try {
         if (parsedRole == UserRole.sme) {
           final profileMap = await getMySmeProfile();
@@ -546,11 +448,8 @@ class ApiAuthRepository implements AuthRepository {
             );
           }
         }
-      } catch (e) {
-        if (kDebugMode) print('Background profile fetch failed during session recovery: $e');
-      }
+      } catch (e) {}
 
-      // Fallback if network is out or profile not found
       final profileCompletedStr = await _secureStorage.read(key: 'profile_completed');
       final isProfileCompleted = profileCompletedStr == 'true';
 
@@ -563,14 +462,13 @@ class ApiAuthRepository implements AuthRepository {
         profileCompleted: isProfileCompleted,
       );
     } catch (e) {
-      if (kDebugMode) print('Error retrieving user session: $e');
       return null;
     }
   }
 
   @override
   Future<void> logout() async {
-    await _secureStorage.deleteAll(); // Clear everything: token, role, completion flags, etc.
+    await _secureStorage.deleteAll(); 
     apiClient.setToken('');
   }
 
@@ -590,7 +488,6 @@ class ApiAuthRepository implements AuthRepository {
       
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        // Unwrap the 'sme' object exactly as the Node.js backend sends it
         if (data.containsKey('sme')) {
           return data['sme'] as Map<String, dynamic>;
         }
@@ -605,7 +502,6 @@ class ApiAuthRepository implements AuthRepository {
         try {
           final cachedStr = await _secureStorage.read(key: 'cached_sme_profile');
           if (cachedStr != null && cachedStr.isNotEmpty) {
-            if (kDebugMode) print('Recovered SME Profile from SecureStorage cache.');
             return jsonDecode(cachedStr) as Map<String, dynamic>;
           }
         } catch (_) {}
@@ -630,18 +526,11 @@ class ApiAuthRepository implements AuthRepository {
         sendTimeout: const Duration(seconds: 60),
       );
 
-      // Use a GET request to silently fetch the existing data
       final response = await apiClient.dio.get('/api/sme/me', options: authOptions);
-      
       final responseData = response.data is Map ? response.data : {};
       
-      // Keep it as a Map so the extractor can search inside it!
       final smeData = responseData['sme'] ?? responseData['profile'] ?? responseData;
       final Map scoreMap = smeData['credibility'] is Map ? smeData['credibility'] : smeData;
-
-      if (kDebugMode) {
-        print('Existing Model Version retrieved: ${scoreMap['model_version'] ?? 'Cached'}');
-      }
 
       RiskLevel rLevel = RiskLevel.low;
       final riskStr = (scoreMap['risk_level'] ?? scoreMap['riskLevel'])?.toString().toUpperCase();
@@ -657,7 +546,6 @@ class ApiAuthRepository implements AuthRepository {
             if (parsed != null) return parsed;
           }
         }
-        // Even more aggressive check for any field that might be the score
         for (var entry in data.entries) {
           final lowKey = entry.key.toString().toLowerCase();
           if (lowKey.contains('score')) {
@@ -667,17 +555,19 @@ class ApiAuthRepository implements AuthRepository {
              if (parsed != null) return parsed;
           }
         }
-        
-        if (kDebugMode && data.isNotEmpty) {
-          print('WARNING: Credibility score extraction found 0.0 but map is NOT empty. Keys: ${data.keys.toList()}');
-        }
         return 0.0;
+      }
+
+      final double extractedScore = extractScoreSafe(scoreMap);
+
+      if (kDebugMode && extractedScore == 0.0 && scoreMap.isNotEmpty) {
+          print('WARNING: Credibility score extraction found 0.0 but map is NOT empty. Keys: ${scoreMap.keys.toList()}');
       }
 
       final score = CredibilityScore(
         id: scoreMap['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
         organisationId: smeData['sme_id']?.toString() ?? smeData['id']?.toString() ?? 'unknown_sme',
-        totalScore: extractScoreSafe(scoreMap),
+        totalScore: extractedScore,
         riskLevel: rLevel,
         topContributingFactors: [],
         generalExplanation: scoreMap['explanation_json']?.toString() ?? scoreMap['explanation']?.toString(),
@@ -688,44 +578,28 @@ class ApiAuthRepository implements AuthRepository {
                   ?? 0.7,
       );
 
-      // --- RECOVERY LOGIC ---
-      if (kDebugMode) {
-        print('DIAGNOSTIC: Server returned 0.0. Map empty? ${smeData.isEmpty}. Keys: ${smeData.keys.toList()}');
-      }
-
-      // Try pulling from /api/sme/profile (Some backends use this for aggregated data)
       if (score.totalScore == 0) {
         try {
-          if (kDebugMode) print('FALLBACK: Attempting GET /api/sme/profile for aggregated score...');
           final profResp = await apiClient.dio.get('/api/sme/profile', options: authOptions);
           final profData = profResp.data is Map ? profResp.data : {};
           final smePart = profData['sme'] ?? profData['profile'] ?? profData;
           final sVal = extractScoreSafe(smePart['credibility'] is Map ? smePart['credibility'] : smePart);
           if (sVal > 0) {
-             if (kDebugMode) print('FALLBACK SUCCESS: Found score $sVal in /api/sme/profile!');
              return score.copyWith(totalScore: sVal);
           }
         } catch (_) {}
       }
 
-      // Final persistence fallback: Higher Score Wins
       try {
         final cachedStr = await _secureStorage.read(key: 'cached_credibility_score');
         if (cachedStr != null && cachedStr.isNotEmpty) {
           final cached = CredibilityScore.fromJson(jsonDecode(cachedStr));
           if (score.totalScore == 0 && cached.totalScore > 0) {
-            if (kDebugMode) {
-              print('Detected server-side score loss (v2). Using local cache: ${cached.totalScore}');
-            }
             return cached;
           }
         }
-      } catch (e) {
-        if (kDebugMode) print('Error reading score cache for recovery: $e');
-      }
+      } catch (e) {}
 
-      // ONLY overwrite the cache if the server actually returned a score
-      // or if there is no cache at all.
       if (score.totalScore > 0) {
         await _secureStorage.write(key: 'cached_credibility_score', value: jsonEncode(score.toJson()));
       }
@@ -733,15 +607,9 @@ class ApiAuthRepository implements AuthRepository {
       return score;
       
     } catch(e) {
-      if (kDebugMode) {
-        print('Score Fetch Error: $e');
-      }
-      
-      // Attempt to load from cache if network fails
       try {
         final cachedScore = await _secureStorage.read(key: 'cached_credibility_score');
         if (cachedScore != null && cachedScore.isNotEmpty) {
-          if (kDebugMode) print('Recovered CredibilityScore from SecureStorage cache.');
           return CredibilityScore.fromJson(jsonDecode(cachedScore));
         }
       } catch (_) {}
@@ -754,15 +622,11 @@ class ApiAuthRepository implements AuthRepository {
   Future<void> uploadStatementOfAccount(File file) async {
     try {
       String fileName = file.path.split('/').last;
-      
       FormData formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(file.path, filename: fileName),
       });
 
-      await apiClient.dio.post(
-        '/api/soa/upload',
-        data: formData,
-      );
+      await apiClient.dio.post('/api/soa/upload', data: formData);
     } catch (e) {
       if (e is DioException) {
         throw Exception(e.response?.data['message'] ?? e.response?.data['error'] ?? 'We couldn\'t upload your statement. Please check the file format and try again.');
@@ -783,24 +647,18 @@ class ApiAuthRepository implements AuthRepository {
       }
 
       final authOptions = Options(headers: {'Authorization': 'Bearer $token'});
-
-      // Directly hit the correct Render endpoint
       final response = await apiClient.dio.get('/api/investor/smes', options: authOptions);
       
       if (response.statusCode == 200) {
-        if (kDebugMode) print('Live SME Feed loaded successfully!');
         return _parseSmeResponse(response.data);
       } else {
         throw Exception('Failed to load SMEs');
       }
-
     } catch (e) {
-      if (kDebugMode) print('Sme Discovery Final Error: $e');
       throw Exception('Unable to load SME feed. Please check your connection.');
     }
   }
 
-  /// Helper to robustly parse various list formats from the backend
   List<Map<String, dynamic>> _parseSmeResponse(dynamic data) {
     if (data is List) {
       return List<Map<String, dynamic>>.from(data.map((x) => Map<String, dynamic>.from(x)));
@@ -828,7 +686,6 @@ class ApiAuthRepository implements AuthRepository {
   @override
   Future<Map<String, dynamic>> getMyInvestorProfile() async {
     try {
-      // 1. Fetch the live profile from the backend first
       String? token = apiClient.getCachedToken();
       if (token == null || token.isEmpty) {
         token = await _secureStorage.read(key: 'jwt_token');
@@ -840,18 +697,14 @@ class ApiAuthRepository implements AuthRepository {
         
         final data = response.data;
         if (data is Map<String, dynamic>) {
-          // Unwrap the 'investor' object from the Node.js backend
           if (data.containsKey('investor')) {
             return data['investor'] as Map<String, dynamic>;
           }
           return data;
         }
       }
-    } catch (e) {
-      if (kDebugMode) print('Failed to fetch live investor profile: $e');
-    }
+    } catch (e) {}
 
-    // 2. Fallback to local cache if the network fails
     try {
       final cachedStr = await _secureStorage.read(key: 'cached_investor_profile');
       if (cachedStr != null && cachedStr.isNotEmpty) {

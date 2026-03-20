@@ -33,7 +33,7 @@ class FaqPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.all(AppSpacing.xl),
+          padding: EdgeInsets.all(AppSpacing.md),
           children: [
             Text(
               isInvestor ? 'Understanding SME Data' : 'Understanding Your Data',
