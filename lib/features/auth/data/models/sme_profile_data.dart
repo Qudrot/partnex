@@ -27,31 +27,41 @@ class SmeCardData {
         riskLevel: _mapToDriverRisk(revenueTrendSignal),
         percentage: yoyGrowth.clamp(0, 100),
         impactPoints: (score * 0.3),
-        description: 'Evaluates your year-over-year revenue trajectory. Current growth: ${yoyGrowth.toStringAsFixed(1)}%.',
+        description:
+            'Evaluates your year-over-year revenue trajectory. Current growth: ${yoyGrowth.toStringAsFixed(1)}%.',
       ),
       DriverMetric(
         name: 'Profitability & Expense Management',
         riskLevel: _mapToDriverRisk(profitMarginSignal),
         percentage: profitMargin.clamp(0, 100),
         impactPoints: (score * 0.25),
-        description: 'Measures operational efficiency. Current profit margin: ${profitMargin.toStringAsFixed(1)}%.',
+        description:
+            'Measures operational efficiency. Current profit margin: ${profitMargin.toStringAsFixed(1)}%.',
       ),
       DriverMetric(
         name: 'Debt & Liability Management',
         riskLevel: _mapToDriverRisk(liabilitiesRatioSignal),
         percentage: (100 - liabilitiesRatio).clamp(0, 100),
         impactPoints: (score * 0.2),
-        description: 'Evaluates debt relative to total revenue. Your liability ratio is ${liabilitiesRatio.toStringAsFixed(1)}%.',
+        description:
+            'Evaluates debt relative to total revenue. Your liability ratio is ${liabilitiesRatio.toStringAsFixed(1)}%.',
       ),
     ];
   }
 
   DriverRiskLevel _mapToDriverRisk(String signal) {
     final s = signal.toLowerCase();
-    if (s.contains('positive') || s.contains('healthy') || s.contains('low') || s.contains('excellent')) return DriverRiskLevel.excellent;
+    if (s.contains('positive') ||
+        s.contains('healthy') ||
+        s.contains('low') ||
+        s.contains('excellent'))
+      return DriverRiskLevel.excellent;
     if (s.contains('good') || s.contains('strong')) return DriverRiskLevel.good;
     if (s.contains('moderate')) return DriverRiskLevel.moderate;
-    if (s.contains('declining') || s.contains('high') || s.contains('needs work')) return DriverRiskLevel.needsWork;
+    if (s.contains('declining') ||
+        s.contains('high') ||
+        s.contains('needs work'))
+      return DriverRiskLevel.needsWork;
     return DriverRiskLevel.critical;
   }
 
@@ -71,7 +81,7 @@ class SmeCardData {
   final DateTime generatedAt;
   final DataSource dataSource;
   final bool allowSharing;
-  
+
   final String? website;
   final String? bio;
   final String? contactPersonName;
@@ -84,13 +94,15 @@ class SmeCardData {
 
   // Computed fields for UI:
   String get employeesText => '$numberOfEmployees employees';
-  String get yearsOfOperationText => '$yearsOfOperation ${yearsOfOperation == 1 ? 'yr' : 'yrs'}';
+  String get yearsOfOperationText =>
+      '$yearsOfOperation ${yearsOfOperation == 1 ? 'yr' : 'yrs'}';
   String get displayLocation => location.split(',').first.trim();
   String get revenueText => '₦${(annualRevenue / 1000).toStringAsFixed(0)}K';
-  
+
   bool get isGrowthPositive => yoyGrowth >= 0;
-  String get growthSignal => '${yoyGrowth >= 0 ? '↑' : '↓'} ${yoyGrowth.abs().toStringAsFixed(0)}% YoY';
-  
+  String get growthSignal =>
+      '${yoyGrowth >= 0 ? '↑' : '↓'} ${yoyGrowth.abs().toStringAsFixed(0)}% YoY';
+
   bool get trustFunded => fundingHistory.toLowerCase() != 'no prior funding';
   bool get trustPayments => true;
   bool get trustStable => true;
@@ -110,7 +122,8 @@ class SmeCardData {
 
   double get yoyGrowth {
     if (_prevRevenue <= 0) return 0.0;
-    if (previousAnnualRevenue <= 0) return 0.0; // Avoid showing +Inf or synthetic numbers if no history
+    if (previousAnnualRevenue <= 0)
+      return 0.0; // Avoid showing +Inf or synthetic numbers if no history
     return ((annualRevenue - _prevRevenue) / _prevRevenue) * 100;
   }
 
@@ -204,8 +217,9 @@ class SmeCardData {
     return _criticalColor;
   }
 
-  double get profitMargin =>
-      annualRevenue > 0 ? ((annualRevenue - (monthlyExpenses * 12)) / annualRevenue) * 100 : 0;
+  double get profitMargin => annualRevenue > 0
+      ? ((annualRevenue - (monthlyExpenses * 12)) / annualRevenue) * 100
+      : 0;
 
   String get profitMarginText {
     if (annualRevenue <= 0) return 'N/A';
@@ -250,7 +264,8 @@ class SmeCardData {
   }
 
   String get financialAssessment {
-    if (score >= 100) return "You have it figured out! Your business demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management. Keep rising and growing—you are on a path of exceptional stability.";
+    if (score >= 100)
+      return "You have it figured out! Your business demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management. Keep rising and growing—you are on a path of exceptional stability.";
 
     final List<String> highlights = [];
 
@@ -266,38 +281,49 @@ class SmeCardData {
         );
       } else {
         highlights.add(
-          "is managing a revenue adjustment period (${yoyGrowth.toStringAsFixed(1)}% YoY) with current annual revenue of ₦${(annualRevenue/1e6).toStringAsFixed(1)}M",
+          "is managing a revenue adjustment period (${yoyGrowth.toStringAsFixed(1)}% YoY) with current annual revenue of ₦${(annualRevenue / 1e6).toStringAsFixed(1)}M",
         );
       }
     } else {
-      highlights.add("operates with a strong baseline revenue of ₦${(annualRevenue/1e6).toStringAsFixed(1)}M");
+      highlights.add(
+        "operates with a strong baseline revenue of ₦${(annualRevenue / 1e6).toStringAsFixed(1)}M",
+      );
     }
 
     // Efficiency Analysis
     if (profitMargin >= 20) {
-      highlights.add("retains high operational efficiency (Profit Margin: ${profitMargin.toStringAsFixed(1)}%)");
+      highlights.add(
+        "retains high operational efficiency (Profit Margin: ${profitMargin.toStringAsFixed(1)}%)",
+      );
     } else if (profitMargin >= 10) {
       highlights.add("maintains healthy profitability levels");
     } else if (profitMargin < 0) {
-      highlights.add("is currently prioritizing expansion over immediate margins (Net Margin: ${profitMargin.toStringAsFixed(1)}%)");
+      highlights.add(
+        "is currently prioritizing expansion over immediate margins (Net Margin: ${profitMargin.toStringAsFixed(1)}%)",
+      );
     }
 
     // Leverage Analysis
     if (liabilitiesRatio < 15) {
       highlights.add("maintains a very light debt profile");
     } else if (liabilitiesRatio > 45) {
-      highlights.add("utilizes significant leverage (Debt-to-Revenue: ${liabilitiesRatio.toStringAsFixed(1)}%)");
+      highlights.add(
+        "utilizes significant leverage (Debt-to-Revenue: ${liabilitiesRatio.toStringAsFixed(1)}%)",
+      );
     }
 
-    if (highlights.isEmpty) return "The financial profile shows neutral indicators across revenue and expense management.";
+    if (highlights.isEmpty)
+      return "The financial profile shows neutral indicators across revenue and expense management.";
 
     String assessment = "This business ${highlights[0]}. ";
     if (highlights.length > 1) {
-      assessment += "Key performance data indicates ${highlights.sublist(1).join(" and ")}. ";
+      assessment +=
+          "Key performance data indicates ${highlights.sublist(1).join(" and ")}. ";
     }
-    
-    assessment += "The ${riskLevel.toUpperCase()} risk rating is driven by ${revenueTrendSignal.toLowerCase()} momentum against a ${expenseRatioSignal.toLowerCase()} expense structure.";
-    
+
+    assessment +=
+        "The ${riskLevel.toUpperCase()} risk rating is driven by ${revenueTrendSignal.toLowerCase()} momentum against a ${expenseRatioSignal.toLowerCase()} expense structure.";
+
     return assessment;
   }
 
@@ -358,7 +384,7 @@ class SmeCardData {
       numberOfEmployees:
           int.tryParse(
             map['employees']?.toString() ??
-            map['number_of_employees']?.toString() ??
+                map['number_of_employees']?.toString() ??
                 map['numbersOfEmployee']?.toString() ??
                 '0',
           ) ??
@@ -380,9 +406,9 @@ class SmeCardData {
                     map['annualRevenue2'] != null ||
                     map['revenue2'] != null)
                 ? (map['annual_revenue_amount_1']?.toString() ??
-                    map['annualRevenue1']?.toString() ??
-                    map['revenue1']?.toString() ??
-                    '0')
+                      map['annualRevenue1']?.toString() ??
+                      map['revenue1']?.toString() ??
+                      '0')
                 : '0',
           ) ??
           0.0,
@@ -408,28 +434,78 @@ class SmeCardData {
             map['current_credibility_score'] ??
             map['totalScore'] ??
             map['total_score'] ??
-            (map['credibility'] != null && map['credibility'] is Map ? map['credibility']['total_score'] ?? map['credibility']['score'] ?? map['credibility']['totalScore'] : null),
+            (map['credibility'] != null && map['credibility'] is Map
+                ? map['credibility']['total_score'] ??
+                      map['credibility']['score'] ??
+                      map['credibility']['totalScore']
+                : null),
       ),
       riskLevel:
           map['risk_level']?.toString() ??
           map['riskLevel']?.toString() ??
-          (map['credibility'] != null && map['credibility'] is Map ? map['credibility']['risk_level']?.toString() ?? map['credibility']['riskLevel']?.toString() : null) ??
+          (map['credibility'] != null && map['credibility'] is Map
+              ? map['credibility']['risk_level']?.toString() ??
+                    map['credibility']['riskLevel']?.toString()
+              : null) ??
           'Unknown',
-      generatedAt: DateTime.tryParse(map['scored_at_raw_timestamp']?.toString() ?? '') ?? DateTime.now(),
+      // Robust date parsing that checks multiple common keys
+      generatedAt: DateTime.tryParse(
+            map['scored_at_raw_timestamp']?.toString() ?? 
+            map['created_at']?.toString() ?? 
+            map['updated_at']?.toString() ?? 
+            ''
+          ) ?? DateTime.now(),
+          
+      // Flexible enum matching that handles spaced strings like "Bank Data"
       dataSource: DataSource.values.firstWhere(
-        (e) => e.name == (map['data_source'] ?? map['dataSource'] ?? 'selfReported'),
+        (e) => e.name.toLowerCase().replaceAll(' ', '') == 
+               (map['data_source'] ?? map['dataSource'] ?? 'selfReported').toString().toLowerCase().replaceAll(' ', ''),
         orElse: () => DataSource.selfReported,
       ),
-      allowSharing: map['allowSharing'] ?? map['allow_sharing'] ?? true,
+      
+      allowSharing: map['allow_sharing'] != null
+          ? (map['allow_sharing'] == 1 || map['allow_sharing'] == true)
+          : (map['allowSharing'] ?? true),
       website: map['website']?.toString() ?? map['websiteUrl']?.toString(),
       bio: map['bio']?.toString() ?? map['description']?.toString(),
-      contactPersonName: map['contact_person_name']?.toString() ?? map['contactPersonName']?.toString() ?? map['contactName']?.toString() ?? map['name']?.toString() ?? map['fullName']?.toString() ?? map['user']?['name']?.toString() ?? map['user']?['fullName']?.toString(),
-      contactPersonTitle: map['contact_person_title']?.toString() ?? map['contactPersonTitle']?.toString() ?? map['contactPosition']?.toString() ?? map['contact_position']?.toString() ?? map['position']?.toString() ?? map['user']?['position']?.toString() ?? map['user']?['title']?.toString(),
-      phoneNumber: map['phone_number']?.toString() ?? map['phoneNumber']?.toString() ?? map['phone']?.toString() ?? map['user']?['phone_number']?.toString() ?? map['user']?['phone']?.toString() ?? map['contact_phone']?.toString() ?? map['contact']?['phone']?.toString(),
-      email: map['email']?.toString() ?? map['user']?['email']?.toString() ?? map['contact_email']?.toString() ?? map['user_email']?.toString() ?? map['owner_email']?.toString() ?? map['contact']?['email']?.toString(),
-      whatsappNumber: map['whatsapp_number']?.toString() ?? map['whatsappNumber']?.toString() ?? map['whatsapp']?.toString(),
-      linkedinUrl: map['linkedin_url']?.toString() ?? map['linkedinUrl']?.toString() ?? map['linkedin']?.toString(),
-      twitterHandle: map['twitter_handle']?.toString() ?? map['twitterHandle']?.toString() ?? map['twitter']?.toString(),
+
+      // Simplified mapping to ensure the COALESCE data from Node.js is respected
+      contactPersonName: () {
+        final name = map['contact_person_name']?.toString() ?? map['contactPersonName']?.toString() ?? '';
+        return name.trim().isEmpty ? 'Business Representative' : name;
+      }(),
+      
+      contactPersonTitle: () {
+        final title = map['contact_person_title']?.toString() ?? map['contactPersonTitle']?.toString() ?? '';
+        return title.trim().isEmpty ? '' : title;
+      }(),
+      phoneNumber:
+          map['phone_number']?.toString() ??
+          map['phoneNumber']?.toString() ??
+          map['phone']?.toString() ??
+          map['user']?['phone_number']?.toString() ??
+          map['user']?['phone']?.toString() ??
+          map['contact_phone']?.toString() ??
+          map['contact']?['phone']?.toString(),
+      email:
+          map['email']?.toString() ??
+          map['user']?['email']?.toString() ??
+          map['contact_email']?.toString() ??
+          map['user_email']?.toString() ??
+          map['owner_email']?.toString() ??
+          map['contact']?['email']?.toString(),
+      whatsappNumber:
+          map['whatsapp_number']?.toString() ??
+          map['whatsappNumber']?.toString() ??
+          map['whatsapp']?.toString(),
+      linkedinUrl:
+          map['linkedin_url']?.toString() ??
+          map['linkedinUrl']?.toString() ??
+          map['linkedin']?.toString(),
+      twitterHandle:
+          map['twitter_handle']?.toString() ??
+          map['twitterHandle']?.toString() ??
+          map['twitter']?.toString(),
     );
   }
 }

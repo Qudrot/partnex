@@ -73,6 +73,14 @@ class ApiAuthRepository implements AuthRepository {
           }
         }
 
+        else if (!isProfileCompleted && parsedRole == UserRole.investor) {
+          try {
+            final profile = await getMyInvestorProfile();
+            isProfileCompleted = profile.isNotEmpty;
+            if (kDebugMode && isProfileCompleted) print('Login: Investor profile fetched successfully.');
+          } catch (_) {}
+        }
+
         await _secureStorage.write(key: 'profile_completed', value: isProfileCompleted.toString());
       }
 
@@ -220,6 +228,7 @@ class ApiAuthRepository implements AuthRepository {
         "contact_person_title": data['contactPosition'],
         "email": data['email'],
         "phone_number": data['phoneNumber'],
+        "allow_sharing": data['allowSharing'] == false ? 0 : 1,
       };
 
       List<Map<String, dynamic>> revData = [];

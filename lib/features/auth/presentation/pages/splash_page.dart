@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/core/network/api_client.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_typography.dart';
@@ -41,6 +44,9 @@ class _SplashPageState extends State<SplashPage> {
     if (storedToken != null && storedToken.isNotEmpty) {
       // Re-inject token into ApiClient for this session
       ApiClient.restoreToken(storedToken);
+      if (mounted) {
+        context.read<AuthBloc>().add(RestoreSessionEvent());
+      }
       if (kDebugMode) print('SPLASH: Token restored → navigating to Dashboard');
 
       if (storedRole == 'investor') {

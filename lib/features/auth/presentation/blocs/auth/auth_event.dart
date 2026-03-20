@@ -19,6 +19,8 @@ class LoginEvent extends AuthEvent {
 
 class LogoutEvent extends AuthEvent {}
 
+class RestoreSessionEvent extends AuthEvent {}
+
 class SignupEvent extends AuthEvent {
   final String name;
   final String email;

@@ -18,6 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SubmitSmeProfileEvent>(_onSubmitSmeProfile);
     on<SubmitInvestorProfileEvent>(_onSubmitInvestorProfile);
     on<LogoutEvent>(_onLogout);
+    on<RestoreSessionEvent>(_onRestoreSession);
   }
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
@@ -150,6 +151,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       final msg = e.toString().replaceAll('Exception: ', '');
       emit(AuthError(msg));
+    }
+  }
+
+  Future<void> _onRestoreSession(RestoreSessionEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final user = await authRepository.getCurrentUser();
+      if (user != null) {
+        emit(AuthAuthenticated(user));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } catch (e) {
+      emit(AuthUnauthenticated());
     }
   }
 }
