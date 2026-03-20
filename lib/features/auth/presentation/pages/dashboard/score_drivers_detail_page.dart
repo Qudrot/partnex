@@ -361,10 +361,16 @@ class ScoreDriversDetailPage extends StatelessWidget {
 
     if (sections.isEmpty) {
       sections.add(
-        const Padding(
-          padding: EdgeInsets.all(16.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8.0),
           child: Text(
-            'Your metrics are incredibly strong! Maintain your current financial discipline to keep your high credibility rating.',
+            'You have it figured out! Keep rising and growing—you are on an exceptional path of financial stability and credibility.',
+            style: AppTypography.textTheme.bodyLarge?.copyWith(
+              color: AppColors.successGreen,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       );

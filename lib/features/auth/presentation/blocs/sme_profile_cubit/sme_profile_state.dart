@@ -57,6 +57,7 @@ class SmeProfileState extends Equatable {
   final String twitterHandle;
 
   // Contact Info (from signup + business profile)
+  final String contactName;
   final String contactPosition;
   final String phoneNumber;
   final String email;
@@ -94,12 +95,13 @@ class SmeProfileState extends Equatable {
     this.csvProcessingStatus = CsvProcessingStatus.initial,
     this.csvErrorMessage,
     this.dataSource = DataSource.selfReported,
-    this.allowSharing = true,
+    this.allowSharing = false,
     this.bio = '',
     this.websiteUrl = '',
     this.whatsappNumber = '',
     this.linkedinUrl = '',
     this.twitterHandle = '',
+    this.contactName = '',
     this.contactPosition = '',
     this.phoneNumber = '',
     this.email = '',
@@ -143,6 +145,7 @@ class SmeProfileState extends Equatable {
     String? whatsappNumber,
     String? linkedinUrl,
     String? twitterHandle,
+    String? contactName,
     String? contactPosition,
     String? phoneNumber,
     String? email,
@@ -187,6 +190,7 @@ class SmeProfileState extends Equatable {
       whatsappNumber: whatsappNumber ?? this.whatsappNumber,
       linkedinUrl: linkedinUrl ?? this.linkedinUrl,
       twitterHandle: twitterHandle ?? this.twitterHandle,
+      contactName: contactName ?? this.contactName,
       contactPosition: contactPosition ?? this.contactPosition,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       email: email ?? this.email,
@@ -231,6 +235,7 @@ class SmeProfileState extends Equatable {
       'whatsappNumber': whatsappNumber,
       'linkedinUrl': linkedinUrl,
       'twitterHandle': twitterHandle,
+      'contactName': contactName,
       'contactPosition': contactPosition,
       'phoneNumber': phoneNumber,
       'email': email,
@@ -313,12 +318,14 @@ class SmeProfileState extends Equatable {
       areDocumentsComplete: map['areDocumentsComplete'] ?? map['are_documents_complete'] ?? false,
       areDocumentsConsistent: map['areDocumentsConsistent'] ?? map['are_documents_consistent'] ?? false,
       dataSource: DataSource.values.firstWhere((e) => e.name == (map['dataSource'] ?? 'selfReported'), orElse: () => DataSource.selfReported),
+      allowSharing: map['allowSharing'] ?? map['allow_sharing'] ?? false,
       bio: map['bio'] ?? '',
       websiteUrl: map['websiteUrl'] ?? map['website'] ?? '',
       whatsappNumber: map['whatsappNumber'] ?? map['whatsapp'] ?? '',
       linkedinUrl: map['linkedinUrl'] ?? map['linkedin'] ?? '',
       twitterHandle: map['twitterHandle'] ?? map['twitter'] ?? '',
-      contactPosition: map['contactPosition'] ?? map['position'] ?? '',
+      contactName: map['contactName'] ?? map['contact_person_name'] ?? map['name'] ?? '',
+      contactPosition: map['contactPosition'] ?? map['contact_person_title'] ?? map['position'] ?? '',
       phoneNumber: map['phoneNumber'] ?? map['phone_number'] ?? '',
       email: map['email'] ?? '',
     );
@@ -365,6 +372,7 @@ class SmeProfileState extends Equatable {
         whatsappNumber,
         linkedinUrl,
         twitterHandle,
+        contactName,
         contactPosition,
         phoneNumber,
         email,

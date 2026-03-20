@@ -6,11 +6,13 @@ import 'package:partnex/core/theme/app_typography.dart';
 class CircularScoreRing extends StatelessWidget {
   final int score;
   final double size;
+  final double? fontSizeOverride;
 
   const CircularScoreRing({
     super.key,
     required this.score,
     this.size = 180.0,
+    this.fontSizeOverride,
   });
 
   @override
@@ -43,20 +45,21 @@ class CircularScoreRing extends StatelessWidget {
               Text(
                 score.toString(),
                 style: AppTypography.textTheme.displayLarge?.copyWith(
-                  fontSize: size * 0.35,
+                  fontSize: fontSizeOverride ?? size * 0.35,
                   fontWeight: FontWeight.w800,
                   color: AppColors.slate900,
                   height: 1.1,
                 ),
               ),
-              Text(
-                'out of 100',
-                style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.trustBlue.withValues(alpha: 0.6),
-                  fontWeight: FontWeight.w600,
-                  fontSize: size * 0.08,
+              if (size >= 100)
+                Text(
+                  'out of 100',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.slate600.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w600,
+                    fontSize: size * 0.08,
+                  ),
                 ),
-              ),
             ],
           ),
         ],
@@ -77,74 +80,67 @@ class _ScoreRingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width / 2) - 10;
-    final strokeWidth = size.width * 0.08;
+    final radius = (size.width / 2) - 12;
+    final strokeWidth = size.width * 0.085;
 
+    // Background ring
     final backgroundPaint = Paint()
-      ..color = activeColor.withValues(alpha: 0.2)
+      ..color = activeColor.withValues(alpha: 0.18)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
 
-    final activePaint = Paint()
+    canvas.drawCircle(center, radius, backgroundPaint);
+
+    // Progress arc
+    final progressPaint = Paint()
       ..color = activeColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
 
-    final dotPaint = Paint()
-      ..color = AppColors.neutralWhite
-      ..style = PaintingStyle.fill;
+    final sweepAngle = (score / 100) * 2 * math.pi;
 
-    // Draw the 3 background segments
-    // We break the 360 degrees into 3 parts, with small gaps
-    final startAngle = -math.pi * 1.5; // Start from top (-90 degrees)
-    final sweepAngle = (math.pi * 2) / 3;
-    final gap = 0.1; // small gap in radians
-    final segmentSweep = sweepAngle - gap;
-
-    for (int i = 0; i < 3; i++) {
+    if (score > 0) {
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
-        startAngle + (i * sweepAngle) + (gap / 2),
-        segmentSweep,
+        -math.pi / 2,
+        sweepAngle,
         false,
-        backgroundPaint,
+        progressPaint,
       );
     }
 
-    // Determine how much of the ring is active based on score
-    // Score is 0-100, maps to 0 to 3 sweeps
-    // Just draw a single continuous arc over the background segments for the filled portion
-    final fillSweep = (score / 100) * (math.pi * 2);
-    final adjustedFillSweep = math.max(0.01, fillSweep); // Ensure a tiny dot at least
+    // Moving dot (only when score < 100)
+    if (score < 100) {
+      final angle = -math.pi / 2 + sweepAngle;
+      final dotCenter = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
 
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      adjustedFillSweep,
-      false,
-      activePaint,
-    );
+      // Soft outer glow
+      canvas.drawCircle(
+        dotCenter,
+        strokeWidth / 2 + 2,
+        Paint()..color = activeColor.withValues(alpha: 0.25),
+      );
 
-    // Draw the dot at the end
-    final currentAngle = startAngle + fillSweep;
-    final dotCenter = Offset(
-      center.dx + radius * math.cos(currentAngle),
-      center.dy + radius * math.sin(currentAngle),
-    );
+      // Main dot
+      canvas.drawCircle(
+        dotCenter,
+        strokeWidth / 2,
+        Paint()..color = activeColor,
+      );
 
-    // Subtle dark shadow for the dot
-    canvas.drawCircle(
-      dotCenter,
-      strokeWidth / 2 - 2,
-      Paint()
-        ..color = AppColors.slate900.withValues(alpha: 0.2)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
-    );
-
-    canvas.drawCircle(dotCenter, strokeWidth / 2 - 3, activePaint);
-    canvas.drawCircle(dotCenter, strokeWidth / 4, dotPaint);
+      // Inner highlight
+      canvas.drawCircle(
+        dotCenter,
+        strokeWidth / 3.5,
+        Paint()..color = Colors.white,
+      );
+    }
+    // When score == 100 → just a clean full ring (no dot, no checkmark)
   }
 
   @override

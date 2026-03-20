@@ -26,10 +26,6 @@ class SmeBioContactCard extends StatelessWidget {
                       (contactPersonTitle != null && contactPersonTitle!.isNotEmpty);
     bool hasBio = bio != null && bio!.isNotEmpty;
 
-    if (!hasBio && !hasContact) {
-      return const SizedBox.shrink();
-    }
-
     String bioSnippet = '';
     if (hasBio) {
       bioSnippet = bio!.length > 100 ? '${bio!.substring(0, 100)}... ' : '${bio!} ';
@@ -45,7 +41,7 @@ class SmeBioContactCard extends StatelessWidget {
     String contactDisplay = contactParts.join(', ');
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.slate50,
@@ -62,16 +58,16 @@ class SmeBioContactCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (hasBio) ...[
-            Text(
-              'About',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.slate600,
-              ),
+          Text(
+            'About',
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppColors.slate600,
             ),
-            const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 8),
+          if (hasBio) 
             Text.rich(
               TextSpan(
                 children: [
@@ -101,54 +97,36 @@ class SmeBioContactCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            if (hasContact) ...[
-              const SizedBox(height: 12),
-              Container(
-                height: 1,
-                color: AppColors.slate200,
-              ),
-              const SizedBox(height: 12),
-            ],
-          ] else ...[
+            )
+          else 
             Text(
-              'No bio available',
+              "No company bio has been added yet. $smeName is currently focusing on operations and hasn't shared their story.",
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: AppColors.slate500,
                 fontStyle: FontStyle.italic,
+                height: 1.5,
               ),
             ),
-            if (hasContact) ...[
-              const SizedBox(height: 12),
-              Container(
-                height: 1,
-                color: AppColors.slate200,
-              ),
-              const SizedBox(height: 12),
-            ],
+
+          const SizedBox(height: 12),
+          if (hasBio) ...[
+            Container(
+              height: 1,
+              color: AppColors.slate200,
+            ),
+            const SizedBox(height: 12),
           ],
 
-          if (hasContact) ...[
-            Text(
-              'Primary Contact',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.slate600,
-              ),
+          Text(
+            hasContact ? contactDisplay : "$smeName Business Representative",
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.slate900,
             ),
-            const SizedBox(height: 4),
-            Text(
-              contactDisplay,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.slate900,
-              ),
-            ),
-          ],
+          ),
         ],
       ),
     );

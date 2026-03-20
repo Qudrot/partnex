@@ -102,26 +102,27 @@ class SmeCardData {
   static const Color _criticalColor = AppColors.dangerRed;
 
   double get _prevRevenue {
+    // Return actual previous revenue if provided, otherwise default to current revenue (0% growth)
+    // to avoid misleading "synthetic" growth numbers.
     if (previousAnnualRevenue > 0) return previousAnnualRevenue;
-    if (annualRevenue <= 0) return 0;
-    if (score >= 80) return annualRevenue / 1.25;
-    if (score >= 60) return annualRevenue / 1.10;
-    if (score >= 40) return annualRevenue / 0.98;
-    return annualRevenue / 0.92;
+    return annualRevenue;
   }
 
   double get yoyGrowth {
-    if (_prevRevenue <= 0) return 0;
+    if (_prevRevenue <= 0) return 0.0;
+    if (previousAnnualRevenue <= 0) return 0.0; // Avoid showing +Inf or synthetic numbers if no history
     return ((annualRevenue - _prevRevenue) / _prevRevenue) * 100;
   }
 
   String get revenueTrendText {
     if (annualRevenue <= 0) return 'N/A';
+    if (previousAnnualRevenue <= 0) return 'Stable';
     final sign = yoyGrowth > 0 ? '+' : '';
     return '$sign${yoyGrowth.toStringAsFixed(0)}% YoY';
   }
 
   String get revenueTrendSignal {
+    if (previousAnnualRevenue <= 0) return 'Baseline';
     if (yoyGrowth > 15) return 'Positive';
     if (yoyGrowth >= 0) return 'Moderate';
     if (yoyGrowth >= -5) return 'Declining';
@@ -129,6 +130,7 @@ class SmeCardData {
   }
 
   Color get revenueTrendColor {
+    if (previousAnnualRevenue <= 0) return AppColors.trustBlue;
     if (yoyGrowth > 15) return _positiveColor;
     if (yoyGrowth >= 0) return _moderateColor;
     if (yoyGrowth >= -5) return _concerningColor;
@@ -238,13 +240,65 @@ class SmeCardData {
 
   Color get scoreColor {
     final lowerRisk = riskLevel.toLowerCase();
-    if (lowerRisk.contains('low') || score >= 80) {
+    if (lowerRisk.contains('low') || score >= 85) {
       return AppColors.successGreen;
     }
-    if (lowerRisk.contains('medium') || score >= 50) {
+    if (lowerRisk.contains('medium') || score >= 55) {
       return AppColors.warningAmber;
     }
     return AppColors.dangerRed;
+  }
+
+  String get financialAssessment {
+    if (score >= 100) return "You have it figured out! Your business demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management. Keep rising and growing—you are on a path of exceptional stability.";
+
+    final List<String> highlights = [];
+
+    // Revenue Analysis
+    if (previousAnnualRevenue > 0) {
+      if (yoyGrowth > 15) {
+        highlights.add(
+          "demonstrates robust scaling with a ${yoyGrowth.toStringAsFixed(1)}% YoY revenue surge",
+        );
+      } else if (yoyGrowth >= 0) {
+        highlights.add(
+          "shows steady performance with a ${yoyGrowth.toStringAsFixed(1)}% YoY growth trajectory",
+        );
+      } else {
+        highlights.add(
+          "is managing a revenue adjustment period (${yoyGrowth.toStringAsFixed(1)}% YoY) with current annual revenue of ₦${(annualRevenue/1e6).toStringAsFixed(1)}M",
+        );
+      }
+    } else {
+      highlights.add("operates with a strong baseline revenue of ₦${(annualRevenue/1e6).toStringAsFixed(1)}M");
+    }
+
+    // Efficiency Analysis
+    if (profitMargin >= 20) {
+      highlights.add("retains high operational efficiency (Profit Margin: ${profitMargin.toStringAsFixed(1)}%)");
+    } else if (profitMargin >= 10) {
+      highlights.add("maintains healthy profitability levels");
+    } else if (profitMargin < 0) {
+      highlights.add("is currently prioritizing expansion over immediate margins (Net Margin: ${profitMargin.toStringAsFixed(1)}%)");
+    }
+
+    // Leverage Analysis
+    if (liabilitiesRatio < 15) {
+      highlights.add("maintains a very light debt profile");
+    } else if (liabilitiesRatio > 45) {
+      highlights.add("utilizes significant leverage (Debt-to-Revenue: ${liabilitiesRatio.toStringAsFixed(1)}%)");
+    }
+
+    if (highlights.isEmpty) return "The financial profile shows neutral indicators across revenue and expense management.";
+
+    String assessment = "This business ${highlights[0]}. ";
+    if (highlights.length > 1) {
+      assessment += "Key performance data indicates ${highlights.sublist(1).join(" and ")}. ";
+    }
+    
+    assessment += "The ${riskLevel.toUpperCase()} risk rating is driven by ${revenueTrendSignal.toLowerCase()} momentum against a ${expenseRatioSignal.toLowerCase()} expense structure.";
+    
+    return assessment;
   }
 
   const SmeCardData({
@@ -303,6 +357,7 @@ class SmeCardData {
           1,
       numberOfEmployees:
           int.tryParse(
+            map['employees']?.toString() ??
             map['number_of_employees']?.toString() ??
                 map['numbersOfEmployee']?.toString() ??
                 '0',
@@ -360,7 +415,7 @@ class SmeCardData {
           map['riskLevel']?.toString() ??
           (map['credibility'] != null && map['credibility'] is Map ? map['credibility']['risk_level']?.toString() ?? map['credibility']['riskLevel']?.toString() : null) ??
           'Unknown',
-      generatedAt: DateTime.tryParse(map['created_at']?.toString() ?? '') ?? DateTime.now(),
+      generatedAt: DateTime.tryParse(map['scored_at_raw_timestamp']?.toString() ?? '') ?? DateTime.now(),
       dataSource: DataSource.values.firstWhere(
         (e) => e.name == (map['data_source'] ?? map['dataSource'] ?? 'selfReported'),
         orElse: () => DataSource.selfReported,
@@ -368,13 +423,13 @@ class SmeCardData {
       allowSharing: map['allowSharing'] ?? map['allow_sharing'] ?? true,
       website: map['website']?.toString() ?? map['websiteUrl']?.toString(),
       bio: map['bio']?.toString() ?? map['description']?.toString(),
-      contactPersonName: map['contact_person_name']?.toString() ?? map['contactPersonName']?.toString() ?? map['name']?.toString(),
-      contactPersonTitle: map['contact_person_title']?.toString() ?? map['contactPersonTitle']?.toString() ?? map['contactPosition']?.toString() ?? map['position']?.toString(),
-      phoneNumber: map['phone_number']?.toString() ?? map['phoneNumber']?.toString(),
-      email: map['email']?.toString(),
-      whatsappNumber: map['whatsapp_number']?.toString() ?? map['whatsappNumber']?.toString(),
-      linkedinUrl: map['linkedin_url']?.toString() ?? map['linkedinUrl']?.toString(),
-      twitterHandle: map['twitter_handle']?.toString() ?? map['twitterHandle']?.toString(),
+      contactPersonName: map['contact_person_name']?.toString() ?? map['contactPersonName']?.toString() ?? map['contactName']?.toString() ?? map['name']?.toString() ?? map['fullName']?.toString() ?? map['user']?['name']?.toString() ?? map['user']?['fullName']?.toString(),
+      contactPersonTitle: map['contact_person_title']?.toString() ?? map['contactPersonTitle']?.toString() ?? map['contactPosition']?.toString() ?? map['contact_position']?.toString() ?? map['position']?.toString() ?? map['user']?['position']?.toString() ?? map['user']?['title']?.toString(),
+      phoneNumber: map['phone_number']?.toString() ?? map['phoneNumber']?.toString() ?? map['phone']?.toString() ?? map['user']?['phone_number']?.toString() ?? map['user']?['phone']?.toString() ?? map['contact_phone']?.toString() ?? map['contact']?['phone']?.toString(),
+      email: map['email']?.toString() ?? map['user']?['email']?.toString() ?? map['contact_email']?.toString() ?? map['user_email']?.toString() ?? map['owner_email']?.toString() ?? map['contact']?['email']?.toString(),
+      whatsappNumber: map['whatsapp_number']?.toString() ?? map['whatsappNumber']?.toString() ?? map['whatsapp']?.toString(),
+      linkedinUrl: map['linkedin_url']?.toString() ?? map['linkedinUrl']?.toString() ?? map['linkedin']?.toString(),
+      twitterHandle: map['twitter_handle']?.toString() ?? map['twitterHandle']?.toString() ?? map['twitter']?.toString(),
     );
   }
 }

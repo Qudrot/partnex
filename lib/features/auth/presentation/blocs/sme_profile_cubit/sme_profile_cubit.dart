@@ -284,6 +284,7 @@ class SmeProfileCubit extends Cubit<SmeProfileState> {
     String? position,
   }) {
     emit(state.copyWith(
+      contactName: name,
       email: email,
       contactPosition: position,
     ));

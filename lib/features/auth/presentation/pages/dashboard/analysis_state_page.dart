@@ -312,10 +312,10 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                             size: 16,
                             color: AppColors.slate600,
                           ),
-                          const SizedBox(width: 4),
+                          //const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'Your data is secure and encrypted. We never share your information.',
+                              'Your data is secure. We never share your information without your consent.',
                               style: AppTypography.textTheme.bodySmall
                                   ?.copyWith(
                                     fontSize: 12,

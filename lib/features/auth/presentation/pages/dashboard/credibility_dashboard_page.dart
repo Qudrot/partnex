@@ -161,16 +161,16 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
         }
 
         final scoreData = state.score;
-        String riskLevelString = 'High Risk';
+        String riskLevelString = 'HIGH RISK';
         Color riskColor = AppColors.dangerRed;
 
         final String lowerRisk = scoreData.riskLevel.toString().toLowerCase();
 
         if (lowerRisk.contains('low')) {
-          riskLevelString = 'Low Risk';
+          riskLevelString = 'LOW RISK';
           riskColor = AppColors.successGreen;
         } else if (lowerRisk.contains('medium')) {
-          riskLevelString = 'Medium Risk';
+          riskLevelString = 'MEDIUM RISK';
           riskColor = AppColors.warningOrange;
         }
 

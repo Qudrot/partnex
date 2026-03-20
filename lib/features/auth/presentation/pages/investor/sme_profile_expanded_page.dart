@@ -158,15 +158,19 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
               },
             ),
             const SizedBox(height: 24),
-            if (widget.email != null && widget.email!.isNotEmpty)
-              _buildDirectContact(
-                'Email',
-                widget.email!,
-                LucideIcons.mail,
-                onTap: () => UrlHelper.launchEmail(widget.email!),
-              ),
-            if (widget.email != null && widget.email!.isNotEmpty)
-              const SizedBox(height: 12),
+            _buildDirectContact(
+              'Email',
+              (widget.email != null && widget.email!.isNotEmpty)
+                  ? widget.email!
+                  : 'Not provided',
+              LucideIcons.mail,
+              onTap: () {
+                if (widget.email != null && widget.email!.isNotEmpty) {
+                  UrlHelper.launchEmail(widget.email!);
+                }
+              },
+            ),
+            const SizedBox(height: 12),
             if (widget.phoneNumber != null && widget.phoneNumber!.isNotEmpty)
               _buildDirectContact(
                 'Phone',
@@ -461,7 +465,8 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                               ),
                               child: CircularScoreRing(
                                 score: widget.sme.score,
-                                size: 140,
+                                size: 64,
+                                fontSizeOverride: 15,
                               ),
                             ),
                             SizedBox(width: AppSpacing.md),
@@ -470,7 +475,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${widget.sme.riskLevel} Risk',
+                                    '${widget.sme.riskLevel} RISK',
                                     style: AppTypography.textTheme.bodyMedium
                                         ?.copyWith(
                                           color: AppColors.slate900,

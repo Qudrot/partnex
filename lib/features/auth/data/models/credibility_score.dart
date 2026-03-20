@@ -35,4 +35,27 @@ class CredibilityScore {
   factory CredibilityScore.fromJson(Map<String, dynamic> json) => _$CredibilityScoreFromJson(json);
   Map<String, dynamic> toJson() => _$CredibilityScoreToJson(this);
 
+  CredibilityScore copyWith({
+    String? id,
+    String? organisationId,
+    double? totalScore,
+    RiskLevel? riskLevel,
+    List<String>? topContributingFactors,
+    String? generalExplanation,
+    String? modelVersion,
+    DateTime? calculatedAt,
+    double? impactScore,
+  }) {
+    return CredibilityScore(
+      id: id ?? this.id,
+      organisationId: organisationId ?? this.organisationId,
+      totalScore: totalScore ?? this.totalScore,
+      riskLevel: riskLevel ?? this.riskLevel,
+      topContributingFactors: topContributingFactors ?? this.topContributingFactors,
+      generalExplanation: generalExplanation ?? this.generalExplanation,
+      modelVersion: modelVersion ?? this.modelVersion,
+      calculatedAt: calculatedAt ?? this.calculatedAt,
+      impactScore: impactScore ?? this.impactScore,
+    );
+  }
 }

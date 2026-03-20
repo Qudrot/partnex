@@ -7,6 +7,7 @@ import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
 import 'package:intl/intl.dart';
+import 'package:partnex/core/theme/widgets/trend_chart.dart';
 
 class DeepDiveEvidencePage extends StatelessWidget {
   final SmeCardData sme;
@@ -94,7 +95,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${sme.companyName} demonstrates ${sme.riskLevel.toLowerCase()} risk based on current ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} indicators. ${sme.bio ?? ""}',
+                    sme.financialAssessment,
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       color: AppColors.slate700,
                       fontSize: 12,
@@ -114,8 +115,15 @@ class DeepDiveEvidencePage extends StatelessWidget {
                 contributionColor: sme.revenueTrendColor,
                 evidenceExplanation:
                     'Revenue trajectory based on ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} analysis.',
-                chartPlaceholderText:
-                    '[Trend: ${sme.revenueTrendSignal} | Avg: ₦${(sme.annualRevenue / 12).toStringAsFixed(0)}]',
+                chart: TrendChart(
+                  dataPoints: [
+                    sme.previousAnnualRevenue > 0
+                        ? (sme.previousAnnualRevenue / 12)
+                        : (sme.annualRevenue / 12) * 0.85,
+                    sme.annualRevenue / 12,
+                  ],
+                  barColor: sme.revenueTrendColor,
+                ),
                 metrics: [
                   {'YoY Trajectory': sme.revenueTrendText},
                   {'Annual Revenue': '₦${NumberFormat('#,###').format(sme.annualRevenue)}'},
@@ -128,8 +136,13 @@ class DeepDiveEvidencePage extends StatelessWidget {
                 contributionColor: sme.expenseRatioColor,
                 evidenceExplanation:
                     'Operating efficiency and profit margin calculated from ${sme.dataSource == DataSource.selfReported ? 'manual data' : 'Bank data'} outflows.',
-                chartPlaceholderText:
-                    '[Profit Margin: ${sme.profitMargin.toStringAsFixed(1)}%]',
+                chart: TrendChart(
+                  dataPoints: [
+                    sme.monthlyExpenses,
+                    (sme.annualRevenue / 12),
+                  ],
+                  barColor: sme.expenseRatioColor,
+                ),
                 metrics: [
                   {'Monthly Expenses': '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'},
                   {'Profit Margin': '${sme.profitMargin.toStringAsFixed(1)}%'},
@@ -142,8 +155,13 @@ class DeepDiveEvidencePage extends StatelessWidget {
                 contributionColor: sme.liabilitiesRatioColor,
                 evidenceExplanation:
                     'Debt obligations and repayment history as ${sme.dataSource == DataSource.selfReported ? 'declared by the SME' : 'verified via Bank data'}.',
-                chartPlaceholderText:
-                    '[Liabilities Ratio: ${sme.liabilitiesRatio.toStringAsFixed(1)}%]',
+                chart: TrendChart(
+                  dataPoints: [
+                    sme.annualDebtPayments / 12,
+                    sme.annualRevenue / 12,
+                  ],
+                  barColor: sme.liabilitiesRatioColor,
+                ),
                 metrics: [
                   {'Total Liabilities': '₦${NumberFormat('#,###').format(sme.liabilities)}'},
                   {'Risk Signal': sme.liabilitiesRatioSignal},
@@ -240,8 +258,8 @@ class DeepDiveEvidencePage extends StatelessWidget {
 
             const SizedBox(height: 32),
             CustomButton(
-              text: 'Back to Discovery',
-              variant: ButtonVariant.secondary,
+              text: 'Back to Deep Dive',
+              variant: ButtonVariant.primary,
               onPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 24),
@@ -256,7 +274,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
     required String contribution,
     Color contributionColor = AppColors.trustBlue,
     required String evidenceExplanation,
-    required String chartPlaceholderText,
+    Widget? chart,
     required List<Map<String, String>> metrics,
   }) {
     return Container(
@@ -307,7 +325,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Visual Chart Placeholder
+            // Visual Chart
             Container(
               height: 120,
               width: double.infinity,
@@ -316,15 +334,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
                 border: Border.all(color: AppColors.slate200),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Center(
-                child: Text(
-                  chartPlaceholderText,
-                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                    color: AppColors.slate400,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              child: chart ?? const SizedBox.shrink(),
             ),
             const SizedBox(height: 16),
 

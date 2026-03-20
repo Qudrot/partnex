@@ -41,6 +41,7 @@ class BusinessProfilePage extends StatefulWidget {
 class _BusinessProfilePageState extends State<BusinessProfilePage> {
   final _formKey = GlobalKey<FormState>();
   bool _navigateToAnalysis = false;
+  bool _impactScoreUpdated = false; // Tracks if a bracket was actually crossed
 
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
@@ -177,11 +178,18 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, authState) {
             if (!ModalRoute.of(context)!.isCurrent) return;
+            
             if (authState is SmeProfileSubmittedSuccess) {
               if (widget._inEditMode && !_navigateToAnalysis) {
-                uiService.showSnackBar('Your profile has been successfully updated.');
+                // Dynamic SnackBar based on what actually changed
+                final message = _impactScoreUpdated 
+                    ? 'Your Impact Score has been refreshed to reflect these profile changes. Keep growing! 🚀'
+                    : 'Business profile details have been successfully updated.';
+
+                uiService.showSnackBar(message);
                 uiService.goBack();
               } else {
+                // Major changes (Revenue/Brackets) from other screens. Route to full Analysis Loading Page.
                 uiService.navigateTo(const AnalysisStatePage());
               }
             } else if (authState is SmeProfileSubmissionError) {
@@ -324,16 +332,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   padding: EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      if (!widget._inEditMode) ...[
-                        Expanded(
-                          child: CustomButton(
-                            text: 'Previous',
-                            variant: ButtonVariant.secondary,
-                            onPressed: () => uiService.goBack(),
-                          ),
-                        ),
-                        SizedBox(width: AppSpacing.smd),
-                      ],
+                      //The 'Previous' button block was completely removed from here!
                       Expanded(
                         child: CustomButton(
                           text: widget._inEditMode
@@ -349,17 +348,37 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                               
                               final newYears = int.parse(_yearsController.text);
                               final newEmployees = int.parse(_employeesController.text);
-                              
-                              // Meaningful fields that trigger re-scoring
+                              final newIndustry = _selectedIndustry == 'Other' 
+                                    ? _otherIndustryController.text.trim()
+                                    : _selectedIndustry!;
+
+                              // ---------------------------------------------------------
+                              // THE SMART DIFF: Bracket Threshold Check
+                              // ---------------------------------------------------------
+                              int getEmpBracket(int emp) {
+                                if (emp >= 50) return 3;
+                                if (emp >= 20) return 2;
+                                if (emp >= 5) return 1;
+                                return 0;
+                              }
+
+                              int getSectorBracket(String s) {
+                                final lower = s.toLowerCase();
+                                final high = ['health', 'education', 'agriculture', 'farming', 'clean energy'];
+                                final medium = ['manufacturing', 'technology', 'logistics', 'fintech'];
+                                if (high.any((k) => lower.contains(k))) return 2;
+                                if (medium.any((k) => lower.contains(k))) return 1;
+                                return 0;
+                              }
+
+                              // Only trigger the AI if they cross an actual threshold!
                               final bool meaningfulChanged = 
-                                  newYears != oldState.yearsOfOperation || 
-                                  newEmployees != oldState.numberOfEmployees;
+                                  getEmpBracket(oldState.numberOfEmployees) != getEmpBracket(newEmployees) ||
+                                  getSectorBracket(oldState.industry) != getSectorBracket(newIndustry);
 
                               profileCubit.updateBusinessProfile(
                                 businessName: _nameController.text,
-                                industry: _selectedIndustry == 'Other' 
-                                    ? _otherIndustryController.text.trim()
-                                    : _selectedIndustry!,
+                                industry: newIndustry,
                                 location: _locationController.text,
                                 yearsOfOperation: newYears,
                                 numberOfEmployees: newEmployees,
@@ -367,8 +386,11 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                               );
 
                               if (widget._inEditMode) {
-                                _navigateToAnalysis = meaningfulChanged;
-                                // Save to backend
+                                // NEVER navigate to analysis from the edit screen!
+                                _navigateToAnalysis = false; 
+                                _impactScoreUpdated = meaningfulChanged;
+                                
+                                // Save to backend (AI triggered in background if meaningfulChanged is true)
                                 final newState = profileCubit.state;
                                 context.read<AuthBloc>().add(
                                   SubmitSmeProfileEvent(

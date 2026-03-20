@@ -15,6 +15,7 @@ import 'package:partnex/features/auth/presentation/pages/login_page.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
+import 'package:partnex/core/theme/widgets/circular_score_ring.dart';
 
 class SmeDiscoveryFeedPage extends StatefulWidget {
   const SmeDiscoveryFeedPage({super.key});
@@ -423,30 +424,10 @@ class _SmeDiscoveryFeedPageState extends State<SmeDiscoveryFeedPage> {
                 // Right Section (Score Badge) ~10%
                 // Score Badge (Clicking anywhere on card handles navigation)
                 const SizedBox(width: 12),
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: sme.scoreColor,
-                    shape: BoxShape.circle,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.05),
-                        blurRadius: 2,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${sme.score}',
-                      style: AppTypography.textTheme.headlineSmall?.copyWith(
-                        color: AppColors.neutralWhite,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+                CircularScoreRing(
+                  score: sme.score,
+                  size: 64,
+                  fontSizeOverride: 15,
                 ),
                 // Note: risk label is hidden on mobile per spec
                 // to maintain strict 64px height and density.

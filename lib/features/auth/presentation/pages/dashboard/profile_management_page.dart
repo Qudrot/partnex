@@ -20,6 +20,7 @@ import 'package:partnex/features/auth/data/models/user_model.dart';
 import 'package:partnex/core/theme/widgets/sme_about_section.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/bio_edit_page.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/faq_page.dart';
+import 'package:partnex/core/theme/widgets/circular_score_ring.dart';
 
 class ProfileManagementPage extends StatefulWidget {
   const ProfileManagementPage({super.key});
@@ -72,7 +73,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               final scoreState = context.watch<ScoreCubit>().state;
 
               int scoreValue = 0;
-              String riskLevelString = 'High Risk';
+              String riskLevelString = 'HIGH RISK';
               Color riskColor = AppColors.dangerRed;
 
               if (scoreState is ScoreLoadedSuccess) {
@@ -80,10 +81,10 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                 scoreValue = scoreData.totalScore.toInt();
 
                 if (scoreData.riskLevel == RiskLevel.low) {
-                  riskLevelString = 'Low Risk';
+                  riskLevelString = 'LOW RISK';
                   riskColor = AppColors.successGreen;
                 } else if (scoreData.riskLevel == RiskLevel.medium) {
-                  riskLevelString = 'Medium Risk';
+                  riskLevelString = 'MEDIUM RISK';
                   riskColor = AppColors.warningAmber;
                 }
               }
@@ -119,23 +120,9 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              width: AppSpacing.avatar,
-                              height: AppSpacing.avatar,
-                              decoration: BoxDecoration(
-                                color: riskColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '$scoreValue',
-                                  style: AppTypography.textTheme.headlineMedium
-                                      ?.copyWith(
-                                        color: AppColors.neutralWhite,
-                                        fontSize: 24,
-                                      ),
-                                ),
-                              ),
+                            CircularScoreRing(
+                              score: scoreValue,
+                              size: 70,
                             ),
                             SizedBox(width: AppSpacing.md),
                             Expanded(
@@ -173,7 +160,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                                     decoration: BoxDecoration(
                                       color: riskColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(
-                                        AppRadius.sm,
+                                        100,
                                       ),
                                       border: Border.all(
                                         color: riskColor.withValues(alpha: 0.3),
@@ -284,9 +271,12 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                               'Allow verified investors to view and download your uploaded bank statements',
                           icon: LucideIcons.shield,
                           value: profileState.allowSharing,
-                          onChanged: (val) => context
-                              .read<SmeProfileCubit>()
-                              .updateSharingPolicy(val),
+                          onChanged: (val) {
+                            context.read<SmeProfileCubit>().updateSharingPolicy(val);
+                            // Persist to backend
+                            final updatedState = context.read<SmeProfileCubit>().state.copyWith(allowSharing: val);
+                            context.read<AuthBloc>().add(SubmitSmeProfileEvent(updatedState.toMap()));
+                          },
                         ),
                         Divider(height: 1, color: AppColors.slate200),
                         _ToggleTile(
