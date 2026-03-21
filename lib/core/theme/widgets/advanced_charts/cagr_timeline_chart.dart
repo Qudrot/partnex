@@ -136,13 +136,6 @@ class _CAGRTimelineChartState extends State<CAGRTimelineChart>
                           decoration: BoxDecoration(
                             color: barColor,
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: barColor.withValues(alpha: 0.3),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
                           ),
                           // Dashed border for projected bar
                           child: point.isProjected

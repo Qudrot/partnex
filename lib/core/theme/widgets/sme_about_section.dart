@@ -82,7 +82,7 @@ class SmeAboutSection extends StatelessWidget {
               TextSpan(
                 children: [
                   TextSpan(
-                    text: "No bio yet. ",
+                    text: "Add a bio to build credibility and help investors reach you. ",
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -96,7 +96,7 @@ class SmeAboutSection extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onEditBio,
                       child: Text(
-                        'Add Bio',
+                        'Add Now',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,

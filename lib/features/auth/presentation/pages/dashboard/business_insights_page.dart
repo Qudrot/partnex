@@ -49,13 +49,6 @@ class BusinessInsightsPage extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        actions: [
-          if (sme.dataSource != DataSource.selfReported)
-            IconButton(
-              icon: const Icon(LucideIcons.download, size: 20, color: AppColors.slate900),
-              onPressed: () {},
-            ),
-        ],
       ),
       body: SafeArea(
         child: _buildBody(context),
@@ -64,6 +57,17 @@ class BusinessInsightsPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    // Privacy Logic: SMEs can always see their own data. 
+    // Investors can only see it if allowSharing is true.
+    final bool isPrivate = !isSmeView && !sme.allowSharing;
+
+    if (isPrivate) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: _buildPrivacyLock(context),
+      );
+    }
+
     // Dynamic Display Logic
     final bool hasHistory = sme.previousAnnualRevenue > 0;
     final bool hasRevenue = sme.annualRevenue > 0;
@@ -86,9 +90,6 @@ class BusinessInsightsPage extends StatelessWidget {
             _buildAssessmentBox(),
             const SizedBox(height: 24),
             
-            if (!sme.allowSharing) 
-              _buildPrivacyLock()
-            else ...[
             Text(
               'Performance Metrics',
               style: AppTypography.textTheme.headlineSmall?.copyWith(
@@ -139,7 +140,6 @@ class BusinessInsightsPage extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             _buildFinancialStatementsRow(),
-            ],
           ],
         );
       },
@@ -223,19 +223,8 @@ class BusinessInsightsPage extends StatelessWidget {
         baseColor: AppColors.trustBlue,
         thirdColor: AppColors.slate400,
       ),
-      summary: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Growth Rate', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
-              Text('${sme.yoyGrowth > 0 ? '+' : ''}${sme.yoyGrowth.toStringAsFixed(1)}% YoY', 
-                style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: sme.revenueTrendColor)),
-            ],
-          ),
-        ],
-      ),
+      summary: _buildSummaryText('Growth Rate', '${sme.yoyGrowth > 0 ? '+' : ''}${sme.yoyGrowth.toStringAsFixed(1)}% YoY', 
+        valueColor: sme.revenueTrendColor),
     );
   }
 
@@ -304,19 +293,8 @@ class BusinessInsightsPage extends StatelessWidget {
         negativeColor: AppColors.dangerRed,
         baseColor: AppColors.trustBlue,
       ),
-      summary: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Compounded Rate', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
-          Text(
-            '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}% / yr',
-            style: AppTypography.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: cagr >= 0 ? AppColors.successGreen : AppColors.dangerRed,
-            ),
-          ),
-        ],
-      ),
+      summary: _buildSummaryText('Compounded Rate', '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}% / yr', 
+        valueColor: cagr >= 0 ? AppColors.successGreen : AppColors.dangerRed),
     );
   }
 
@@ -335,7 +313,7 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: benchmark * 1.5,
         currentLabel: '₦${(revPerEmp/1000000).toStringAsFixed(2)}M',
       ),
-      summary: Text('Employees: ${sme.numberOfEmployees} | Status: ${revPerEmp >= benchmark ? 'Positive' : 'Concerning'}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Employees', '${sme.numberOfEmployees}', secondLabel: 'Status', secondValue: revPerEmp >= benchmark ? 'Positive' : 'Concerning'),
     );
   }
 
@@ -354,7 +332,7 @@ class BusinessInsightsPage extends StatelessWidget {
           centerSubLabel: 'Expenses',
         ),
       ),
-      summary: Text('Monthly Expenses: ₦${NumberFormat('#,###').format(sme.monthlyExpenses)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'),
     );
   }
 
@@ -373,7 +351,7 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 20, endValue: 30, color: AppColors.successGreen, label: 'Healthy'),
         ],
       ),
-      summary: Text('Annual Profit: ₦${NumberFormat('#,###').format(sme.annualRevenue - sme.monthlyExpenses * 12)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Annual Profit', '₦${NumberFormat('#,###').format(sme.annualRevenue - sme.monthlyExpenses * 12)}'),
     );
   }
 
@@ -391,7 +369,7 @@ class BusinessInsightsPage extends StatelessWidget {
         currentLabel: '₦${(avgProfit/1000).toStringAsFixed(0)}K',
         showBenchmarkLabels: false,
       ),
-      summary: Text('Avg Monthly Profit: ₦${NumberFormat('#,###').format(avgProfit)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Avg Monthly Profit', '₦${NumberFormat('#,###').format(avgProfit)}'),
     );
   }
 
@@ -410,7 +388,7 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 50, endValue: 70, color: AppColors.dangerRed, label: 'Critical'),
         ],
       ),
-      summary: Text('Liabilities: ₦${NumberFormat('#,###').format(sme.liabilities)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'),
     );
   }
 
@@ -431,7 +409,7 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 200, endValue: 300, color: AppColors.dangerRed, label: '3+ yrs'),
         ],
       ),
-      summary: Text('Ratio: ${ratio.toStringAsFixed(1)}%', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Ratio', '${ratio.toStringAsFixed(1)}%'),
     );
   }
 
@@ -449,7 +427,7 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: bench * 2,
         currentLabel: '₦${(val/1000).toStringAsFixed(0)}K',
       ),
-      summary: Text('Target: < ₦500K / employee', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Target', '< ₦500K / employee'),
     );
   }
 
@@ -470,7 +448,7 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 1.0, endValue: 2.5, color: AppColors.successGreen, label: 'Healthy'),
         ],
       ),
-      summary: Text('Coverage Ratio: ${coverage.toStringAsFixed(2)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Coverage Ratio', coverage.toStringAsFixed(2)),
     );
   }
 
@@ -488,7 +466,7 @@ class BusinessInsightsPage extends StatelessWidget {
           TimelineMilestone(year: 5, label: '5 yrs'),
         ],
       ),
-      summary: Text('Current: ${sme.yearsOfOperation} years', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Current', '${sme.yearsOfOperation} years'),
     );
   }
 
@@ -513,7 +491,7 @@ class BusinessInsightsPage extends StatelessWidget {
         currentLabel: '${rate.toStringAsFixed(1)} / yr',
         showBenchmarkLabels: false,
       ),
-      summary: Text('Avg Hiring Rate: ${rate.toStringAsFixed(1)} / year', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Avg Hiring Rate', '${rate.toStringAsFixed(1)} / year'),
     );
   }
 
@@ -532,7 +510,7 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: bench * 2,
         currentLabel: '₦${(val/1000).toStringAsFixed(0)}K',
       ),
-      summary: Text('Total Growth: ₦${NumberFormat('#,###').format(growth)}', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+      summary: _buildSummaryText('Total Growth', '₦${NumberFormat('#,###').format(growth)}'),
     );
   }
 
@@ -578,23 +556,36 @@ class BusinessInsightsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPrivacyLock() {
+  Widget _buildPrivacyLock(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
       decoration: BoxDecoration(
         color: AppColors.neutralWhite,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.slate200),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(LucideIcons.lock, size: 48, color: AppColors.slate400),
+          Container(
+            padding: EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.trustBlue.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              LucideIcons.lock,
+              size: 48,
+              color: AppColors.trustBlue,
+            ),
+          ),
           const SizedBox(height: 24),
           Text(
             'Financial Data is Private',
             style: AppTypography.textTheme.headlineSmall?.copyWith(
               color: AppColors.slate900,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
             textAlign: TextAlign.center,
           ),
@@ -604,8 +595,19 @@ class BusinessInsightsPage extends StatelessWidget {
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.slate600,
               height: 1.5,
+              fontSize: 14,
             ),
             textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          CustomButton(
+            text: 'Message ${sme.companyName}',
+            variant: ButtonVariant.primary,
+            isFullWidth: true,
+            onPressed: () {
+              // Navigation or bottom sheet for messaging
+              Navigator.pop(context); // Simple fallback for now
+            },
           ),
         ],
       ),
@@ -675,6 +677,37 @@ class BusinessInsightsPage extends StatelessWidget {
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
               ),
               child: summary,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+  Widget _buildSummaryText(String label, String value, {Color? valueColor, String? secondLabel, String? secondValue}) {
+    return Text.rich(
+      TextSpan(
+        style: AppTypography.textTheme.bodyMedium?.copyWith(
+          color: AppColors.slate600,
+          fontSize: 12.5,
+        ),
+        children: [
+          TextSpan(text: '$label: '),
+          TextSpan(
+            text: value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold, 
+              color: valueColor ?? AppColors.slate900,
+            ),
+          ),
+          if (secondLabel != null && secondValue != null) ...[
+            TextSpan(text: '  |  '),
+            TextSpan(text: '$secondLabel: '),
+            TextSpan(
+              text: secondValue,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold, 
+                color: AppColors.slate900,
+              ),
             ),
           ],
         ],

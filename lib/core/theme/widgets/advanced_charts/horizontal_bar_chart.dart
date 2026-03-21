@@ -29,22 +29,6 @@ class HorizontalBarChart extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (showBenchmarkLabels)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Text(
-                  'Benchmark',
-                  style: AppTypography.textTheme.labelMedium?.copyWith(
-                    color: AppColors.slate500,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        if (showBenchmarkLabels) const SizedBox(height: 8),
         SizedBox(
           height: 32,
           child: LayoutBuilder(

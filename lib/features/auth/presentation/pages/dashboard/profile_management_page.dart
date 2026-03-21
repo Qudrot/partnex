@@ -268,7 +268,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                         _ToggleTile(
                           title: 'Data Sharing with Investors',
                           subtitle:
-                              'Allow verified investors to view and download your uploaded bank statements',
+                              'Allow investors to view your business insights',
                           icon: LucideIcons.shield,
                           value: profileState.allowSharing,
                           onChanged: (val) {

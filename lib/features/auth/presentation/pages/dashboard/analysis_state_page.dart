@@ -303,26 +303,26 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                   const Spacer(),
                   if (!_isError)
                     Padding(
-                      padding: EdgeInsets.only(bottom: 24.0),
+                      padding: const EdgeInsets.only(bottom: 24.0, left: 16.0, right: 16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
                             LucideIcons.lock,
-                            size: 16,
-                            color: AppColors.slate600,
+                            size: 14,
+                            color: AppColors.slate500,
                           ),
-                          //const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Flexible(
                             child: Text(
-                              'Your data is secure. We never share your information without your consent.',
-                              style: AppTypography.textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontSize: 12,
-                                    color: AppColors.slate600,
-                                    letterSpacing: -0.1,
-                                  ),
-                              textAlign: TextAlign.center,
+                              'Your data is secure and never shared without your consent.',
+                              style: AppTypography.textTheme.bodySmall?.copyWith(
+                                fontSize: 11,
+                                color: AppColors.slate500,
+                                letterSpacing: 0,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
