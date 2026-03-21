@@ -276,6 +276,23 @@ class SmeProfileState extends Equatable {
       return defaultValue;
     }
 
+    // Helper to extract bool values (Handles bool, int 0/1, and String "true"/"false")
+    bool? extractBool(List<String> keys, bool? defaultValue) {
+      for (var key in keys) {
+        if (map[key] != null) {
+          final val = map[key];
+          if (val is bool) return val;
+          if (val is num) return val == 1; // 1 = true, 0 = false
+          if (val is String) {
+            final s = val.toLowerCase().trim();
+            if (s == 'true' || s == '1' || s == 'yes') return true;
+            if (s == 'false' || s == '0' || s == 'no') return false;
+          }
+        }
+      }
+      return defaultValue;
+    }
+
     return SmeProfileState(
       businessName: map['businessName'] ?? map['business_name'] ?? map['name'] ?? '',
       industry: map['industry'] ?? map['industry_sector'] ?? map['sector'] ?? '',
@@ -301,7 +318,7 @@ class SmeProfileState extends Equatable {
       totalLiabilities: extractDouble(['totalLiabilities', 'existing_liabilities', 'liabilities_total', 'liabilities', 'debt', 'loans'], 0) ?? 0.0,
       outstandingLoans: extractDouble(['outstandingLoans', 'outstanding_loans'], 0) ?? 0.0,
       
-      hasPriorFunding: map['hasPriorFunding'] ?? map['has_prior_funding'],
+      hasPriorFunding: extractBool(['hasPriorFunding', 'has_prior_funding'], null),
       priorFundingAmount: (() {
         final val = extractDouble(['priorFundingAmount', 'prior_funding_amount'], null);
         return (val != null && val > 0) ? val : null;
@@ -314,11 +331,11 @@ class SmeProfileState extends Equatable {
       latePaymentsOver30Days: extractInt(['latePaymentsOver30Days', 'late_payments_over_30_days'], 0) ?? 0,
       latePaymentsOver60Days: extractInt(['latePaymentsOver60Days', 'late_payments_over_60_days'], 0) ?? 0,
       numDocumentsSubmitted: extractInt(['numDocumentsSubmitted', 'num_documents_submitted'], 0) ?? 0,
-      areDocumentsRecent: map['areDocumentsRecent'] ?? map['are_documents_recent'] ?? false,
-      areDocumentsComplete: map['areDocumentsComplete'] ?? map['are_documents_complete'] ?? false,
-      areDocumentsConsistent: map['areDocumentsConsistent'] ?? map['are_documents_consistent'] ?? false,
+      areDocumentsRecent: extractBool(['areDocumentsRecent', 'are_documents_recent'], false) ?? false,
+      areDocumentsComplete: extractBool(['areDocumentsComplete', 'are_documents_complete'], false) ?? false,
+      areDocumentsConsistent: extractBool(['areDocumentsConsistent', 'are_documents_consistent'], false) ?? false,
       dataSource: DataSource.values.firstWhere((e) => e.name == (map['dataSource'] ?? 'selfReported'), orElse: () => DataSource.selfReported),
-      allowSharing: map['allowSharing'] ?? map['allow_sharing'] ?? false,
+      allowSharing: extractBool(['allowSharing', 'allow_sharing'], false) ?? false,
       bio: map['bio'] ?? '',
       websiteUrl: map['websiteUrl'] ?? map['website'] ?? '',
       whatsappNumber: map['whatsappNumber'] ?? map['whatsapp'] ?? '',

@@ -29,6 +29,7 @@ class DataSourceBadge extends StatelessWidget {
       borderColor = AppColors.trustBlue.withValues(alpha: 0.2);
     }
 
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.sm,

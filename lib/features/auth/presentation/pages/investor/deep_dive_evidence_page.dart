@@ -205,14 +205,17 @@ class DeepDiveEvidencePage extends StatelessWidget {
       subtitle: 'Year-over-year growth visualization',
       chart: CircularRingsChart(
         data: CircularRingsChartData(
-          baseLabel: 'Year 1',
+          baseLabel: sme.annualRevenueYear2 > 0 ? '${sme.annualRevenueYear2}' : 'Year 1',
           baseValue: sme.previousAnnualRevenue,
-          finalLabel: 'Year 2',
+          finalLabel: sme.annualRevenueYear1 > 0 ? '${sme.annualRevenueYear1}' : 'Year 2',
           finalValue: sme.annualRevenue,
+          thirdLabel: sme.annualRevenueYear3 > 0 ? '${sme.annualRevenueYear3}' : null,
+          thirdValue: sme.annualRevenueYear3 > 0 ? sme.annualRevenueAmount3 : null,
         ),
         positiveColor: AppColors.successGreen,
         negativeColor: AppColors.dangerRed,
-        baseColor: AppColors.slate400,
+        baseColor: AppColors.trustBlue,
+        thirdColor: AppColors.slate400,
       ),
       summary: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,33 +235,59 @@ class DeepDiveEvidencePage extends StatelessWidget {
 
   // 1.2 CAGR
   Widget _buildCAGRCard() {
-    final double cagr = sme.previousAnnualRevenue > 0
-        ? ((sme.annualRevenue - sme.previousAnnualRevenue) / sme.previousAnnualRevenue) * 100
-        : 0.0;
-    final double multiplier = sme.previousAnnualRevenue > 0 ? sme.annualRevenue / sme.previousAnnualRevenue : 1.0;
-    final double projectedY3 = sme.annualRevenue * multiplier;
+    double nYears = 1.0;
+    double totalMultiplier = 1.0;
+    
+    if (sme.annualRevenueAmount3 > 0 && sme.annualRevenueYear3 > 0 && sme.annualRevenueYear1 > 0) {
+      nYears = (sme.annualRevenueYear1 - sme.annualRevenueYear3).toDouble().clamp(1.0, 100.0);
+      totalMultiplier = sme.annualRevenue / sme.annualRevenueAmount3;
+    } else if (sme.previousAnnualRevenue > 0 && sme.annualRevenueYear2 > 0 && sme.annualRevenueYear1 > 0) {
+      nYears = (sme.annualRevenueYear1 - sme.annualRevenueYear2).toDouble().clamp(1.0, 100.0);
+      totalMultiplier = sme.annualRevenue / sme.previousAnnualRevenue;
+    } else if (sme.previousAnnualRevenue > 0) {
+      nYears = 1.0;
+      totalMultiplier = sme.annualRevenue / sme.previousAnnualRevenue;
+    }
 
-    final List<CAGRTimelinePoint> timelinePoints = [
-      CAGRTimelinePoint(
-        yearLabel: 'Year 1',
-        revenue: sme.previousAnnualRevenue,
+    final double cagr = totalMultiplier > 0 ? (math.pow(totalMultiplier, 1 / nYears) - 1) * 100 : 0.0;
+    final double projectedYNext = sme.annualRevenue * math.pow(1 + (cagr / 100), 1);
+
+    final List<CAGRTimelinePoint> timelinePoints = [];
+
+    // Add Year 3 (Earliest) if exists
+    if (sme.annualRevenueAmount3 > 0) {
+      timelinePoints.add(CAGRTimelinePoint(
+        yearLabel: sme.annualRevenueYear3 > 0 ? '${sme.annualRevenueYear3}' : 'Year 1',
+        revenue: sme.annualRevenueAmount3,
         growthRate: null,
-        isProjected: false,
-      ),
-      CAGRTimelinePoint(
-        yearLabel: 'Year 2',
-        revenue: sme.annualRevenue,
+      ));
+    }
+
+    // Add Year 2 (Middle)
+    timelinePoints.add(CAGRTimelinePoint(
+      yearLabel: sme.annualRevenueYear2 > 0 ? '${sme.annualRevenueYear2}' : (timelinePoints.isEmpty ? 'Year 1' : 'Year 2'),
+      revenue: sme.previousAnnualRevenue,
+      growthRate: timelinePoints.isNotEmpty
+          ? ((sme.previousAnnualRevenue - timelinePoints.last.revenue) / timelinePoints.last.revenue) * 100
+          : null,
+    ));
+
+    // Add Year 1 (Latest Activity)
+    timelinePoints.add(CAGRTimelinePoint(
+      yearLabel: sme.annualRevenueYear1 > 0 ? '${sme.annualRevenueYear1}' : 'Year ${timelinePoints.length + 1}',
+      revenue: sme.annualRevenue,
+      growthRate: ((sme.annualRevenue - sme.previousAnnualRevenue) / sme.previousAnnualRevenue) * 100,
+    ));
+
+    // Add Projected Year
+    if (sme.annualRevenue > 0) {
+      timelinePoints.add(CAGRTimelinePoint(
+        yearLabel: sme.annualRevenueYear1 > 0 ? '${sme.annualRevenueYear1 + 1}' : 'Projected',
+        revenue: projectedYNext,
         growthRate: cagr,
-        isProjected: false,
-      ),
-      if (sme.previousAnnualRevenue > 0)
-        CAGRTimelinePoint(
-          yearLabel: 'Year 3',
-          revenue: projectedY3,
-          growthRate: cagr,
-          isProjected: true,
-        ),
-    ];
+        isProjected: true,
+      ));
+    }
 
     return _buildMetricCard(
       title: 'CAGR',
@@ -272,9 +301,9 @@ class DeepDiveEvidencePage extends StatelessWidget {
       summary: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('CAGR', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
+          Text('Compounded Rate', style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600)),
           Text(
-            '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}%',
+            '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}% / yr',
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: cagr >= 0 ? AppColors.successGreen : AppColors.dangerRed,
@@ -523,7 +552,16 @@ class DeepDiveEvidencePage extends StatelessWidget {
               DataColumn(label: Text('Amount', style: AppTypography.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
             ],
             rows: [
-              DataRow(cells: [DataCell(Text('Annual Revenue')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenue)}'))]),
+              if (sme.annualRevenueYear1 > 0)
+                DataRow(cells: [DataCell(Text('Revenue (${sme.annualRevenueYear1})')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenue)}'))]),
+              if (sme.annualRevenueYear2 > 0)
+                DataRow(cells: [DataCell(Text('Revenue (${sme.annualRevenueYear2})')), DataCell(Text('₦${NumberFormat('#,###').format(sme.previousAnnualRevenue)}'))]),
+              if (sme.annualRevenueYear3 > 0)
+                DataRow(cells: [DataCell(Text('Revenue (${sme.annualRevenueYear3})')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenueAmount3)}'))]),
+              
+              if (sme.annualRevenueYear1 == 0) // Fallback for old data
+                 DataRow(cells: [DataCell(Text('Annual Revenue')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenue)}'))]),
+
               DataRow(cells: [DataCell(Text('Monthly Expenses')), DataCell(Text('₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'))]),
               DataRow(cells: [DataCell(Text('Total Liabilities')), DataCell(Text('₦${NumberFormat('#,###').format(sme.liabilities)}'))]),
               DataRow(cells: [DataCell(Text('Net Profit (Est)')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenue - (sme.monthlyExpenses * 12))}'))]),

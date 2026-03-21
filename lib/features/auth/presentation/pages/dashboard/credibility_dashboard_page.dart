@@ -150,9 +150,35 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
         }
 
         if (state is ScoreError) {
+          // Strip the Dart "Exception: " prefix if present so users see a clean message.
+          final rawMsg = state.message.startsWith('Exception: ')
+              ? state.message.substring('Exception: '.length)
+              : state.message;
           return Scaffold(
             backgroundColor: AppColors.neutralWhite,
-            body: Center(child: Text('We couldn\'t load your credibility score. Please try again.', style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600), textAlign: TextAlign.center)),
+            body: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(LucideIcons.wifiOff, size: 48, color: AppColors.slate400),
+                    SizedBox(height: AppSpacing.lg),
+                    Text(
+                      rawMsg,
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+                    CustomButton(
+                      text: 'Try again',
+                      variant: ButtonVariant.primary,
+                      onPressed: () => context.read<ScoreCubit>().fetchDashboardData(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         }
 

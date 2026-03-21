@@ -229,7 +229,9 @@ class ApiAuthRepository implements AuthRepository {
         "email": data['email'],
         "phone_number": data['phoneNumber'],
         "allow_sharing": data['allowSharing'] == false ? 0 : 1,
+        "data_source": data['dataSource'],
       };
+
 
       List<Map<String, dynamic>> revData = [];
       if (data['annualRevenueYear1'] != null) {
@@ -528,6 +530,16 @@ revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
       String? token = apiClient.getCachedToken();
       if (token == null || token.isEmpty) {
         token = await _secureStorage.read(key: 'jwt_token');
+      }
+      if (token == null || token.isEmpty) {
+        // Try returning cached score before throwing
+        try {
+          final cachedStr = await _secureStorage.read(key: 'cached_credibility_score');
+          if (cachedStr != null && cachedStr.isNotEmpty) {
+            return CredibilityScore.fromJson(jsonDecode(cachedStr));
+          }
+        } catch (_) {}
+        throw Exception('Your session has expired. Please sign in again to continue.');
       }
       final authOptions = Options(
         headers: {'Authorization': 'Bearer $token'},

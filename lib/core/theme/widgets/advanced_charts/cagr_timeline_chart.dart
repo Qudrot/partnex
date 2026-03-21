@@ -192,16 +192,8 @@ class _CAGRTimelineChartState extends State<CAGRTimelineChart>
   }
 
   Widget _buildConnector(CAGRTimelinePoint from, CAGRTimelinePoint to) {
-    final bool isGrowth = to.revenue >= from.revenue;
-    return SizedBox(
+    return const SizedBox(
       width: 24,
-      child: Center(
-        child: Icon(
-          isGrowth ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-          size: 16,
-          color: isGrowth ? widget.positiveColor : widget.negativeColor,
-        ),
-      ),
     );
   }
 

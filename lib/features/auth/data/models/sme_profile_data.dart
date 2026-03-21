@@ -71,8 +71,12 @@ class SmeCardData {
   final String location;
   final int yearsOfOperation;
   final int numberOfEmployees;
+  final int annualRevenueYear1;
+  final int annualRevenueYear2;
+  final int annualRevenueYear3;
   final double annualRevenue;
   final double previousAnnualRevenue;
+  final double annualRevenueAmount3;
   final double monthlyExpenses;
   final double liabilities;
   final String fundingHistory;
@@ -271,7 +275,15 @@ class SmeCardData {
 
     // Revenue Analysis
     if (previousAnnualRevenue > 0) {
-      if (yoyGrowth > 15) {
+      if (annualRevenueAmount3 > 0) {
+        final double totalGrowth = ((annualRevenue - annualRevenueAmount3) / annualRevenueAmount3) * 100;
+        final String startYear = annualRevenueYear3 > 0 ? '$annualRevenueYear3' : 'Year 3';
+        final String currentYear = annualRevenueYear1 > 0 ? '$annualRevenueYear1' : 'Year 1';
+        
+        highlights.add(
+          "has seen a ${(totalGrowth).toStringAsFixed(1)}% revenue expansion since $startYear, culminating in ₦${(annualRevenue / 1e6).toStringAsFixed(1)}M for $currentYear",
+        );
+      } else if (yoyGrowth > 15) {
         highlights.add(
           "demonstrates robust scaling with a ${yoyGrowth.toStringAsFixed(1)}% YoY revenue surge",
         );
@@ -334,8 +346,12 @@ class SmeCardData {
     required this.location,
     required this.yearsOfOperation,
     required this.numberOfEmployees,
+    this.annualRevenueYear1 = 0,
+    this.annualRevenueYear2 = 0,
+    this.annualRevenueYear3 = 0,
     required this.annualRevenue,
     this.previousAnnualRevenue = 0.0,
+    this.annualRevenueAmount3 = 0.0,
     required this.monthlyExpenses,
     required this.liabilities,
     required this.fundingHistory,
@@ -389,12 +405,14 @@ class SmeCardData {
                 '0',
           ) ??
           0,
+      annualRevenueYear1: int.tryParse(map['annual_revenue_year_1']?.toString() ?? '0') ?? 0,
+      annualRevenueYear2: int.tryParse(map['annual_revenue_year_2']?.toString() ?? '0') ?? 0,
+      annualRevenueYear3: int.tryParse(map['annual_revenue_year_3']?.toString() ?? '0') ?? 0,
       annualRevenue:
           double.tryParse(
-            map['annual_revenue_amount_2']?.toString() ??
-                map['annualRevenue2']?.toString() ??
-                map['revenue2']?.toString() ??
-                map['annual_revenue_amount_1']?.toString() ??
+            map['annual_revenue_amount_1']?.toString() ??
+                map['annualRevenue1']?.toString() ??
+                map['revenue1']?.toString() ??
                 map['annualRevenue']?.toString() ??
                 map['revenue']?.toString() ??
                 '0',
@@ -402,16 +420,21 @@ class SmeCardData {
           0.0,
       previousAnnualRevenue:
           double.tryParse(
-            (map['annual_revenue_amount_2'] != null ||
-                    map['annualRevenue2'] != null ||
-                    map['revenue2'] != null)
-                ? (map['annual_revenue_amount_1']?.toString() ??
-                      map['annualRevenue1']?.toString() ??
-                      map['revenue1']?.toString() ??
-                      '0')
-                : '0',
+            map['annual_revenue_amount_2']?.toString() ??
+                map['annualRevenue2']?.toString() ??
+                map['revenue2']?.toString() ??
+                '0',
           ) ??
           0.0,
+      annualRevenueAmount3:
+          double.tryParse(
+            map['annual_revenue_amount_3']?.toString() ??
+                map['annualRevenue3']?.toString() ??
+                map['revenue3']?.toString() ??
+                '0',
+          ) ??
+          0.0,
+
       monthlyExpenses:
           double.tryParse(
             map['monthly_expenses']?.toString() ??

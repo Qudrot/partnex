@@ -15,31 +15,40 @@ class ScoreCubit extends Cubit<ScoreState> {
   Future<void> fetchDashboardData() async {
     emit(ScoreLoading());
     try {
-      // 1. Fetch data from backend
-      final serverProfile = await authRepository.getMySmeProfile();
+      // 1. Fetch score — this is the critical call. A failure here surfaces the error.
       final score = await authRepository.getMyScore();
-      
-      // 2. Fetch data from local cache (raw UI map)
+
+      // 2. Fetch profile from backend — non-fatal; we fall back to cache if it fails.
+      Map<String, dynamic> serverProfile = {};
+      try {
+        serverProfile = await authRepository.getMySmeProfile();
+      } catch (_) {
+        // Server profile unavailable — the cached profile below will cover this.
+      }
+
+      // 3. Fetch data from local cache (raw UI map)
       final cachedProfile = await authRepository.getCachedSmeProfile();
-      
-      // 3. AGGRESSIVE MERGE: Construct a state from cache first, then overlay server data.
-      // This ensures that any fields the server is missing (but were submitted) are preserved.
+
+      // 4. AGGRESSIVE MERGE: cache first, then overlay server data.
+      // This ensures fields the server is missing (but were submitted) are preserved.
       final Map<String, dynamic> mergedProfile = {...cachedProfile, ...serverProfile};
-      
+
       final profileState = SmeProfileState.fromMap(mergedProfile);
-      
-      // 4. Sync to SmeProfileCubit for "Add new" flow
+
+      // 5. Sync to SmeProfileCubit for "Add new" flow
       smeProfileCubit.updateFromMap(mergedProfile);
-      
-      // 5. Calculate metrics from the unified state
+
+      // 6. Calculate metrics from the unified state
       final metrics = FinancialMetricsCalculator.calculate(profileState);
-      
+
       emit(ScoreLoadedSuccess(
-        score: score, 
-        smeProfile: mergedProfile, 
-        financialMetrics: metrics
+        score: score,
+        smeProfile: mergedProfile,
+        financialMetrics: metrics,
       ));
     } catch (e) {
+      // If the error is a session-expiry, surface it clearly.
+      // Otherwise show the generic error state.
       emit(ScoreError(message: e.toString()));
     }
   }
