@@ -172,7 +172,8 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        centerTitle: true,
+        titleSpacing: 0,
+        centerTitle: false,
       ),
       body: SafeArea(
         child: BlocConsumer<AuthBloc, AuthState>(

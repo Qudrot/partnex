@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:partnex/core/theme/widgets/message_sme_bottom_sheet.dart';
 import 'dart:math' as math;
 
 import 'package:partnex/core/theme/app_colors.dart';
@@ -48,7 +49,8 @@ class BusinessInsightsPage extends StatelessWidget {
             color: AppColors.slate900,
           ),
         ),
-        centerTitle: true,
+        titleSpacing: 0,
+        centerTitle: false,
       ),
       body: SafeArea(
         child: _buildBody(context),
@@ -601,12 +603,24 @@ class BusinessInsightsPage extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           CustomButton(
-            text: 'Message ${sme.companyName}',
+            text: 'Message SME',
             variant: ButtonVariant.primary,
             isFullWidth: true,
             onPressed: () {
-              // Navigation or bottom sheet for messaging
-              Navigator.pop(context); // Simple fallback for now
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => MessageSmeBottomSheet(
+                  companyName: sme.companyName,
+                  email: sme.email,
+                  phoneNumber: sme.phoneNumber,
+                  website: sme.website,
+                  whatsappNumber: sme.whatsappNumber,
+                  linkedinUrl: sme.linkedinUrl,
+                  twitterHandle: sme.twitterHandle,
+                ),
+              );
             },
           ),
         ],

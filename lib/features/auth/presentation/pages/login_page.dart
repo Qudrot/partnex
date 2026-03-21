@@ -83,7 +83,8 @@ class _LoginPageState extends State<LoginPage> {
                   // Header
                   Padding(
                     padding: EdgeInsets.all(AppSpacing.md),
-                    child: Center(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
                       child: Text(
                         'Log In',
                         style: AppTypography.textTheme.bodyLarge?.copyWith(

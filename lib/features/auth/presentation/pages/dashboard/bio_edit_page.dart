@@ -112,12 +112,7 @@ class _BioEditPageState extends State<BioEditPage> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
-            onPressed: () {
-              if (!_isDirty) {
-                uiService.showSnackBar('Profile confirmed with no changes.');
-              }
-              uiService.goBack();
-            },
+            onPressed: () => uiService.goBack(),
           ),
           title: Text(
             'Edit Bio',
@@ -127,6 +122,7 @@ class _BioEditPageState extends State<BioEditPage> {
               color: AppColors.slate900,
             ),
           ),
+          titleSpacing: 0,
           centerTitle: false,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1.0),

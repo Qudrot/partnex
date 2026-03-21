@@ -31,8 +31,11 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _navigateToNext() async {
-    // 1. Force the splash screen to hold for exactly 5 seconds
-    await Future.delayed(const Duration(seconds: 3));
+    // 1. Snappier splash timing (reduced from 3s to 1.5s)
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    // Safety: If the widget was unmounted (e.g., during hot restart) during the delay, stop executing.
+    if (!mounted) return;
 
     // 2. Perform authentication checks while the user waits
     final storedToken = await _secureStorage.read(key: 'jwt_token');

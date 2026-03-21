@@ -200,9 +200,14 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
           riskColor = AppColors.warningOrange;
         }
 
-        final formattedDate = DateFormat(
-          'MMM d, yyyy h:mm a',
-        ).format(scoreData.calculatedAt);
+        final now = DateTime.now();
+        final isToday = scoreData.calculatedAt.year == now.year &&
+            scoreData.calculatedAt.month == now.month &&
+            scoreData.calculatedAt.day == now.day;
+            
+        final formattedDate = isToday 
+            ? 'Today at ${DateFormat('h:mm a').format(scoreData.calculatedAt)}'
+            : DateFormat('MMM d, yyyy h:mm a').format(scoreData.calculatedAt);
 
         return Scaffold(
           backgroundColor: AppColors.neutralWhite,
@@ -210,8 +215,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             backgroundColor: AppColors.neutralWhite,
             elevation: 0,
             automaticallyImplyLeading: false,
-            titleSpacing: 16,
-            centerTitle: true,
+            titleSpacing: 0,
+            centerTitle: false,
             leading: IconButton(
               icon: const Icon(
                 LucideIcons.menu,

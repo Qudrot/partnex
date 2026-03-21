@@ -319,7 +319,8 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
               color: AppColors.slate900,
             ),
           ),
-          centerTitle: true,
+          titleSpacing: 0,
+          centerTitle: false,
         ),
         backgroundColor: AppColors.neutralWhite,
         body: SafeArea(

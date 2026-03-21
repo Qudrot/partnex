@@ -119,7 +119,8 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                 fontSize: 18,
               ),
             ),
-            centerTitle: true,
+            titleSpacing: 0,
+            centerTitle: false,
           ),
           body: SafeArea(
             child: Column(

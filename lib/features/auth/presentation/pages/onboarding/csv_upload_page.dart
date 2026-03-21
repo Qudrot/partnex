@@ -141,7 +141,8 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          centerTitle: true,
+          titleSpacing: 0,
+          centerTitle: false,
           actions: [
             IconButton(
               icon: const Icon(LucideIcons.x, color: AppColors.slate900),

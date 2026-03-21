@@ -73,7 +73,8 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        centerTitle: true,
+        titleSpacing: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(

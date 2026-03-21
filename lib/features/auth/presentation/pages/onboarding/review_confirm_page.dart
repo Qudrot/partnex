@@ -159,7 +159,8 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                 color: AppColors.slate900,
               ),
             ),
-            centerTitle: true,
+            titleSpacing: 0,
+            centerTitle: false,
           ),
           body: SafeArea(
             child: Column(

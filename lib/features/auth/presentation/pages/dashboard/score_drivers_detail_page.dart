@@ -51,6 +51,8 @@ class ScoreDriversDetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.neutralWhite,
         elevation: 0,
+        centerTitle: false,
+        titleSpacing: 0,
         leading: IconButton(
           icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
           onPressed: () => Navigator.pop(context),
@@ -68,7 +70,6 @@ class ScoreDriversDetailPage extends StatelessWidget {
             const SizedBox(height: 2),
           ],
         ),
-        centerTitle: true,
       ),
       body: BlocBuilder<ScoreCubit, ScoreState>(
         builder: (context, state) {

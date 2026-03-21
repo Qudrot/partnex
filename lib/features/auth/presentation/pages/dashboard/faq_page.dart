@@ -22,7 +22,8 @@ class FaqPage extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
+        titleSpacing: 0,
         backgroundColor: AppColors.neutralWhite,
         elevation: 1,
         shadowColor: AppColors.slate200,
@@ -35,17 +36,18 @@ class FaqPage extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.all(AppSpacing.md),
           children: [
-            Text(
-              isInvestor ? 'Understanding SME Data' : 'Understanding Your Data',
-              style: AppTypography.textTheme.headlineMedium?.copyWith(
-                color: AppColors.slate900,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: AppSpacing.sm),
+            // Text(
+            //   isInvestor ? 'Understanding SME Data' : 'Understanding Your Data',
+            //   style: AppTypography.textTheme.headlineMedium?.copyWith(
+            //     color: AppColors.slate900,
+            //     fontSize: 22,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
+            // SizedBox(height: AppSpacing.sm),
             Text(
               isInvestor ? 'Learn how Partnex calculates credibility and extracts financial records for SMEs.' : 'Learn how Partnex calculates your credibility and extracts financial records securely.',
+              textAlign: TextAlign.center,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: AppColors.slate600,
               ),
