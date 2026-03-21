@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 
 enum CsvProcessingStatus { initial, processing, success, error }
 enum DataSource { uploaded, selfReported, bankData }
@@ -349,6 +350,40 @@ class SmeProfileState extends Equatable {
   }
 
   factory SmeProfileState.empty() => const SmeProfileState();
+
+  SmeCardData toSmeCardData(int score, String riskLevel) {
+    return SmeCardData(
+      id: 'me', // Self-view
+      companyName: businessName.isEmpty ? contactName : businessName,
+      industry: industry,
+      location: location,
+      yearsOfOperation: yearsOfOperation,
+      numberOfEmployees: numberOfEmployees,
+      annualRevenueYear1: annualRevenueYear1,
+      annualRevenueYear2: annualRevenueYear2,
+      annualRevenueYear3: annualRevenueYear3 ?? 0,
+      annualRevenue: annualRevenueAmount1,
+      previousAnnualRevenue: annualRevenueAmount2,
+      annualRevenueAmount3: annualRevenueAmount3 ?? 0.0,
+      monthlyExpenses: monthlyAvgExpenses,
+      liabilities: totalLiabilities,
+      fundingHistory: priorFundingSource ?? 'No prior funding',
+      score: score,
+      riskLevel: riskLevel,
+      generatedAt: DateTime.now(),
+      dataSource: dataSource == DataSource.uploaded ? DataSource.uploaded : (dataSource == DataSource.bankData ? DataSource.bankData : DataSource.selfReported),
+      allowSharing: allowSharing,
+      bio: bio,
+      website: websiteUrl,
+      contactPersonName: contactName,
+      contactPersonTitle: contactPosition,
+      phoneNumber: phoneNumber,
+      email: email,
+      whatsappNumber: whatsappNumber,
+      linkedinUrl: linkedinUrl,
+      twitterHandle: twitterHandle,
+    );
+  }
 
   @override
   List<Object?> get props => [

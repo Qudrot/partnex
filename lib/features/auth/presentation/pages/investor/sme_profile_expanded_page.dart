@@ -395,10 +395,10 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                     ),
                     const SizedBox(height: 12),
                     CustomButton(
-                      text: 'Deep dive',
+                      text: 'View Insights',
                       onPressed: () => context
                           .read<DiscoveryCubit>()
-                          .viewDeepDiveEvidence(widget.sme),
+                          .viewBusinessInsights(widget.sme),
                       variant: ButtonVariant.secondary,
                       isFullWidth: true,
                     ),

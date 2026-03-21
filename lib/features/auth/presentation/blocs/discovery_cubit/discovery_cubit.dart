@@ -4,7 +4,7 @@ import 'discovery_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/sme_profile_expanded_page.dart';
-import 'package:partnex/features/auth/presentation/pages/investor/deep_dive_evidence_page.dart';
+import 'package:partnex/features/auth/presentation/pages/dashboard/business_insights_page.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 
 class DiscoveryCubit extends Cubit<DiscoveryState> {
@@ -16,8 +16,8 @@ class DiscoveryCubit extends Cubit<DiscoveryState> {
     uiService.navigateTo(SmeProfileExpandedPage(sme: sme));
   }
 
-  void viewDeepDiveEvidence(SmeCardData sme) {
-    uiService.navigateTo(DeepDiveEvidencePage(sme: sme));
+  void viewBusinessInsights(SmeCardData sme, {bool isSmeView = false}) {
+    uiService.navigateTo(BusinessInsightsPage(sme: sme, isSmeView: isSmeView));
   }
 
   Future<void> loadSmes() async {

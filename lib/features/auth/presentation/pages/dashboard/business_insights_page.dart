@@ -19,9 +19,15 @@ import 'package:partnex/core/theme/widgets/advanced_charts/gauge_chart.dart';
 import 'package:partnex/core/theme/widgets/advanced_charts/column_chart.dart';
 import 'package:partnex/core/theme/widgets/advanced_charts/timeline_chart.dart';
 
-class DeepDiveEvidencePage extends StatelessWidget {
+class BusinessInsightsPage extends StatelessWidget {
   final SmeCardData sme;
-  const DeepDiveEvidencePage({super.key, required this.sme});
+  final bool isSmeView;
+
+  const BusinessInsightsPage({
+    super.key, 
+    required this.sme,
+    this.isSmeView = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +41,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Evidence & Details',
+          'Business Insights',
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
@@ -192,7 +198,7 @@ class DeepDiveEvidencePage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _ExpandableAssessmentText(text: sme.financialAssessment),
+          _ExpandableAssessmentText(text: sme.getFinancialAssessment(isOwnProfile: isSmeView)),
         ],
       ),
     );

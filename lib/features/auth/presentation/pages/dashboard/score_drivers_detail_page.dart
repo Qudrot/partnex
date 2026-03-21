@@ -11,6 +11,7 @@ import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state
 import 'package:partnex/features/auth/data/models/financial_metrics.dart';
 
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
+import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
 
 class ScoreDriversDetailPage extends StatelessWidget {
@@ -239,19 +240,23 @@ class ScoreDriversDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   CustomButton(
-                    text: 'Deep dive',
+                    text: 'View Insights',
                     variant: ButtonVariant.secondary,
                     isFullWidth: true,
                     onPressed: () => context
                         .read<DiscoveryCubit>()
-                        .viewDeepDiveEvidence(sme!),
+                        .viewBusinessInsights(sme!),
                   ),
                 ] else ...[
                   CustomButton(
-                    text: 'Back to Dashboard',
+                    text: 'View Insights',
                     variant: ButtonVariant.primary,
                     isFullWidth: true,
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      final profileState = context.read<SmeProfileCubit>().state;
+                      final ownSme = profileState.toSmeCardData(sc.toInt(), rLevel);
+                      context.read<DiscoveryCubit>().viewBusinessInsights(ownSme, isSmeView: true);
+                    },
                   ),
                 ],
                 const SizedBox(height: 24),

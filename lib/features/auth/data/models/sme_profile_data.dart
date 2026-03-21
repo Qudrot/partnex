@@ -267,9 +267,15 @@ class SmeCardData {
     return AppColors.dangerRed;
   }
 
-  String get financialAssessment {
-    if (score >= 100)
-      return "You have it figured out! Your business demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management. Keep rising and growing—you are on a path of exceptional stability.";
+  String getFinancialAssessment({bool isOwnProfile = false}) {
+    final String subject = isOwnProfile ? "Your business" : "This business";
+    final String possessive = isOwnProfile ? "your" : "this";
+    
+    if (score >= 100) {
+      return isOwnProfile 
+        ? "You have it figured out! Your business demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management. Keep rising and growing—you are on a path of exceptional stability."
+        : "This business has it figured out! It demonstrates peak financial health with optimized revenue growth, healthy margins, and excellent debt management.";
+    }
 
     final List<String> highlights = [];
 
@@ -311,7 +317,7 @@ class SmeCardData {
       highlights.add("maintains healthy profitability levels");
     } else if (profitMargin < 0) {
       highlights.add(
-        "is currently prioritizing expansion over immediate margins (Net Margin: ${profitMargin.toStringAsFixed(1)}%)",
+        "is currently prioritising expansion over immediate margins (Net Margin: ${profitMargin.toStringAsFixed(1)}%)",
       );
     }
 
@@ -320,14 +326,14 @@ class SmeCardData {
       highlights.add("maintains a very light debt profile");
     } else if (liabilitiesRatio > 45) {
       highlights.add(
-        "utilizes significant leverage (Debt-to-Revenue: ${liabilitiesRatio.toStringAsFixed(1)}%)",
+        "utilises significant leverage (Debt-to-Revenue: ${liabilitiesRatio.toStringAsFixed(1)}%)",
       );
     }
 
     if (highlights.isEmpty)
       return "The financial profile shows neutral indicators across revenue and expense management.";
 
-    String assessment = "This business ${highlights[0]}. ";
+    String assessment = "$subject ${highlights[0]}. ";
     if (highlights.length > 1) {
       assessment +=
           "Key performance data indicates ${highlights.sublist(1).join(" and ")}. ";
@@ -338,6 +344,9 @@ class SmeCardData {
 
     return assessment;
   }
+
+  // Legacy getter for backward compatibility
+  String get financialAssessment => getFinancialAssessment();
 
   const SmeCardData({
     required this.id,
