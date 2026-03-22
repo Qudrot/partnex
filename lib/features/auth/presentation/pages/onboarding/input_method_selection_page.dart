@@ -30,12 +30,12 @@ class InputMethodSelectionPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.x, color: AppColors.slate900),
+            icon: Icon(LucideIcons.x, color: AppColors.textPrimary(context)),
             onPressed: () {
               // TODO: Handle Close onboarding flow
               Navigator.pop(context);

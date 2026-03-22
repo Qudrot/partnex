@@ -48,3 +48,8 @@ class AppColors {
   static Color textSecondary(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? slate400 : slate600;
 }
+
+extension ThemeContext on BuildContext {
+  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+}
+

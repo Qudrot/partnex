@@ -42,11 +42,11 @@ class PartnexLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (variant == PartnexLogoVariant.iconOnly) {
-      return _buildSymbol(size);
+      return _buildSymbol(context, size);
     }
 
     if (variant == PartnexLogoVariant.wordmarkOnly) {
-      return _buildWordmark(size);
+      return _buildWordmark(context, size);
     }
 
     // Default to brandCombo
@@ -54,29 +54,29 @@ class PartnexLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildSymbol(size),
+        _buildSymbol(context, size),
         SizedBox(width: size * 0.003), // Spacing between symbol and wordmark
-        _buildWordmark(size),
+        _buildWordmark(context, size),
       ],
     );
   }
 
-  Widget _buildSymbol(double renderSize) {
+  Widget _buildSymbol(BuildContext context, double renderSize) {
     return SizedBox(
       width: renderSize,
       height: renderSize,
       child: CustomPaint(
         painter: _DataFlowSymbolPainter(
           primaryColor: AppColors.trustBlue,
-          secondaryColor: AppColors.slate900, // Or Deep Navy #0F172A
+          secondaryColor: AppColors.textPrimary(context), // Adjusts to dark mode
         ),
       ),
     );
   }
 
-  Widget _buildWordmark(double renderSize) {
-    final tPrimary = textPrimaryColor ?? AppColors.slate900;
-    final tSecondary = textSecondaryColor ?? AppColors.slate900;
+  Widget _buildWordmark(BuildContext context, double renderSize) {
+    final tPrimary = textPrimaryColor ?? AppColors.textPrimary(context); // Adjusts to dark mode
+    final tSecondary = textSecondaryColor ?? AppColors.textPrimary(context); // Adjusts to dark mode
 
     return Text.rich(
       TextSpan(

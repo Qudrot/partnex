@@ -20,12 +20,12 @@ class SmeAboutSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
-        border: Border.all(color: AppColors.slate200),
+        color: AppColors.surface(context),
+        border: Border.all(color: AppColors.border(context)),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 1),
             blurRadius: 2,
           ),
@@ -40,7 +40,7 @@ class SmeAboutSection extends StatelessWidget {
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
 
@@ -49,10 +49,8 @@ class SmeAboutSection extends StatelessWidget {
           if (hasBio)
             TwoLineText(
               text: bio!,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.linkBlue,
-              ),
+              ctaText: 'Read more',
+              onCtaTap: onEditBio,
             )
           else
             Text.rich(
@@ -63,7 +61,7 @@ class SmeAboutSection extends StatelessWidget {
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.slate500,
+                      color: AppColors.textSecondary(context),
                       fontStyle: FontStyle.italic,
                     ),
                   ),

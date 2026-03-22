@@ -126,7 +126,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                             Expanded(
                               child: _buildSocialOption(
                                 'Twitter',
-                                'assets/icons/twitter.png',
+                                context.isDarkMode ? 'assets/icons/twitter_light.png' : 'assets/icons/twitter.png',
                                 onTap: () => UrlHelper.launchWebsite(
                                   'https://twitter.com/${widget.twitterHandle!.replaceAll('@', '')}',
                                 ),

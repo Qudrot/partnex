@@ -22,8 +22,8 @@ class AppSpacing {
   /// 20 dp — slightly larger container padding
   static const double lg = 20.0;
 
-  /// 24 dp — section-level vertical gap / screen horizontal padding
-  static const double xl = 24.0;
+  /// 16 dp — section-level vertical gap / screen horizontal padding
+  static const double xl = 16.0;
 
   /// 32 dp — large section spacer
   static const double xxl = 32.0;

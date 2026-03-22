@@ -125,7 +125,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               LucideIcons.chevronLeft,
               color: AppColors.textPrimary(context),
             ),
@@ -188,11 +188,11 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                 GestureDetector(
                   onTap: _isUploading ? null : _pickAndParseFile,
                   child: DottedBorder(
-                    options: const RoundedRectDottedBorderOptions(
-                      radius: Radius.circular(AppRadius.md),
+                    options: RoundedRectDottedBorderOptions(
+                      radius: const Radius.circular(AppRadius.md),
                       color: AppColors.border(context),
                       strokeWidth: 2,
-                      dashPattern: [6, 6],
+                      dashPattern: const [6, 6],
                     ),
                     child: SizedBox(
                       height: 200,

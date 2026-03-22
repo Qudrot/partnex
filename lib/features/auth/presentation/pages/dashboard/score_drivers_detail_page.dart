@@ -169,7 +169,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 Theme(
-                  data: ThemeData(dividerColor: Colors.transparent),
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
                     title: Text(
                       'Secondary Drivers',
@@ -228,7 +228,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                if (sme == null) ..._generateRecommendations((state as ScoreLoadedSuccess).financialMetrics!),
+                if (sme == null) ..._generateRecommendations(context, (state as ScoreLoadedSuccess).financialMetrics!),
 
                 const SizedBox(height: 32),
                 if (sme != null) ...[
@@ -283,7 +283,8 @@ class ScoreDriversDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationSection({
+  Widget _buildRecommendationSection(
+    BuildContext context, {
     required String title,
     required List<String> items,
   }) {
@@ -338,7 +339,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
     return 'This metric evaluates a key aspect of your business creditworthiness.';
   }
 
-  List<Widget> _generateRecommendations(FinancialMetrics metrics) {
+  List<Widget> _generateRecommendations(BuildContext context, FinancialMetrics metrics) {
     List<Widget> sections = [];
 
     for (var driver in metrics.rankedDrivers) {
@@ -374,7 +375,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
         }
 
         sections.add(
-          _buildRecommendationSection(title: '${driver.name}:', items: items),
+          _buildRecommendationSection(context, title: '${driver.name}:', items: items),
         );
       }
     }

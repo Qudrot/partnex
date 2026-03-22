@@ -171,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               SizedBox(height: AppSpacing.md),
                               Align(
-                                alignment: Alignment.centerRight,
+                                alignment: Alignment.centerLeft,
                                 child: CustomButton(
                                   text: 'Forgot Password?',
                                   variant: ButtonVariant.tertiary,

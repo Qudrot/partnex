@@ -65,8 +65,8 @@ class SmeBioContactCard extends StatelessWidget {
           const SizedBox(height: 8),
           if (hasBio)
             TwoLineText(
-              text: bio,
-              ctaText: 'Read More',
+              text: bio ?? '',
+              ctaText: 'Read more',
               onCtaTap: onReadMore,
               textStyle: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
@@ -82,7 +82,7 @@ class SmeBioContactCard extends StatelessWidget {
             )
           else
             Text(
-              "No company bio has been added yet. $smeName is currently focusing on operations and hasn't shared their story.",
+              "No company bio has been added yet. This business hasn't shared their story.",
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,

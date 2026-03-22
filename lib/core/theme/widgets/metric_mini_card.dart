@@ -21,8 +21,8 @@ class MetricMiniCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.slate50,
-        border: Border.all(color: AppColors.slate200, width: 1.0),
+        color: AppColors.surface(context),
+        border: Border.all(color: AppColors.border(context), width: 1.0),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -32,7 +32,7 @@ class MetricMiniCard extends StatelessWidget {
           Text(
             label,
             style: AppTypography.textTheme.labelMedium?.copyWith(
-              color: AppColors.slate600,
+              color: AppColors.textSecondary(context),
               fontWeight: FontWeight.w500,
               fontSize: 13,
             ),
@@ -42,7 +42,7 @@ class MetricMiniCard extends StatelessWidget {
           Text(
             value,
             style: AppTypography.textTheme.headlineSmall?.copyWith(
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
               fontWeight: FontWeight.w700,
               fontSize: 20,
             ),

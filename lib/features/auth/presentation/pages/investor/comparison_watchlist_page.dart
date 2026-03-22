@@ -165,7 +165,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: AppColors.border(context), width: 1),
               ),
@@ -226,7 +226,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               LucideIcons.gitCompare,
               size: AppSpacing.avatar,
               color: AppColors.textSecondary(context),
@@ -276,7 +276,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(LucideIcons.heart, size: AppSpacing.avatar, color: AppColors.textSecondary(context)),
+          Icon(LucideIcons.heart, size: AppSpacing.avatar, color: AppColors.textSecondary(context)),
           SizedBox(height: AppSpacing.md),
           Text(
             'No companies yet',
@@ -306,7 +306,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
     return Container(
       color: AppColors.surface(context),
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border(context), width: 1)),
       ),
       child: Row(
@@ -346,7 +346,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
         color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: AppColors.border(context)),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color.fromRGBO(0, 0, 0, 0.02),
             blurRadius: 4,
@@ -404,7 +404,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               LucideIcons.trash2,
                               size: AppSpacing.md,
                               color: AppColors.textSecondary(context),

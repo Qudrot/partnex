@@ -117,7 +117,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                     Text(
                       'Welcome to Partnex!',
                       style: AppTypography.textTheme.headlineMedium?.copyWith(
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                       ),
@@ -155,18 +155,18 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               ? state.message.substring('Exception: '.length)
               : state.message;
           return Scaffold(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.background(context),
             body: Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(LucideIcons.wifiOff, size: 48, color: AppColors.slate400),
+                    Icon(LucideIcons.wifiOff, size: 48, color: AppColors.textSecondary(context)),
                     SizedBox(height: AppSpacing.lg),
                     Text(
                       rawMsg,
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary(context)),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: AppSpacing.xl),
@@ -183,7 +183,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
         }
 
         if (state is! ScoreLoadedSuccess) {
-          return const Scaffold(backgroundColor: AppColors.neutralWhite);
+          return Scaffold(backgroundColor: AppColors.background(context));
         }
 
         final scoreData = state.score;
@@ -218,10 +218,10 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             titleSpacing: 0,
             centerTitle: false,
             leading: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 LucideIcons.menu,
                 size: 24,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
               onPressed: () => Navigator.push(
                 context,
@@ -414,7 +414,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                   Text(
                     'Top 3 factors contributing to your credibility score',
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                       fontSize: 12,
                     ),
                   ),
@@ -507,7 +507,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             Text(
               'Coming Soon!',
               style: AppTypography.textTheme.headlineMedium?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -553,7 +553,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
           Text(
             driverName,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),
@@ -566,7 +566,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                   borderRadius: BorderRadius.circular(2),
                   child: LinearProgressIndicator(
                     value: percentage,
-                    backgroundColor: AppColors.slate100,
+                    backgroundColor: context.isDarkMode ? Colors.white24 : AppColors.slate100,
                     valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                     minHeight: 6,
                   ),

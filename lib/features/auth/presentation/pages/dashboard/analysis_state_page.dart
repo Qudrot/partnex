@@ -203,130 +203,135 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
           SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              child: Column(
+              child: Stack(
                 children: [
-                  const SizedBox(height: 24),
-                  const Spacer(),
+                  const FloatingMetricsBackground(),
+                  Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      const Spacer(),
 
-                  if (_isError) ...[
-                    const Icon(
-                      LucideIcons.alertCircle,
-                      size: 64,
-                      color: AppColors.dangerRed,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Analysis encountered an issue.',
-                      style: AppTypography.textTheme.bodyLarge?.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary(context),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Please check back in a few minutes or try again.',
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary(context),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-                    CustomButton(
-                      text: 'Go Back',
-                      onPressed: () => uiService.goBack(),
-                      variant: ButtonVariant.secondary,
-                    ),
-                  ] else ...[
-                    const Center(child: NumberStreamAnimation()),
-                    const SizedBox(height: 32),
-
-                    Text(
-                      widget.isDocumentUpload
-                          ? 'Analyzing your financial data...'
-                          : 'Generating your credibility score...',
-                      style: AppTypography.textTheme.bodyLarge?.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary(context),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.isDocumentUpload
-                          ? 'Extracting documents. This typically takes 30–60 seconds.'
-                          : 'Applying AI models. This will only take a moment.',
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary(context),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
-
-                    Text(
-                      'Step $_step of $_totalSteps: ${_getStepName(_step)}',
-                      style: AppTypography.textTheme.bodySmall?.copyWith(
-                        fontSize: 12,
-                        color: AppColors.textSecondary(context),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-
-                    Center(
-                      child: Container(
-                        width: 200,
-                        height: 2,
-                        decoration: BoxDecoration(
-                          color: AppColors.border(context),
-                          borderRadius: BorderRadius.circular(1),
+                      if (_isError) ...[
+                        const Icon(
+                          LucideIcons.alertCircle,
+                          size: 64,
+                          color: AppColors.dangerRed,
                         ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 800),
-                            curve: Curves.easeOutCubic,
-                            width: 200 * (_progress / 100),
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: AppColors.trustBlue,
-                              borderRadius: BorderRadius.circular(1),
-                            ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Analysis encountered an issue.',
+                          style: AppTypography.textTheme.bodyLarge?.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary(context),
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ),
-                  ],
-
-                  const Spacer(),
-                  if (!_isError)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24.0, left: 12.0, right: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            LucideIcons.lock,
-                            size: 14,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please check back in a few minutes or try again.',
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
                             color: AppColors.textSecondary(context),
                           ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              'Your data is secure. Never shared without your consent.',
-                              style: AppTypography.textTheme.bodySmall?.copyWith(
-                                fontSize: 11,
-                                color: AppColors.textSecondary(context),
-                                letterSpacing: 0,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        CustomButton(
+                          text: 'Go Back',
+                          onPressed: () => uiService.goBack(),
+                          variant: ButtonVariant.secondary,
+                        ),
+                      ] else ...[
+                        const Center(child: NumberStreamAnimation()),
+                        const SizedBox(height: 32),
+
+                        Text(
+                          widget.isDocumentUpload
+                              ? 'Analyzing your financial data...'
+                              : 'Generating your credibility score...',
+                          style: AppTypography.textTheme.bodyLarge?.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary(context),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.isDocumentUpload
+                              ? 'Extracting documents. This typically takes 30–60 seconds.'
+                              : 'Applying AI models. This will only take a moment.',
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 48),
+
+                        Text(
+                          'Step $_step of $_totalSteps: ${_getStepName(_step)}',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary(context),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+
+                        Center(
+                          child: Container(
+                            width: 200,
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: AppColors.border(context),
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 800),
+                                curve: Curves.easeOutCubic,
+                                width: 200 * (_progress / 100),
+                                height: 2,
+                                decoration: BoxDecoration(
+                                  color: AppColors.trustBlue,
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      ],
+
+                      const Spacer(),
+                      if (!_isError)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 24.0, left: 12.0, right: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                LucideIcons.lock,
+                                size: 14,
+                                color: AppColors.textSecondary(context),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  'Your data is secure. Never shared without your consent.',
+                                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary(context),
+                                    letterSpacing: 0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -563,18 +568,19 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
   Timer? _spawnTimer;
   final math.Random _random = math.Random();
 
-  final List<Color> _colors = [
-    AppColors.trustBlue,
-    AppColors.trustBlue.withValues(alpha: 0.5),
-    AppColors.warningOrange,
-    AppColors.successGreen,
-    AppColors.textSecondary(context).withValues(alpha: 0.6),
-    AppColors.textSecondary(context).withValues(alpha: 0.4),
-  ];
+  late final List<Color> _colors;
 
   @override
   void initState() {
     super.initState();
+    _colors = [
+      AppColors.trustBlue,
+      AppColors.trustBlue.withValues(alpha: 0.5),
+      AppColors.warningOrange,
+      AppColors.successGreen,
+      AppColors.textSecondary(context).withValues(alpha: 0.6),
+      AppColors.textSecondary(context).withValues(alpha: 0.4),
+    ];
     // Start with 2 numbers
     _spawnNumber(0);
     _spawnNumber(1);

@@ -76,19 +76,21 @@ class CustomButton extends StatelessWidget {
               return AppColors.trustBlue;
             }),
           ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.neutralWhite,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.neutralWhite,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
                 Flexible(
                   child: Text(
@@ -100,7 +102,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 
@@ -132,19 +134,21 @@ class CustomButton extends StatelessWidget {
               return AppColors.background(context);
             }),
           ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.slate900,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.slate900,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
                 Flexible(
                   child: Text(
@@ -156,7 +160,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 
@@ -187,19 +191,21 @@ class CustomButton extends StatelessWidget {
               return Colors.transparent;
             }),
           ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.trustBlue,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.trustBlue,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
                 Flexible(
                   child: Text(
@@ -211,7 +217,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 
@@ -246,19 +252,21 @@ class CustomButton extends StatelessWidget {
               return AppColors.dangerRed;
             }),
           ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.neutralWhite,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.neutralWhite,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
                 Flexible(
                   child: Text(
@@ -270,7 +278,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 
@@ -304,21 +312,22 @@ class CustomButton extends StatelessWidget {
           return Colors.transparent;
         }),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.dangerRed,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.dangerRed,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[
-                  // If we use an Icon widget, we should try to tint it
                   Theme(
                     data: Theme.of(context).copyWith(
                       iconTheme: const IconThemeData(color: AppColors.dangerRed),
@@ -337,7 +346,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 
@@ -367,19 +376,21 @@ class CustomButton extends StatelessWidget {
           return Colors.transparent;
         }),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppColors.dangerRed,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      child: Row(
+        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: isLoading
+            ? const [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.dangerRed,
+                    strokeWidth: 2,
+                  ),
+                )
+              ]
+            : [
                 if (icon != null) ...[
                   Theme(
                     data: Theme.of(context).copyWith(
@@ -397,7 +408,7 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+      ),
     );
   }
 }

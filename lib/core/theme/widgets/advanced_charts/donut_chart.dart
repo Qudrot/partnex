@@ -44,7 +44,7 @@ class DonutChart extends StatelessWidget {
               Text(
                 centerLabel,
                 style: AppTypography.textTheme.headlineSmall?.copyWith(
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                 ),
@@ -52,7 +52,7 @@ class DonutChart extends StatelessWidget {
               Text(
                 centerSubLabel,
                 style: AppTypography.textTheme.bodySmall?.copyWith(
-                  color: AppColors.slate600,
+                  color: AppColors.textSecondary(context),
                   fontSize: 12,
                 ),
               ),

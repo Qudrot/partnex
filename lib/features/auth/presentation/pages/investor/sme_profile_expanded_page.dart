@@ -76,15 +76,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
         ),
         titleSpacing: 0,
         centerTitle: false,
-        actions: [
-          IconButton(
-            icon: Icon(
-              LucideIcons.moreVertical,
-              color: AppColors.textPrimary(context),
-            ),
-            onPressed: () {},
-          ),
-        ],
+        actions: [],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(color: AppColors.border(context), height: 1.0),
@@ -238,8 +230,8 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                           genAt.month == now.month &&
                                           genAt.day == now.day;
                                       final formattedDate = isToday
-                                          ? 'Today at ${DateFormat('h:mm a').format(genAt)}'
-                                          : DateFormat('MMM d, yyyy').format(genAt);
+                                          ? 'today at ${DateFormat('h:mm a').format(genAt)}'
+                                          : 'on ${DateFormat('MMM d, yyyy').format(genAt)}';
                                       return Text(
                                         'Generated $formattedDate',
                                         style: AppTypography.textTheme.bodySmall

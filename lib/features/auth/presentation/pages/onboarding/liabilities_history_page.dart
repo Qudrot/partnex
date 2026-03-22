@@ -120,7 +120,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
       curve: Curves.easeInOut,
       child: isVisible
           ? Container(
-              margin: EdgeInsets.only(top: 20, left: 16),
+              margin: const EdgeInsets.only(top: 20, left: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.surface(context),
@@ -146,6 +146,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
         }
       },
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
           backgroundColor: AppColors.surface(context),
           elevation: 0,
@@ -167,296 +168,295 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
           centerTitle: false,
         ),
         body: SafeArea(
-        child: Column(
-          children: [
-            if (!widget.isEditing && !widget.isUpdatingRecord)
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 4.0,
-                ),
-                child: ProgressIndicatorWidget(progress: 0.80),
-              ),
-            const SizedBox(height: 16),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Section A
-                      Text(
-                        'Total Outstanding Liabilities',
-                        style: AppTypography.textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Total amount owed to creditors',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      CustomCurrencyField(
-                        label: 'Total Outstanding Liabilities *',
-                        placeholder: 'e.g., 200,000',
-                        controller: _totalLiabilitiesController,
-                        onChanged: _onFieldChanged,
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Please enter a valid liability amount';
-                          }
-                          final num = double.tryParse(val.replaceAll(',', ''));
-                          if (num == null || num < 0) {
-                            return 'Please enter a valid liability amount';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      CustomCurrencyField(
-                        label: 'Outstanding Loans *',
-                        placeholder: 'e.g., 100,000',
-                        controller: _outstandingLoansController,
-                        onChanged: _onFieldChanged,
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Please enter a valid loan amount';
-                          }
-                          final num = double.tryParse(val.replaceAll(',', ''));
-                          if (num == null || num < 0) {
-                            return 'Please enter a valid loan amount';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Total amount of active loans',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Section B
-                      Text(
-                        'Prior Funding History',
-                        style: AppTypography.textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Prior funding demonstrates investment confidence and capital access.',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      CustomYesNoField(
-                        label: 'Have you received prior funding? *',
-                        value: _hasPriorFunding,
-                        onChanged: (val) {
-                          setState(() => _hasPriorFunding = val);
-                        },
-                      ),
-
-                      _buildConditionalField(
-                        Column(
-                          children: [
-                            CustomCurrencyField(
-                              label: 'Funding Amount *',
-                              placeholder: 'e.g., 100,000',
-                              controller: _fundingAmountController,
-                              onChanged: _onFieldChanged,
-                              validator: (val) {
-                                if (_hasPriorFunding == true) {
-                                  if (val == null || val.isEmpty) {
-                                    return 'Please enter a valid funding amount';
-                                  }
-                                  final num = double.tryParse(
-                                    val.replaceAll(',', ''),
-                                  );
-                                  if (num == null || num <= 0) {
-                                    return 'Please enter a valid funding amount';
-                                  }
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            CustomInputField(
-                              label: 'Funding Source *',
-                              placeholder:
-                                  'e.g., Venture Capital, Angel Investor',
-                              controller: _fundingSourceController,
-                              onChanged: _onFieldChanged,
-                              validator: (val) {
-                                if (_hasPriorFunding == true) {
-                                  if (val == null ||
-                                      val.isEmpty ||
-                                      val.length > 100) {
-                                    return 'Please enter a valid funding source';
-                                  }
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            CustomInputField(
-                              label: 'Year of Funding *',
-                              placeholder: 'e.g., 2022',
-                              controller: _fundingYearController,
-                              onChanged: _onFieldChanged,
-                              validator: (val) {
-                                if (_hasPriorFunding == true) {
-                                  if (val == null || val.isEmpty) {
-                                    return 'Please enter a valid year';
-                                  }
-                                  final num = int.tryParse(val);
-                                  final currentYear = DateTime.now().year;
-                                  if (num == null ||
-                                      num < 2000 ||
-                                      num > currentYear) {
-                                    return 'Please enter a valid year';
-                                  }
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
-                        ),
-                        _hasPriorFunding == true,
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Section C
-                      Text(
-                        'Repayment Behavior',
-                        style: AppTypography.textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'This helps us assess your reliability in meeting obligations.',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      CustomInputField(
-                        label: 'Repayment History (Optional)',
-                        placeholder:
-                            'e.g., No missed repayments, defaulted in 2021',
-                        controller: _repaymentHistoryController,
-                        onChanged: _onFieldChanged,
-                        maxLines: 2,
-                        validator: (val) {
-                          // Repayment behavior is optional
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Summarize your loan/credit repayment history',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+          child: Column(
+            children: [
+              if (!widget.isEditing && !widget.isUpdatingRecord)
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 4.0,
                   ),
+                  child: ProgressIndicatorWidget(progress: 0.80),
                 ),
-              ),
-            ),
+              const SizedBox(height: 16),
 
-            // Navigation Buttons
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      text: 'Previous',
-                      variant: ButtonVariant.secondary,
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CustomButton(
-                      text: widget.isEditing ? 'Save Changes' : 'Next',
-                      variant: ButtonVariant.primary,
-                      isDisabled: !_isFormValid,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          context
-                              .read<SmeProfileCubit>()
-                              .updateLiabilitiesHistory(
-                                totalLiabilities: double.parse(
-                                  _totalLiabilitiesController.text.replaceAll(
-                                    ',',
-                                    '',
-                                  ),
-                                ),
-                                outstandingLoans: double.parse(
-                                  _outstandingLoansController.text.replaceAll(
-                                    ',',
-                                    '',
-                                  ),
-                                ),
-                                hasPriorFunding: _hasPriorFunding,
-                                priorFundingAmount:
-                                    _fundingAmountController.text.isEmpty
-                                    ? null
-                                    : double.parse(
-                                        _fundingAmountController.text
-                                            .replaceAll(',', ''),
-                                      ),
-                                priorFundingSource:
-                                    _fundingSourceController.text.isEmpty
-                                    ? null
-                                    : _fundingSourceController.text,
-                                fundingYear: _fundingYearController.text.isEmpty
-                                    ? null
-                                    : int.parse(_fundingYearController.text),
-                                repaymentHistory:
-                                    _repaymentHistoryController.text.isEmpty
-                                    ? null
-                                    : _repaymentHistoryController.text,
-                              );
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Section A
+                        Text(
+                          'Total Outstanding Liabilities',
+                          style: AppTypography.textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Total amount owed to creditors',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
 
-                          if (widget.isEditing) {
-                            // Save to backend and re-score (everything here is meaningful)
-                            final state = context.read<SmeProfileCubit>().state;
-                            context.read<AuthBloc>().add(SubmitSmeProfileEvent(state.toMap(), shouldGenerateScore: true));
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ReviewConfirmPage(
-                                  isUpdatingRecord: widget.isUpdatingRecord,
-                                ),
+                        CustomCurrencyField(
+                          label: 'Total Outstanding Liabilities *',
+                          placeholder: 'e.g., 200,000',
+                          controller: _totalLiabilitiesController,
+                          onChanged: _onFieldChanged,
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter a valid liability amount';
+                            }
+                            final num = double.tryParse(val.replaceAll(',', ''));
+                            if (num == null || num < 0) {
+                              return 'Please enter a valid liability amount';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+
+                        CustomCurrencyField(
+                          label: 'Outstanding Loans *',
+                          placeholder: 'e.g., 100,000',
+                          controller: _outstandingLoansController,
+                          onChanged: _onFieldChanged,
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter a valid loan amount';
+                            }
+                            final num = double.tryParse(val.replaceAll(',', ''));
+                            if (num == null || num < 0) {
+                              return 'Please enter a valid loan amount';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Total amount of active loans',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Section B
+                        Text(
+                          'Prior Funding History',
+                          style: AppTypography.textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Prior funding demonstrates investment confidence and capital access.',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        CustomYesNoField(
+                          label: 'Have you received prior funding? *',
+                          value: _hasPriorFunding,
+                          onChanged: (val) {
+                            setState(() => _hasPriorFunding = val);
+                          },
+                        ),
+
+                        _buildConditionalField(
+                          Column(
+                            children: [
+                              CustomCurrencyField(
+                                label: 'Funding Amount *',
+                                placeholder: 'e.g., 100,000',
+                                controller: _fundingAmountController,
+                                onChanged: _onFieldChanged,
+                                validator: (val) {
+                                  if (_hasPriorFunding == true) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'Please enter a valid funding amount';
+                                    }
+                                    final num = double.tryParse(
+                                      val.replaceAll(',', ''),
+                                    );
+                                    if (num == null || num <= 0) {
+                                      return 'Please enter a valid funding amount';
+                                    }
+                                  }
+                                  return null;
+                                },
                               ),
-                            );
-                          }
-                        }
-                      },
+                              const SizedBox(height: 20),
+                              CustomInputField(
+                                label: 'Funding Source *',
+                                placeholder:
+                                    'e.g., Venture Capital, Angel Investor',
+                                controller: _fundingSourceController,
+                                onChanged: _onFieldChanged,
+                                validator: (val) {
+                                  if (_hasPriorFunding == true) {
+                                    if (val == null ||
+                                        val.isEmpty ||
+                                        val.length > 100) {
+                                      return 'Please enter a valid funding source';
+                                    }
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              CustomInputField(
+                                label: 'Year of Funding *',
+                                placeholder: 'e.g., 2022',
+                                controller: _fundingYearController,
+                                onChanged: _onFieldChanged,
+                                validator: (val) {
+                                  if (_hasPriorFunding == true) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'Please enter a valid year';
+                                    }
+                                    final num = int.tryParse(val);
+                                    final currentYear = DateTime.now().year;
+                                    if (num == null ||
+                                        num < 2000 ||
+                                        num > currentYear) {
+                                      return 'Please enter a valid year';
+                                    }
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                          _hasPriorFunding == true,
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Section C
+                        Text(
+                          'Repayment Behavior',
+                          style: AppTypography.textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'This helps us assess your reliability in meeting obligations.',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        CustomInputField(
+                          label: 'Repayment History (Optional)',
+                          placeholder:
+                              'e.g., No missed repayments, defaulted in 2021',
+                          controller: _repaymentHistoryController,
+                          onChanged: _onFieldChanged,
+                          maxLines: 2,
+                          validator: (val) {
+                            // Repayment behavior is optional
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Summarize your loan/credit repayment history',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // Navigation Buttons
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Previous',
+                        variant: ButtonVariant.secondary,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: CustomButton(
+                        text: widget.isEditing ? 'Save Changes' : 'Next',
+                        variant: ButtonVariant.primary,
+                        isDisabled: !_isFormValid,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            context
+                                .read<SmeProfileCubit>()
+                                .updateLiabilitiesHistory(
+                                  totalLiabilities: double.parse(
+                                    _totalLiabilitiesController.text.replaceAll(
+                                      ',',
+                                      '',
+                                    ),
+                                  ),
+                                  outstandingLoans: double.parse(
+                                    _outstandingLoansController.text.replaceAll(
+                                      ',',
+                                      '',
+                                    ),
+                                  ),
+                                  hasPriorFunding: _hasPriorFunding,
+                                  priorFundingAmount:
+                                      _fundingAmountController.text.isEmpty
+                                      ? null
+                                      : double.parse(
+                                          _fundingAmountController.text
+                                              .replaceAll(',', ''),
+                                        ),
+                                  priorFundingSource:
+                                      _fundingSourceController.text.isEmpty
+                                      ? null
+                                      : _fundingSourceController.text,
+                                  fundingYear: _fundingYearController.text.isEmpty
+                                      ? null
+                                      : int.parse(_fundingYearController.text),
+                                  repaymentHistory:
+                                      _repaymentHistoryController.text.isEmpty
+                                      ? null
+                                      : _repaymentHistoryController.text,
+                                );
+
+                            if (widget.isEditing) {
+                              // Save to backend and re-score (everything here is meaningful)
+                              final state = context.read<SmeProfileCubit>().state;
+                              context.read<AuthBloc>().add(SubmitSmeProfileEvent(state.toMap(), shouldGenerateScore: true));
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ReviewConfirmPage(
+                                    isUpdatingRecord: widget.isUpdatingRecord,
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        backgroundColor: AppColors.background(context),
       ),
-    ),
-  );
-}
+    );
+  }
 }

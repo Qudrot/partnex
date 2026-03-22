@@ -72,15 +72,17 @@ class TwoLineText extends StatelessWidget {
         }
 
         // Measure width required by the CTA label (with "... " prefix).
-        final ctaFull = '... $ctaText';
+        final ctaPrefixSpan = TextSpan(text: '... ', style: resolvedTextStyle);
+        final ctaLabelSpan = TextSpan(text: ctaText, style: resolvedCtaStyle);
+        
         final ctaPainter = TextPainter(
-          text: TextSpan(text: ctaFull, style: resolvedTextStyle),
+          text: TextSpan(children: [ctaPrefixSpan, ctaLabelSpan]),
           maxLines: 1,
           textDirection: TextDirection.ltr,
         )..layout();
         final double ctaWidth = ctaPainter.size.width;
 
-        // Find the character position that fills line 2 up to (maxWidth - ctaWidth).
+        // Find the character position that fills line 2 without exceeding (maxWidth - ctaWidth).
         // We do a binary search on the text length.
         int lo = 0;
         int hi = text.length;
@@ -90,9 +92,18 @@ class TwoLineText extends StatelessWidget {
             text: TextSpan(text: text.substring(0, mid), style: resolvedTextStyle),
             maxLines: 2,
             textDirection: TextDirection.ltr,
-          )..layout(maxWidth: maxWidth - ctaWidth);
+          )..layout(maxWidth: maxWidth);
 
-          if (painter.didExceedMaxLines) {
+          final metrics = painter.computeLineMetrics();
+          bool tooBig = painter.didExceedMaxLines;
+          
+          if (!tooBig && metrics.length == 2) {
+             if (metrics.last.width > maxWidth - ctaWidth) {
+                tooBig = true;
+             }
+          }
+
+          if (tooBig) {
             hi = mid;
           } else {
             lo = mid;
