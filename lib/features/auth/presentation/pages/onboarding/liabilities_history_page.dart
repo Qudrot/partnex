@@ -123,9 +123,9 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
               margin: EdgeInsets.only(top: 20, left: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.slate50,
+                color: AppColors.surface(context),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.slate200),
+                border: Border.all(color: AppColors.border(context)),
               ),
               child: child,
             )
@@ -147,10 +147,10 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.surface(context),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+            icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
@@ -158,7 +158,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 18,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -196,7 +196,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       Text(
                         'Total amount owed to creditors',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -239,7 +239,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       Text(
                         'Total amount of active loans',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -253,7 +253,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       Text(
                         'Prior funding demonstrates investment confidence and capital access.',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -344,7 +344,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       Text(
                         'This helps us assess your reliability in meeting obligations.',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -365,7 +365,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
                       Text(
                         'Summarize your loan/credit repayment history',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -454,6 +454,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
             ),
           ],
         ),
+        backgroundColor: AppColors.background(context),
       ),
     ),
   );

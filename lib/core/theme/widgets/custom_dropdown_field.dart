@@ -33,11 +33,11 @@ class CustomDropdownField extends StatelessWidget {
         DropdownButtonFormField<String>(
           isExpanded: true,
           initialValue: value,
-          icon: const Icon(LucideIcons.chevronDown, color: AppColors.slate600),
+          icon: Icon(LucideIcons.chevronDown, color: AppColors.textSecondary(context)),
           decoration: InputDecoration(
             hintText: placeholder,
             hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate400,
+              color: AppColors.textSecondary(context),
             ),
             errorText: errorText,
             errorStyle: AppTypography.textTheme.bodySmall?.copyWith(
@@ -46,9 +46,9 @@ class CustomDropdownField extends StatelessWidget {
             filled: true,
             fillColor: WidgetStateColor.resolveWith((Set<WidgetState> states) {
               if (states.contains(WidgetState.error) || states.contains(WidgetState.focused)) {
-                return AppColors.slate50;
+                return AppColors.background(context);
               }
-              return AppColors.slate100;
+              return Theme.of(context).brightness == Brightness.dark ? AppColors.slate800 : AppColors.slate100;
             }),
             contentPadding: EdgeInsets.symmetric(
               vertical: 12,
@@ -56,11 +56,11 @@ class CustomDropdownField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
@@ -84,9 +84,9 @@ class CustomDropdownField extends StatelessWidget {
               ),
             ),
           ),
-          dropdownColor: AppColors.neutralWhite,
+          dropdownColor: AppColors.surface(context),
           style: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           items: items.map((String item) {
             return DropdownMenuItem<String>(value: item, child: Text(item));

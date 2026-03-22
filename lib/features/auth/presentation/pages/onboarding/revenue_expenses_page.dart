@@ -212,7 +212,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     style: AppTypography.textTheme.labelLarge?.copyWith(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.slate900,
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                   SizedBox(height: AppSpacing.xs),
@@ -248,7 +248,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     style: AppTypography.textTheme.labelLarge?.copyWith(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.slate900,
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                   SizedBox(height: AppSpacing.xs),
@@ -257,7 +257,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     placeholder: 'e.g., 5,000,000',
                     controller: amountCtrl,
                     onChanged: _onFieldChanged,
-                    fillColor: AppColors.neutralWhite,
+                    fillColor: AppColors.surface(context),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: AppSpacing.smd,
                       vertical: AppSpacing.sm,
@@ -276,7 +276,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                     helperText,
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       fontSize: 12,
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                 ],
@@ -304,10 +304,10 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.neutralWhite,
+          backgroundColor: AppColors.surface(context),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+            icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
             iconSize: 20,
             onPressed: () => Navigator.pop(context),
           ),
@@ -316,13 +316,13 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 18,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
           titleSpacing: 0,
           centerTitle: false,
         ),
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.background(context),
         body: SafeArea(
         child: Column(
           children: [
@@ -347,7 +347,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         style: AppTypography.textTheme.headlineSmall?.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.xs),
@@ -355,7 +355,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         'Provide at least 2 years of revenue data',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           fontSize: 12,
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.md),
@@ -383,7 +383,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         Text(
                           'Year 3 (Optional)',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
-                            color: AppColors.slate600,
+                            color: AppColors.textSecondary(context),
                           ),
                         ),
                         SizedBox(height: AppSpacing.sm),
@@ -443,7 +443,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         style: AppTypography.textTheme.headlineSmall?.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.xs),
@@ -461,7 +461,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         style: AppTypography.textTheme.labelLarge?.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.xs),
@@ -470,7 +470,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         placeholder: 'e.g., 500,000',
                         controller: _monthlyRevController,
                         onChanged: _onFieldChanged,
-                        fillColor: AppColors.neutralWhite,
+                        fillColor: AppColors.surface(context),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: AppSpacing.smd,
                           vertical: AppSpacing.sm,
@@ -483,7 +483,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         style: AppTypography.textTheme.labelLarge?.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.xs),
@@ -492,7 +492,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         placeholder: 'e.g., 300,000',
                         controller: _monthlyExpController,
                         onChanged: _onFieldChanged,
-                        fillColor: AppColors.neutralWhite,
+                        fillColor: AppColors.surface(context),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: AppSpacing.smd,
                           vertical: AppSpacing.sm,
@@ -511,9 +511,9 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         Container(
                           padding: EdgeInsets.all(AppSpacing.md),
                           decoration: BoxDecoration(
-                            color: AppColors.slate50,
+                            color: AppColors.surface(context),
                             borderRadius: BorderRadius.circular(AppRadius.md),
-                            border: Border.all(color: AppColors.slate200),
+                            border: Border.all(color: AppColors.border(context)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -521,7 +521,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                               Text(
                                 'Real-Time Calculations',
                                 style: AppTypography.textTheme.labelLarge
-                                    ?.copyWith(color: AppColors.slate900),
+                                    ?.copyWith(color: AppColors.textPrimary(context)),
                               ),
                               SizedBox(height: AppSpacing.smd),
                               if (_profitMargin != null) ...[
@@ -532,14 +532,14 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                     Text(
                                       'Profit Margin',
                                       style: AppTypography.textTheme.bodyMedium
-                                          ?.copyWith(color: AppColors.slate600),
+                                          ?.copyWith(color: AppColors.textSecondary(context)),
                                     ),
                                     Text(
                                       '${_profitMargin!.toStringAsFixed(_profitMargin! % 1 == 0 ? 0 : 1)}%',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.slate900,
+                                            color: AppColors.textPrimary(context),
                                           ),
                                     ),
                                   ],
@@ -552,14 +552,14 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                     Text(
                                       'Expense Ratio',
                                       style: AppTypography.textTheme.bodyMedium
-                                          ?.copyWith(color: AppColors.slate600),
+                                          ?.copyWith(color: AppColors.textSecondary(context)),
                                     ),
                                     Text(
                                       '${_expenseRatio!.toStringAsFixed(_expenseRatio! % 1 == 0 ? 0 : 1)}%',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.slate900,
+                                            color: AppColors.textPrimary(context),
                                           ),
                                     ),
                                   ],
@@ -576,14 +576,14 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                                     Text(
                                       'Estimated Annual Profit',
                                       style: AppTypography.textTheme.bodyMedium
-                                          ?.copyWith(color: AppColors.slate600),
+                                          ?.copyWith(color: AppColors.textSecondary(context)),
                                     ),
                                     Text(
                                       'NGN ${_annualProfit!.toStringAsFixed(_annualProfit! % 1 == 0 ? 0 : 1).replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), ',')}',
                                       style: AppTypography.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.slate900,
+                                            color: AppColors.textPrimary(context),
                                           ),
                                     ),
                                   ],

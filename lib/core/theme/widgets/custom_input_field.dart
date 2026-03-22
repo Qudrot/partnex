@@ -57,13 +57,13 @@ class CustomInputField extends StatelessWidget {
           keyboardType: keyboardType,
           maxLength: maxLength,
           style: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           decoration: InputDecoration(
             counterText: '', // Hides the maxLength character counter to fix alignment
             hintText: placeholder,
             hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate400,
+              color: AppColors.textSecondary(context),
             ),
             errorText: errorText,
             errorStyle: AppTypography.textTheme.bodySmall?.copyWith(
@@ -72,9 +72,9 @@ class CustomInputField extends StatelessWidget {
             filled: true,
             fillColor: fillColor ?? WidgetStateColor.resolveWith((Set<WidgetState> states) {
               if (states.contains(WidgetState.error) || states.contains(WidgetState.focused)) {
-                return AppColors.slate50;
+                return AppColors.background(context);
               }
-              return AppColors.slate100;
+              return Theme.of(context).brightness == Brightness.dark ? AppColors.slate800 : AppColors.slate100;
             }),
             contentPadding: contentPadding ?? EdgeInsets.symmetric(
               vertical: 12,
@@ -84,11 +84,11 @@ class CustomInputField extends StatelessWidget {
             prefixIcon: prefixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),

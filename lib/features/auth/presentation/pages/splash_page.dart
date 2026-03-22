@@ -87,7 +87,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
+      backgroundColor: AppColors.background(context),
       body: Center(
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.98, end: 1.02),
@@ -101,12 +101,12 @@ class _SplashPageState extends State<SplashPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const PartnexLogo(size: 48, variant: PartnexLogoVariant.brandCombo),
+              const PartnexLogo(size: 56, variant: PartnexLogoVariant.brandCombo),
               const SizedBox(height: 4),
               Text(
                 'Your SME credibility platform',
                 style: AppTypography.textTheme.bodySmall?.copyWith(
-                  color: AppColors.slate600,
+                  color: AppColors.textSecondary(context),
                   fontSize: AppSpacing.smd,
                   fontWeight: FontWeight.w400,
                 ),

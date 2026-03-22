@@ -93,13 +93,28 @@ class _DriverCardState extends State<DriverCard> {
     }
   }
 
-  Color get _impactPointsColor => widget.impactPoints > 0
-      ? AppColors.successGreen
-      : AppColors.dangerRed;
+  Color get _impactPointsColor {
+    switch (widget.riskLevel) {
+      case DriverRiskLevel.critical:
+        return AppColors.dangerRed;
+      case DriverRiskLevel.needsWork:
+        return AppColors.warningAmberText;
+      case DriverRiskLevel.moderate:
+        return AppColors.warningAmberText;
+      case DriverRiskLevel.good:
+        return AppColors.successGreenText;
+      case DriverRiskLevel.excellent:
+        return AppColors.successGreen;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final impactSign = widget.impactPoints > 0 ? '+' : '';
+    // Show a visual + or - depending on whether the driver is positive/critical
+    final bool isPenalising = widget.riskLevel == DriverRiskLevel.critical ||
+        widget.riskLevel == DriverRiskLevel.needsWork;
+    final impactSign = isPenalising ? '-' : '+';
+    final displayPoints = widget.impactPoints.abs();
 
     return Semantics(
       label: '${widget.driverName} driver card',
@@ -107,15 +122,15 @@ class _DriverCardState extends State<DriverCard> {
       child: Container(
         margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: AppColors.neutralWhite,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.slate200),
+          border: Border.all(color: AppColors.border(context)),
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: _toggleExpand,
-            hoverColor: AppColors.slate50,
+            hoverColor: AppColors.background(context),
             borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -130,7 +145,7 @@ class _DriverCardState extends State<DriverCard> {
                         child: Text(
                           widget.driverName,
                           style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.slate900,
+                            color: AppColors.textPrimary(context),
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             height: 1.4,
@@ -141,7 +156,7 @@ class _DriverCardState extends State<DriverCard> {
                       IconButton(
                         onPressed: _toggleExpand,
                         iconSize: 20,
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                         icon: Icon(
                           _isExpanded
                               ? LucideIcons.chevronUp
@@ -160,7 +175,7 @@ class _DriverCardState extends State<DriverCard> {
                     width: double.infinity,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: AppColors.slate200,
+                      color: AppColors.border(context),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: FractionallySizedBox(
@@ -178,7 +193,7 @@ class _DriverCardState extends State<DriverCard> {
                   Text(
                     '${widget.percentage.toInt()}%',
                     style: AppTypography.textTheme.bodySmall?.copyWith(
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                       fontWeight: FontWeight.w500,
                       fontSize: 12,
                       height: 1.4,
@@ -196,22 +211,22 @@ class _DriverCardState extends State<DriverCard> {
                                 padding: EdgeInsets.only(
                                   top: 8,
                                 ), // Maintained spacing
-                                child: Text(
-                                  widget.description,
-                                  style: AppTypography.textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColors.slate600,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.6,
-                                      ),
-                                ),
+                                  child: Text(
+                                    widget.description,
+                                    style: AppTypography.textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary(context),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.6,
+                                        ),
+                                  ),
                               ),
                               const SizedBox(height: 24),
                               Row(
                                 children: [
                                   Text(
-                                    '$impactSign${widget.impactPoints.toStringAsFixed(1)} pts',
+                                    '$impactSign${displayPoints.toStringAsFixed(1)} pts',
                                     style: AppTypography.textTheme.bodyMedium
                                         ?.copyWith(
                                           color: _impactPointsColor,

@@ -152,12 +152,13 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         leading: widget._inEditMode
             ? IconButton(
-                icon: const Icon(LucideIcons.x, color: AppColors.slate900),
+                icon: Icon(LucideIcons.x, color: AppColors.textPrimary(context)),
                 onPressed: () => uiService.goBack(),
               )
             : null,
@@ -167,12 +168,12 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        titleSpacing: 0,
+        titleSpacing: widget._inEditMode ? 0 : AppSpacing.md,
         centerTitle: false,
       ),
       body: SafeArea(

@@ -9,6 +9,7 @@ import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_p
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:partnex/core/services/ui_service.dart';
 
 void main() {
@@ -42,6 +43,9 @@ class MyApp extends StatelessWidget {
             authRepository: context.read<AuthBloc>().authRepository,
           ),
         ),
+        BlocProvider<ThemeCubit>(
+          create: (_) => ThemeCubit(),
+        ),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -51,13 +55,19 @@ class MyApp extends StatelessWidget {
             context.read<ScoreCubit>().reset();
           }
         },
-        child: MaterialApp(
-          title: 'Partnex',
-          theme: AppTheme.lightTheme,
-          navigatorKey: uiService.navigatorKey,
-          scaffoldMessengerKey: uiService.scaffoldMessengerKey,
-          debugShowCheckedModeBanner: false,
-          home: const SplashPage(),
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return MaterialApp(
+              title: 'Partnex',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              navigatorKey: uiService.navigatorKey,
+              scaffoldMessengerKey: uiService.scaffoldMessengerKey,
+              debugShowCheckedModeBanner: false,
+              home: const SplashPage(),
+            );
+          },
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
@@ -55,12 +56,12 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -68,7 +69,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -77,16 +78,16 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               LucideIcons.moreVertical,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             onPressed: () {},
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(color: AppColors.slate200, height: 1.0),
+          child: Container(color: AppColors.border(context), height: 1.0),
         ),
       ),
       body: SafeArea(
@@ -107,7 +108,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                           decoration: BoxDecoration(
                             color: AppColors.trustBlue,
                             borderRadius: BorderRadius.circular(AppRadius.sm),
-                            border: Border.all(color: AppColors.slate200),
+                            border: Border.all(color: AppColors.border(context)),
                           ),
                           child: Center(
                             child: Text(
@@ -132,7 +133,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                     ?.copyWith(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.slate900,
+                                      color: AppColors.textPrimary(context),
                                     ),
                               ),
                               const SizedBox(height: 4),
@@ -141,7 +142,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                 style: AppTypography.textTheme.bodyMedium
                                     ?.copyWith(
                                       fontSize: 13,
-                                      color: AppColors.slate600,
+                                      color: AppColors.textSecondary(context),
                                     ),
                               ),
                               // if (widget.sme.website != null &&
@@ -184,8 +185,8 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                     margin: EdgeInsets.symmetric(horizontal: AppSpacing.md),
                     padding: EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.slate50,
-                      border: Border.all(color: AppColors.slate200),
+                      color: AppColors.surface(context),
+                      border: Border.all(color: AppColors.border(context)),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Column(
@@ -194,7 +195,7 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                         Text(
                           'Credibility Score',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
-                            color: AppColors.slate600,
+                            color: AppColors.textSecondary(context),
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                           ),
@@ -223,16 +224,28 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                                     '${widget.sme.riskLevel} RISK',
                                     style: AppTypography.textTheme.bodyMedium
                                         ?.copyWith(
-                                          color: AppColors.slate900,
+                                          color: AppColors.textPrimary(context),
                                           fontWeight: FontWeight.w600,
                                         ),
                                   ),
                                   SizedBox(height: AppSpacing.xs),
                                   // Use the actual timestamp from the database!
-                                  Text(
-                                    'Generated ${widget.sme.generatedAt.day}/${widget.sme.generatedAt.month}/${widget.sme.generatedAt.year} at ${TimeOfDay.fromDateTime(widget.sme.generatedAt).format(context)}',
-                                    style: AppTypography.textTheme.bodySmall
-                                        ?.copyWith(color: AppColors.slate500),
+                                  Builder(
+                                    builder: (context) {
+                                      final now = DateTime.now();
+                                      final genAt = widget.sme.generatedAt;
+                                      final isToday = genAt.year == now.year &&
+                                          genAt.month == now.month &&
+                                          genAt.day == now.day;
+                                      final formattedDate = isToday
+                                          ? 'Today at ${DateFormat('h:mm a').format(genAt)}'
+                                          : DateFormat('MMM d, yyyy').format(genAt);
+                                      return Text(
+                                        'Generated $formattedDate',
+                                        style: AppTypography.textTheme.bodySmall
+                                            ?.copyWith(color: AppColors.textSecondary(context)),
+                                      );
+                                    },
                                   ),
                                   SizedBox(height: AppSpacing.sm),
                                   DataSourceBadge(
@@ -374,11 +387,11 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                 vertical: AppSpacing.smd,
               ),
               decoration: BoxDecoration(
-                color: AppColors.neutralWhite,
-                border: Border(top: BorderSide(color: AppColors.slate200)),
+                color: AppColors.surface(context),
+                border: Border(top: BorderSide(color: AppColors.border(context))),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: context.isDarkMode ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.1),
                     offset: const Offset(0, -2),
                     blurRadius: 10,
                   ),
@@ -389,14 +402,14 @@ class _SmeProfileExpandedPageState extends State<SmeProfileExpandedPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CustomButton(
-                      text: 'Message SME',
+                      text: 'Contact SME',
                       onPressed: _openMessageSheet,
                       variant: ButtonVariant.primary,
                       isFullWidth: true,
                     ),
                     const SizedBox(height: 12),
                     CustomButton(
-                      text: 'View Insights',
+                      text: 'View Business Insights',
                       onPressed: () => context
                           .read<DiscoveryCubit>()
                           .viewBusinessInsights(widget.sme),

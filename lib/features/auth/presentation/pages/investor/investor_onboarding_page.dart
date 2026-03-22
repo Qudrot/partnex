@@ -100,13 +100,13 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
       builder: (context, state) {
         final isLoading = state is InvestorProfileSubmitting;
         return Scaffold(
-          backgroundColor: AppColors.neutralWhite,
+          backgroundColor: AppColors.background(context),
           appBar: AppBar(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.surface(context),
             elevation: 0,
             leading: widget.isEditing
                 ? IconButton(
-                    icon: const Icon(LucideIcons.arrowLeft, color: AppColors.slate900),
+                    icon: Icon(LucideIcons.arrowLeft, color: AppColors.textPrimary(context)),
                     onPressed: () => uiService.goBack(),
                   )
                 : null,
@@ -114,12 +114,12 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
             title: Text(
               'Complete Your Profile',
               style: AppTypography.textTheme.bodyLarge?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
               ),
             ),
-            titleSpacing: 0,
+            titleSpacing: widget.isEditing ? 0 : AppSpacing.md,
             centerTitle: false,
           ),
           body: SafeArea(
@@ -142,7 +142,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.slate900,
+                              color: AppColors.textPrimary(context),
                             ),
                           ),
                           const SizedBox(height: AppSpacing.smd),
@@ -174,7 +174,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.slate900,
+                              color: AppColors.textPrimary(context),
                             ),
                           ),
                           const SizedBox(height: AppSpacing.smd),
@@ -197,14 +197,14 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.slate900,
+                              color: AppColors.textPrimary(context),
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
                           Text(
                             'Select sectors...',
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.slate600,
+                               color: AppColors.textSecondary(context),
                               fontSize: 14,
                             ),
                           ),
@@ -232,9 +232,9 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                                     vertical: AppSpacing.sm,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.trustBlue : AppColors.neutralWhite,
+                                    color: isSelected ? AppColors.trustBlue : AppColors.surface(context),
                                     border: Border.all(
-                                      color: isSelected ? AppColors.trustBlue : AppColors.slate300,
+                                      color: isSelected ? AppColors.trustBlue : AppColors.border(context),
                                     ),
                                     borderRadius: BorderRadius.circular(AppRadius.xxl),
                                   ),
@@ -252,7 +252,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                                       Text(
                                         sector,
                                         style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                          color: isSelected ? AppColors.neutralWhite : AppColors.slate700,
+                                          color: isSelected ? AppColors.neutralWhite : AppColors.textPrimary(context),
                                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                                           fontSize: 14,
                                         ),
@@ -274,10 +274,10 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: AppColors.neutralWhite,
+                    color: AppColors.surface(context),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: context.isDarkMode ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, -4),
                       ),
@@ -325,10 +325,10 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
         margin: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.smd),
         padding: const EdgeInsets.all(AppSpacing.smd),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.trustBlue.withValues(alpha: 0.05) : AppColors.neutralWhite,
+          color: isSelected ? AppColors.trustBlue.withValues(alpha: 0.05) : AppColors.surface(context),
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
-            color: isSelected ? AppColors.trustBlue : AppColors.slate200,
+            color: isSelected ? AppColors.trustBlue : AppColors.border(context),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -340,7 +340,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.trustBlue : AppColors.slate300,
+                  color: isSelected ? AppColors.trustBlue : AppColors.textSecondary(context),
                   width: 2,
                 ),
               ),
@@ -363,7 +363,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
           ],

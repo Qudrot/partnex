@@ -47,7 +47,7 @@ class CircularScoreRing extends StatelessWidget {
                 style: AppTypography.textTheme.displayLarge?.copyWith(
                   fontSize: fontSizeOverride ?? size * 0.35,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                   height: 1.1,
                 ),
               ),
@@ -55,7 +55,7 @@ class CircularScoreRing extends StatelessWidget {
                 Text(
                   'out of 100',
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate600.withValues(alpha: 0.6),
+                    color: AppColors.textSecondary(context).withValues(alpha: 0.6),
                     fontWeight: FontWeight.w600,
                     fontSize: size * 0.08,
                   ),

@@ -76,20 +76,22 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context, state) {
           final isLoading = state is AuthLoading;
           return Scaffold(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.background(context),
             body: SafeArea(
               child: Column(
                 children: [
+                       SizedBox(height: AppSpacing.xl),
                   // Header
                   Padding(
                     padding: EdgeInsets.all(AppSpacing.md),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Log In',
-                        style: AppTypography.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                        'Login',
+                        style: AppTypography.textTheme.headlineMedium?.copyWith(
+                color: AppColors.textPrimary(context),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -107,12 +109,12 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              SizedBox(height: AppSpacing.sm),
+                              // SizedBox(height: AppSpacing.sm),
                               Text(
                                 'Sign in to your Partnex account',
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.left,
                                 style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.slate600,
+                                  color: AppColors.textSecondary(context),
                                 ),
                               ),
                               SizedBox(height: AppSpacing.xl),
@@ -144,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                                    color: AppColors.slate400,
+                                    color: AppColors.textSecondary(context),
                                     size: 20,
                                   ),
                                   onPressed: () {

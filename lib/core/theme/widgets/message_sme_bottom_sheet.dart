@@ -35,8 +35,8 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.neutralWhite,
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
@@ -60,7 +60,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                         style: AppTypography.textTheme.headlineSmall?.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -68,14 +68,14 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                         "Choose how you'd like to reach out",
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           fontSize: 14,
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(LucideIcons.x, color: AppColors.slate900),
+                  icon: Icon(LucideIcons.x, color: AppColors.textPrimary(context)),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -196,8 +196,8 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.slate50,
-            border: Border.all(color: AppColors.slate200),
+            color: AppColors.background(context),
+            border: Border.all(color: AppColors.border(context)),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Column(
@@ -210,7 +210,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                 ),
               ),
             ],
@@ -233,7 +233,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: AppColors.slate400),
+            Icon(icon, size: 16, color: AppColors.textSecondary(context)),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,14 +241,14 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                 Text(
                   label,
                   style: AppTypography.textTheme.labelSmall?.copyWith(
-                    color: AppColors.slate600,
+                    color: AppColors.textSecondary(context),
                     fontSize: 12,
                   ),
                 ),
                 Text(
                   value,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),

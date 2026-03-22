@@ -31,12 +31,14 @@ class CustomCard extends StatelessWidget {
     return Container(
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.slate200, width: 1),
-        boxShadow: const [
+        border: Border.all(color: AppColors.border(context), width: 1),
+        boxShadow: [
           BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.05),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.black.withValues(alpha: 0.2) 
+                : const Color.fromRGBO(0, 0, 0, 0.05),
             blurRadius: 2,
             offset: Offset(0, 1),
           ),
@@ -50,11 +52,13 @@ class CustomCard extends StatelessWidget {
     return Container(
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.07),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.black.withValues(alpha: 0.3) 
+                : const Color.fromRGBO(0, 0, 0, 0.07),
             blurRadius: 6,
             offset: Offset(0, 4),
           ),
@@ -68,9 +72,9 @@ class CustomCard extends StatelessWidget {
     return Container(
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.slate50,
+        color: AppColors.background(context),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.slate200, width: 1),
+        border: Border.all(color: AppColors.border(context), width: 1),
       ),
       child: child,
     );

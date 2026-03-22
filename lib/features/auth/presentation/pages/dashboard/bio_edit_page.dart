@@ -106,12 +106,12 @@ class _BioEditPageState extends State<BioEditPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          backgroundColor: AppColors.neutralWhite,
+          backgroundColor: AppColors.surface(context),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+            icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
             onPressed: () => uiService.goBack(),
           ),
           title: Text(
@@ -119,14 +119,14 @@ class _BioEditPageState extends State<BioEditPage> {
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 16,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
           titleSpacing: 0,
           centerTitle: false,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1.0),
-            child: Container(color: AppColors.slate200, height: 1.0),
+            child: Container(color: AppColors.border(context), height: 1.0),
           ),
         ),
         body: SafeArea(
@@ -139,7 +139,7 @@ class _BioEditPageState extends State<BioEditPage> {
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 12),
@@ -153,17 +153,17 @@ class _BioEditPageState extends State<BioEditPage> {
                 hintText: 'Tell investors about your business, mission, team, and achievements...',
                 hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
-                  color: AppColors.slate400,
+                  color: AppColors.textSecondary(context),
                 ),
                 filled: true,
-                fillColor: AppColors.neutralWhite,
+                fillColor: AppColors.surface(context),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
                   borderSide: BorderSide(color: AppColors.slate300),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
-                  borderSide: BorderSide(color: AppColors.slate300),
+                  borderSide: BorderSide(color: AppColors.border(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
@@ -173,7 +173,7 @@ class _BioEditPageState extends State<BioEditPage> {
               ),
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
             Align(
@@ -184,7 +184,7 @@ class _BioEditPageState extends State<BioEditPage> {
                   '${_bioController.text.trim().isEmpty ? 0 : _bioController.text.trim().split(RegExp(r'\s+')).length} / 1000 words',
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     fontSize: 12,
-                    color: AppColors.slate600,
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
               ),
@@ -198,7 +198,7 @@ class _BioEditPageState extends State<BioEditPage> {
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
             const SizedBox(height: 12),
@@ -269,14 +269,14 @@ class _BioEditPageState extends State<BioEditPage> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.slate600),
+            Icon(icon, size: 18, color: AppColors.textSecondary(context)),
             const SizedBox(width: 8),
             Text(
               label,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
           ],
@@ -289,17 +289,17 @@ class _BioEditPageState extends State<BioEditPage> {
             hintText: placeholder,
             hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
               fontSize: 14,
-              color: AppColors.slate400,
+              color: AppColors.textSecondary(context),
             ),
             filled: true,
-            fillColor: AppColors.neutralWhite,
+            fillColor: AppColors.surface(context),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(color: AppColors.slate300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide(color: AppColors.slate300),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
@@ -309,7 +309,7 @@ class _BioEditPageState extends State<BioEditPage> {
           ),
           style: AppTypography.textTheme.bodyMedium?.copyWith(
             fontSize: 14,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
         ),
       ],

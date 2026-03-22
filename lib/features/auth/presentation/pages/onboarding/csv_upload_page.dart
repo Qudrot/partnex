@@ -120,14 +120,14 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(
               LucideIcons.chevronLeft,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             onPressed: () => uiService.goBack(),
           ),
@@ -136,7 +136,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 18,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -145,7 +145,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
           centerTitle: false,
           actions: [
             IconButton(
-              icon: const Icon(LucideIcons.x, color: AppColors.slate900),
+              icon: Icon(LucideIcons.x, color: AppColors.textPrimary(context)),
               onPressed: () {
                 uiService.goBack();
               },
@@ -178,7 +178,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                 Text(
                   'Upload a CSV file with your financial information. We\'ll parse and validate it for you.',
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate600,
+                    color: AppColors.textSecondary(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -190,7 +190,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                   child: DottedBorder(
                     options: const RoundedRectDottedBorderOptions(
                       radius: Radius.circular(AppRadius.md),
-                      color: AppColors.slate300,
+                      color: AppColors.border(context),
                       strokeWidth: 2,
                       dashPattern: [6, 6],
                     ),
@@ -211,7 +211,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                                   SizedBox(height: AppSpacing.md),
                                   Text(
                                     'Processing in background...',
-                                    style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate600),
+                                    style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary(context)),
                                   ),
                                 ],
                               ),
@@ -230,7 +230,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                                 'Tap to upload from your device',
                                 style: AppTypography.textTheme.bodyLarge
                                     ?.copyWith(
-                                      color: AppColors.slate900,
+                                      color: AppColors.textPrimary(context),
                                       fontWeight: FontWeight.w500,
                                     ),
                               ),
@@ -238,7 +238,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                               Text(
                                 '.csv files only • Max 5 MB',
                                 style: AppTypography.textTheme.bodySmall
-                                    ?.copyWith(color: AppColors.slate400),
+                                    ?.copyWith(color: AppColors.textSecondary(context)),
                               ),
                             ],
                           );
@@ -364,9 +364,9 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: AppColors.slate200),
+                              border: Border.all(color: AppColors.border(context)),
                               borderRadius: BorderRadius.circular(AppRadius.md),
-                              color: AppColors.neutralWhite,
+                              color: AppColors.surface(context),
                             ),
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
@@ -439,11 +439,11 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
       dataRowMinHeight: 40,
       dataRowMaxHeight: 40,
       headingTextStyle: AppTypography.textTheme.labelMedium?.copyWith(
-        color: AppColors.slate600,
+        color: AppColors.textSecondary(context),
         fontWeight: FontWeight.w700,
       ),
       dataTextStyle: AppTypography.textTheme.bodySmall?.copyWith(
-        color: AppColors.slate900,
+        color: AppColors.textPrimary(context),
       ),
       columns: headers.map((header) {
         return DataColumn(label: Text(header.toString()));
@@ -456,7 +456,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
           color: WidgetStateProperty.resolveWith<Color?>((
             Set<WidgetState> states,
           ) {
-            return idx.isEven ? AppColors.slate50 : AppColors.neutralWhite;
+            return idx.isEven ? AppColors.background(context) : AppColors.surface(context);
           }),
           cells: List.generate(headers.length, (colIdx) {
             final cellValue = colIdx < row.length ? row[colIdx].toString() : '';

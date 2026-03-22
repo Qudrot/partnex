@@ -59,9 +59,9 @@ class InputMethodSelectionPage extends StatelessWidget {
               Text(
                 'Choose the method that works best for you. You can always edit your information later.',
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.slate600,
+                  color: AppColors.textSecondary(context),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               SizedBox(height: AppSpacing.xl),
               Expanded(
@@ -162,11 +162,11 @@ class _MethodCardState extends State<_MethodCard> {
   @override
   Widget build(BuildContext context) {
     final bgColor = widget.isPrimary
-        ? (AppColors.neutralWhite)
-        : (_isHovered ? AppColors.slate100 : AppColors.slate50);
+        ? (AppColors.surface(context))
+        : (_isHovered ? AppColors.surface(context).withValues(alpha: 0.8) : AppColors.surface(context).withValues(alpha: 0.5));
 
     final borderColor = widget.isPrimary
-        ? (_isHovered ? AppColors.trustBlue : AppColors.slate200)
+        ? (_isHovered ? AppColors.trustBlue : AppColors.border(context))
         : Colors.transparent;
 
     final borderWidth = widget.isPrimary && _isHovered ? 2.0 : 1.0;
@@ -182,18 +182,26 @@ class _MethodCardState extends State<_MethodCard> {
           color: bgColor,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: borderColor, width: borderWidth),
+          boxShadow: widget.isPrimary ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ] : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(widget.icon, color: AppColors.slate700, size: AppSpacing.xl),
+                Icon(widget.icon, color: AppColors.trustBlue, size: AppSpacing.xl),
                 SizedBox(width: AppSpacing.smd),
                 Text(
                   widget.title,
                   style: AppTypography.textTheme.headlineSmall?.copyWith(
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -202,7 +210,7 @@ class _MethodCardState extends State<_MethodCard> {
             Text(
               widget.description,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
               ),
             ),
             SizedBox(height: AppSpacing.md),
@@ -220,7 +228,7 @@ class _MethodCardState extends State<_MethodCard> {
                     Text(
                       benefit,
                       style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                       ),
                     ),
                   ],

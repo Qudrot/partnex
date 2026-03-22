@@ -11,6 +11,7 @@ import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:partnex/features/auth/data/models/credibility_score.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/login_page.dart';
@@ -42,15 +43,15 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.slate50,
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          backgroundColor: AppColors.neutralWhite,
+          backgroundColor: AppColors.surface(context),
           elevation: 1,
-          shadowColor: AppColors.slate200,
+          shadowColor: AppColors.border(context),
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               LucideIcons.chevronLeft,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             onPressed: () => uiService.goBack(),
           ),
@@ -59,7 +60,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 18,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -106,12 +107,12 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                   Container(
                     padding: EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
-                      color: AppColors.neutralWhite,
+                      color: AppColors.surface(context),
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.slate200),
+                      border: Border.all(color: AppColors.border(context)),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.slate200.withValues(alpha: 0.5),
+                          color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
                           blurRadius: AppRadius.sm,
                           offset: const Offset(0, 2),
                         ),
@@ -140,7 +141,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                                         .textTheme
                                         .headlineMedium
                                         ?.copyWith(
-                                          color: AppColors.slate900,
+                                          color: AppColors.textPrimary(context),
                                           fontSize: 20,
                                         ),
                                   ),
@@ -150,7 +151,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                                         ? 'Verified Angel'
                                         : 'Industry: ${profileState.industry.isNotEmpty ? profileState.industry : 'N/A'}',
                                     style: AppTypography.textTheme.bodyMedium
-                                        ?.copyWith(color: AppColors.slate600),
+                                        ?.copyWith(color: AppColors.textSecondary(context)),
                                   ),
                                   SizedBox(height: AppSpacing.sm),
                                   Container(
@@ -209,15 +210,15 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                   Text(
                     'Actions',
                     style: AppTypography.textTheme.labelLarge?.copyWith(
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                   SizedBox(height: AppSpacing.smd),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.neutralWhite,
+                      color: AppColors.surface(context),
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.slate200),
+                      border: Border.all(color: AppColors.border(context)),
                     ),
                     child: Column(
                       children: [
@@ -232,13 +233,13 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                                 : const BusinessProfilePage(isEditMode: true),
                           ),
                         ),
-                        Divider(height: 1, color: AppColors.slate200),
+                        Divider(height: 1, color: AppColors.border(context)),
                         _ActionTile(
                           title: 'View Score History',
                           icon: LucideIcons.history,
                           onTap: () {},
                         ),
-                        Divider(height: 1, color: AppColors.slate200),
+                        Divider(height: 1, color: AppColors.border(context)),
                         _ActionTile(
                           title: 'Download All Reports',
                           icon: LucideIcons.download,
@@ -254,15 +255,15 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                   Text(
                     'Settings',
                     style: AppTypography.textTheme.labelLarge?.copyWith(
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                   SizedBox(height: AppSpacing.smd),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.neutralWhite,
+                      color: AppColors.surface(context),
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.slate200),
+                      border: Border.all(color: AppColors.border(context)),
                     ),
                     child: Column(
                       children: [
@@ -279,29 +280,23 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                             context.read<AuthBloc>().add(SubmitSmeProfileEvent(updatedState.toMap()));
                           },
                         ),
-                        Divider(height: 1, color: AppColors.slate200),
+                        Divider(height: 1, color: AppColors.border(context)),
                         _ToggleTile(
-                          title: 'Score Update Notifications',
-                          subtitle:
-                              'Receive alerts when your credibility score changes',
-                          icon: LucideIcons.bellRing,
-                          value: _notificationsEnabled,
-                          onChanged: (val) =>
-                              setState(() => _notificationsEnabled = val),
+                          title: 'Turn on Dark Mode',
+                          subtitle: 'Switch to a darker theme for better viewing',
+                          icon: LucideIcons.moon,
+                          value: Theme.of(context).brightness == Brightness.dark,
+                          onChanged: (val) {
+                            context.read<ThemeCubit>().toggleTheme();
+                          },
                         ),
-                        Divider(height: 1, color: AppColors.slate200),
+                        Divider(height: 1, color: AppColors.border(context)),
                         _ActionTile(
                           title: 'FAQ & Help',
                           icon: LucideIcons.helpCircle,
                           onTap: () => uiService.navigateTo(
                             const FaqPage(),
                           ),
-                        ),
-                        Divider(height: 1, color: AppColors.slate200),
-                        _ActionTile(
-                          title: 'Email Preferences',
-                          icon: LucideIcons.mail,
-                          onTap: () {},
                         ),
                       ],
                     ),
@@ -360,18 +355,18 @@ class _ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.slate600, size: 20),
+      leading: Icon(icon, color: AppColors.textSecondary(context), size: 20),
       title: Text(
         title,
         style: AppTypography.textTheme.bodyMedium?.copyWith(
-          color: AppColors.slate900,
+          color: AppColors.textPrimary(context),
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: const Icon(
+      trailing: Icon(
         LucideIcons.chevronRight,
         size: 16,
-        color: AppColors.slate400,
+        color: AppColors.textSecondary(context),
       ),
       onTap: onTap,
     );
@@ -402,17 +397,17 @@ class _ToggleTile extends StatelessWidget {
       title: Text(
         title,
         style: AppTypography.textTheme.bodyMedium?.copyWith(
-          color: AppColors.slate900,
+          color: AppColors.textPrimary(context),
           fontWeight: FontWeight.w500,
         ),
       ),
       subtitle: Text(
         subtitle,
         style: AppTypography.textTheme.bodySmall?.copyWith(
-          color: AppColors.slate500,
+          color: AppColors.textSecondary(context),
         ),
       ),
-      secondary: Icon(icon, color: AppColors.slate600, size: 20),
+      secondary: Icon(icon, color: AppColors.textSecondary(context), size: 20),
     );
   }
 }

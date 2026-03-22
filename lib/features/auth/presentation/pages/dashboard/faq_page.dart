@@ -13,22 +13,22 @@ class FaqPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.slate50,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
         title: Text(
           'FAQ & Help',
           style: AppTypography.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary(context),
             fontSize: 18,
           ),
         ),
         centerTitle: false,
         titleSpacing: 0,
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 1,
-        shadowColor: AppColors.slate200,
+        shadowColor: AppColors.border(context),
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => uiService.goBack(),
         ),
       ),
@@ -49,7 +49,7 @@ class FaqPage extends StatelessWidget {
               isInvestor ? 'Learn how Partnex calculates credibility and extracts financial records for SMEs.' : 'Learn how Partnex calculates your credibility and extracts financial records securely.',
               textAlign: TextAlign.center,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
               ),
             ),
             SizedBox(height: AppSpacing.xxl),
@@ -101,12 +101,12 @@ class FaqPage extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -115,8 +115,8 @@ class FaqPage extends StatelessWidget {
       child: Theme(
         data: ThemeData(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          iconColor: AppColors.slate900,
-          collapsedIconColor: AppColors.slate400,
+          iconColor: AppColors.textPrimary(context),
+          collapsedIconColor: AppColors.textSecondary(context),
           childrenPadding: EdgeInsets.only(
             left: AppSpacing.md,
             right: AppSpacing.md,
@@ -126,14 +126,14 @@ class FaqPage extends StatelessWidget {
             title,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
           children: [
             Text(
               content,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
                 height: 1.5,
               ),
             ),

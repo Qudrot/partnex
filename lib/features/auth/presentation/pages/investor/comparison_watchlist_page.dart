@@ -143,12 +143,12 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.slate50,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -156,7 +156,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -167,13 +167,13 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
           child: Container(
             decoration: const BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: AppColors.slate200, width: 1),
+                bottom: BorderSide(color: AppColors.border(context), width: 1),
               ),
             ),
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.trustBlue,
-              unselectedLabelColor: AppColors.slate600,
+              unselectedLabelColor: AppColors.textSecondary(context),
               indicatorColor: AppColors.trustBlue,
               indicatorWeight: 3,
               labelStyle: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -207,7 +207,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
         Text(
           'Select up to 3 SMEs to compare side-by-side.',
           style: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.slate600,
+            color: AppColors.textSecondary(context),
           ),
         ),
         SizedBox(height: AppSpacing.md),
@@ -229,20 +229,20 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
             const Icon(
               LucideIcons.gitCompare,
               size: AppSpacing.avatar,
-              color: AppColors.slate300,
+              color: AppColors.textSecondary(context),
             ),
             SizedBox(height: AppSpacing.md),
             Text(
               'No SMEs selected',
               style: AppTypography.textTheme.headlineSmall?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
             SizedBox(height: AppSpacing.sm),
             Text(
               'Select SMEs from your watchlist to compare',
               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate500,
+                color: AppColors.textSecondary(context),
               ),
             ),
             SizedBox(height: AppSpacing.xl),
@@ -276,19 +276,19 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(LucideIcons.heart, size: AppSpacing.avatar, color: AppColors.slate300),
+          const Icon(LucideIcons.heart, size: AppSpacing.avatar, color: AppColors.textSecondary(context)),
           SizedBox(height: AppSpacing.md),
           Text(
             'No companies yet',
             style: AppTypography.textTheme.headlineSmall?.copyWith(
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
           SizedBox(height: AppSpacing.sm),
           Text(
             'Start adding companies to your watchlist',
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate500,
+              color: AppColors.textSecondary(context),
             ),
           ),
           SizedBox(height: AppSpacing.xl),
@@ -304,10 +304,10 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
 
   Widget _buildComparisonHeader() {
     return Container(
-      color: AppColors.neutralWhite,
+      color: AppColors.surface(context),
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.slate200, width: 1)),
+        border: Border(bottom: BorderSide(color: AppColors.border(context), width: 1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -343,14 +343,14 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
     return Container(
       margin: EdgeInsets.only(bottom: AppSpacing.smd),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: const [
           BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.02),
+            color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color.fromRGBO(0, 0, 0, 0.02),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -372,8 +372,8 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                   child: Checkbox(
                     value: isSelected,
                     activeColor: AppColors.trustBlue,
-                    side: const BorderSide(
-                      color: AppColors.slate300,
+                    side: BorderSide(
+                      color: AppColors.textSecondary(context),
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
@@ -399,7 +399,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                                   ?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
-                                    color: AppColors.slate900,
+                                    color: AppColors.textPrimary(context),
                                   ),
                             ),
                           ),
@@ -407,7 +407,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                             icon: const Icon(
                               LucideIcons.trash2,
                               size: AppSpacing.md,
-                              color: AppColors.slate400,
+                              color: AppColors.textSecondary(context),
                             ),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
@@ -426,7 +426,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                       Text(
                         sme['industry'],
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.smd),
@@ -487,15 +487,15 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
           columnSpacing: AppSpacing.xl,
-          headingRowColor: WidgetStateProperty.all(AppColors.slate50),
+          headingRowColor: WidgetStateProperty.all(AppColors.background(context)),
           columns: [
             const DataColumn(label: Text('')),
             ...items.map(
@@ -509,7 +509,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                         item['name'],
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       Container(
@@ -543,7 +543,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                     metricDict['label']!,
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                 ),
@@ -570,7 +570,7 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           color: isBest
                               ? AppColors.successGreen
-                              : AppColors.slate900,
+                              : AppColors.textPrimary(context),
                           fontWeight: isBest
                               ? FontWeight.w600
                               : FontWeight.w400,

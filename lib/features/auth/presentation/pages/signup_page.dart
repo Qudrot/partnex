@@ -129,10 +129,11 @@ class _SignupPageState extends State<SignupPage> {
         builder: (context, state) {
           final isLoading = state is AuthLoading;
           return Scaffold(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.background(context),
             body: SafeArea(
               child: Column(
                 children: [
+                       SizedBox(height: AppSpacing.xl),
                   // Header
                   Padding(
                     padding: EdgeInsets.all(AppSpacing.md),
@@ -140,9 +141,10 @@ class _SignupPageState extends State<SignupPage> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Create Account',
-                        style: AppTypography.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                         style: AppTypography.textTheme.headlineMedium?.copyWith(
+                color: AppColors.textPrimary(context),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,
                       ),
@@ -158,12 +160,12 @@ class _SignupPageState extends State<SignupPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(height: AppSpacing.sm),
+                            // SizedBox(height: AppSpacing.sm),
                             Text(
                               'Join Africa\'s leading SME credibility platform',
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.left,
                               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.slate600,
+                                color: AppColors.textSecondary(context),
                               ),
                             ),
                             SizedBox(height: AppSpacing.xl),
@@ -218,7 +220,7 @@ class _SignupPageState extends State<SignupPage> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                                  color: AppColors.slate400,
+                                  color: AppColors.textSecondary(context),
                                   size: 20,
                                 ),
                                 onPressed: () {
@@ -244,7 +246,7 @@ class _SignupPageState extends State<SignupPage> {
                                     borderRadius: BorderRadius.circular(AppRadius.sm),
                                     child: LinearProgressIndicator(
                                       value: _passwordStrength,
-                                      backgroundColor: AppColors.slate200,
+                                      backgroundColor: AppColors.border(context),
                                       color: _passwordStrengthColor,
                                       minHeight: 4,
                                     ),
@@ -270,7 +272,7 @@ class _SignupPageState extends State<SignupPage> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureConfirmPassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                                  color: AppColors.slate400,
+                                  color: AppColors.textSecondary(context),
                                   size: 20,
                                 ),
                                 onPressed: () {
@@ -293,7 +295,7 @@ class _SignupPageState extends State<SignupPage> {
                             Text(
                               'I am signing up as an:',
                               style: AppTypography.textTheme.labelLarge?.copyWith(
-                                color: AppColors.slate900,
+                                color: AppColors.textPrimary(context),
                               ),
                             ),
                             SizedBox(height: AppSpacing.smd),
@@ -305,10 +307,10 @@ class _SignupPageState extends State<SignupPage> {
                                     child: Container(
                                       padding: EdgeInsets.symmetric(vertical: AppSpacing.smd),
                                       decoration: BoxDecoration(
-                                        color: _selectedRole == 'sme' ? AppColors.neutralWhite : AppColors.slate50,
+                                        color: _selectedRole == 'sme' ? AppColors.surface(context) : AppColors.background(context),
                                         borderRadius: BorderRadius.circular(AppRadius.md),
                                         border: Border.all(
-                                          color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.slate200,
+                                          color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.border(context),
                                           width: _selectedRole == 'sme' ? 2.5 : 1.0,
                                         ),
                                       ),
@@ -318,13 +320,13 @@ class _SignupPageState extends State<SignupPage> {
                                           Icon(
                                             LucideIcons.building,
                                             size: 18,
-                                            color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.slate600,
+                                            color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.textSecondary(context),
                                           ),
                                           SizedBox(width: AppSpacing.sm),
                                           Text(
                                             'SME',
                                             style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                              color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.slate600,
+                                              color: _selectedRole == 'sme' ? AppColors.trustBlue : AppColors.textSecondary(context),
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -340,10 +342,10 @@ class _SignupPageState extends State<SignupPage> {
                                     child: Container(
                                       padding: EdgeInsets.symmetric(vertical: AppSpacing.smd),
                                       decoration: BoxDecoration(
-                                        color: _selectedRole == 'investor' ? AppColors.neutralWhite : AppColors.slate50,
+                                        color: _selectedRole == 'investor' ? AppColors.surface(context) : AppColors.background(context),
                                         borderRadius: BorderRadius.circular(AppRadius.md),
                                         border: Border.all(
-                                          color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.slate200,
+                                          color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.border(context),
                                           width: _selectedRole == 'investor' ? 2.5 : 1.0,
                                         ),
                                       ),
@@ -353,13 +355,13 @@ class _SignupPageState extends State<SignupPage> {
                                           Icon(
                                             LucideIcons.briefcase,
                                             size: 18,
-                                            color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.slate600,
+                                            color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.textSecondary(context),
                                           ),
                                           SizedBox(width: AppSpacing.sm),
                                           Text(
                                             'Investor',
                                             style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                              color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.slate600,
+                                              color: _selectedRole == 'investor' ? AppColors.trustBlue : AppColors.textSecondary(context),
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -405,7 +407,7 @@ class _SignupPageState extends State<SignupPage> {
                       TextSpan(
                         text: 'By continuing, you agree to our ',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                         children: [
                           TextSpan(

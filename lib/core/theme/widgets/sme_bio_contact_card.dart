@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/two_line_text.dart';
 
 class SmeBioContactCard extends StatelessWidget {
   final String? bio;
@@ -26,11 +27,6 @@ class SmeBioContactCard extends StatelessWidget {
                       (contactPersonTitle != null && contactPersonTitle!.isNotEmpty);
     bool hasBio = bio != null && bio!.isNotEmpty;
 
-    String bioSnippet = '';
-    if (hasBio) {
-      bioSnippet = bio!.length > 100 ? '${bio!.substring(0, 100)}... ' : '${bio!} ';
-    }
-
     List<String> contactParts = [];
     if (contactPersonName != null && contactPersonName!.isNotEmpty) {
       contactParts.add(contactPersonName!);
@@ -44,8 +40,8 @@ class SmeBioContactCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.slate50,
-        border: Border.all(color: AppColors.slate200),
+        color: AppColors.surface(context),
+        border: Border.all(color: AppColors.border(context)),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -63,48 +59,34 @@ class SmeBioContactCard extends StatelessWidget {
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: AppColors.slate600,
+              color: AppColors.textSecondary(context),
             ),
           ),
           const SizedBox(height: 8),
-          if (hasBio) 
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: bioSnippet,
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.slate700,
-                      height: 1.5,
-                    ),
-                  ),
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.baseline,
-                    baseline: TextBaseline.alphabetic,
-                    child: GestureDetector(
-                      onTap: onReadMore,
-                      child: Text(
-                        'Read More',
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.linkBlue,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          if (hasBio)
+            TwoLineText(
+              text: bio,
+              ctaText: 'Read More',
+              onCtaTap: onReadMore,
+              textStyle: AppTypography.textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textPrimary(context),
+                height: 1.5,
+              ),
+              ctaStyle: AppTypography.textTheme.bodyMedium?.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: AppColors.linkBlue,
               ),
             )
-          else 
+          else
             Text(
               "No company bio has been added yet. $smeName is currently focusing on operations and hasn't shared their story.",
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: AppColors.slate500,
+                color: AppColors.textSecondary(context),
                 fontStyle: FontStyle.italic,
                 height: 1.5,
               ),
@@ -114,17 +96,27 @@ class SmeBioContactCard extends StatelessWidget {
           if (hasBio) ...[
             Container(
               height: 1,
-              color: AppColors.slate200,
+              color: AppColors.border(context),
             ),
             const SizedBox(height: 12),
           ],
 
           Text(
+            'Primary Contact',
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary(context),
+              letterSpacing: 0.4,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
             hasContact ? contactDisplay : "$smeName Business Representative",
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
             ),
           ),
         ],

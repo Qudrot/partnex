@@ -54,8 +54,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
     return BlocBuilder<ScoreCubit, ScoreState>(
       builder: (context, state) {
         if (state is ScoreLoading) {
-          return const Scaffold(
-            backgroundColor: AppColors.neutralWhite,
+          return Scaffold(
+            backgroundColor: AppColors.background(context),
             body: Center(
               child: CircularProgressIndicator(color: AppColors.trustBlue),
             ),
@@ -64,16 +64,16 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
 
         if (state is ScoreInitial) {
           return Scaffold(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.background(context),
             appBar: AppBar(
-              backgroundColor: AppColors.neutralWhite,
+              backgroundColor: AppColors.surface(context),
               elevation: 0,
               automaticallyImplyLeading: false,
               leading: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   LucideIcons.menu,
                   size: 24,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                 ),
                 onPressed: () {
                   Navigator.push(
@@ -87,7 +87,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               title: Text(
                 'Dashboard',
                 style: AppTypography.textTheme.headlineMedium?.copyWith(
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
@@ -127,7 +127,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                       'No credibility score yet. Submit your business profile to generate your AI-powered credibility score.',
                       textAlign: TextAlign.center,
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                         fontSize: 14,
                       ),
                     ),
@@ -206,13 +206,13 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             scoreData.calculatedAt.day == now.day;
             
         final formattedDate = isToday 
-            ? 'Today at ${DateFormat('h:mm a').format(scoreData.calculatedAt)}'
-            : DateFormat('MMM d, yyyy h:mm a').format(scoreData.calculatedAt);
+            ? 'today at ${DateFormat('h:mm a').format(scoreData.calculatedAt)}'
+            : 'on ${DateFormat('MMM d, yyyy h:mm a').format(scoreData.calculatedAt)}';
 
         return Scaffold(
-          backgroundColor: AppColors.neutralWhite,
+          backgroundColor: AppColors.background(context),
           appBar: AppBar(
-            backgroundColor: AppColors.neutralWhite,
+            backgroundColor: AppColors.surface(context),
             elevation: 0,
             automaticallyImplyLeading: false,
             titleSpacing: 0,
@@ -233,7 +233,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
             title: Text(
               'Credibility Score',
               style: AppTypography.textTheme.headlineMedium?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -317,9 +317,9 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Generated on $formattedDate',
+                          'Generated $formattedDate',
                           style: AppTypography.textTheme.bodySmall?.copyWith(
-                            color: AppColors.slate600,
+                            color: AppColors.textSecondary(context),
                             fontSize: 12,
                           ),
                         ),
@@ -405,7 +405,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
                   Text(
                     'What Drives Your Score',
                     style: AppTypography.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.slate900,
+                      color: AppColors.textPrimary(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -476,7 +476,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
       builder: (context) => Container(
         padding: EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
-          color: AppColors.neutralWhite,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         ),
         child: Column(
@@ -486,7 +486,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.slate200,
+                color: AppColors.border(context),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -516,7 +516,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               'We\'re working with top institutional investors to bring you the best funding opportunities directly on Partnex.',
               textAlign: TextAlign.center,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
                 height: 1.5,
               ),
             ),
@@ -543,8 +543,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
-        border: Border.all(color: AppColors.slate200),
+        color: AppColors.surface(context),
+        border: Border.all(color: AppColors.border(context)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -576,7 +576,7 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
               Text(
                 displayValue,
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),

@@ -82,9 +82,9 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
       margin: EdgeInsets.symmetric(vertical: AppSpacing.md),
       padding: EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.slate50,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +92,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: AppTypography.textTheme.headlineSmall?.copyWith(fontSize: 16, color: AppColors.slate900)),
+              Text(title, style: AppTypography.textTheme.headlineSmall?.copyWith(fontSize: 16, color: AppColors.textPrimary(context))),
               if (onEdit != null)
                 CustomButton(
                   text: editLabel,
@@ -109,12 +109,12 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entry.key, style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.slate600, fontSize: 12)),
+                  Text(entry.key, style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.textSecondary(context), fontSize: 12)),
                   const SizedBox(height: 2),
                   Text(
                     entry.value.toString(),
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: isMissingError ? AppColors.dangerRed : AppColors.slate900,
+                      color: isMissingError ? AppColors.dangerRed : AppColors.textPrimary(context),
                       fontWeight: isMissingError ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
@@ -148,20 +148,21 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
 
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppColors.surface(context),
             elevation: 0,
-            leading: IconButton(icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900), onPressed: () => Navigator.pop(context)),
+            leading: IconButton(icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)), onPressed: () => Navigator.pop(context)),
             title: Text(
               'Review Your Information',
               style: AppTypography.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
             titleSpacing: 0,
             centerTitle: false,
           ),
+          backgroundColor: AppColors.background(context),
           body: SafeArea(
             child: Column(
               children: [
@@ -214,7 +215,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                           'Extracted Financial Profile',
                                           style: AppTypography.textTheme.bodyMedium?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.slate900,
+                                            color: AppColors.textPrimary(context),
                                           ),
                                         ),
                                         IconButton(
@@ -242,7 +243,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                               child: const Text('Understood'),
                                             ),
                                           ],
-                                          backgroundColor: AppColors.neutralWhite,
+                                          backgroundColor: AppColors.surface(context),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(AppRadius.xl),
                                           ),
@@ -256,7 +257,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                                     Text(
                                       'The financial values below were intelligently extracted directly from your document.',
                                       style: AppTypography.textTheme.bodySmall?.copyWith(
-                                        color: AppColors.slate600,
+                                        color: AppColors.textSecondary(context),
                                       ),
                                     ),
                                   ],
@@ -348,7 +349,7 @@ class _ReviewConfirmPageState extends State<ReviewConfirmPage> {
                             Expanded(
                               child: GestureDetector(
                                 onTap: () => setState(() => _isConfirmed = !_isConfirmed),
-                                child: Text('I confirm this information is accurate and complete', style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.slate900)),
+                                child: Text('I confirm this information is accurate and complete', style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary(context))),
                               ),
                             ),
                           ],

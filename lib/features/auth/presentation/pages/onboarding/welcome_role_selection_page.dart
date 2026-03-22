@@ -12,6 +12,7 @@ class WelcomeRoleSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background(context),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -25,17 +26,17 @@ class WelcomeRoleSelectionPage extends StatelessWidget {
                 style: AppTypography.textTheme.displayMedium?.copyWith(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               const SizedBox(height: 8),
               Text(
                 'Choose how you want to use Partnex.',
                 style: AppTypography.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.slate600,
+                  color: AppColors.textSecondary(context),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               const SizedBox(height: 32),
 
@@ -147,11 +148,11 @@ class _RoleCardState extends State<_RoleCard> {
   @override
   Widget build(BuildContext context) {
     final bgColor = widget.isPrimary
-        ? (_isHovered ? AppColors.slate50 : AppColors.neutralWhite)
-        : (_isHovered ? AppColors.slate100 : AppColors.slate50);
+        ? (_isHovered ? AppColors.surface(context) : AppColors.surface(context).withValues(alpha: 0.8))
+        : (_isHovered ? AppColors.surface(context).withValues(alpha: 0.8) : AppColors.surface(context).withValues(alpha: 0.5));
 
     final borderColor = widget.isPrimary
-        ? (_isHovered ? AppColors.trustBlue : AppColors.slate200)
+        ? (_isHovered ? AppColors.trustBlue : AppColors.border(context))
         : Colors.transparent;
 
     final borderWidth = widget.isPrimary && _isHovered ? 2.0 : 1.0;
@@ -182,14 +183,14 @@ class _RoleCardState extends State<_RoleCard> {
                 decoration: BoxDecoration(
                   color: widget.isPrimary
                       ? AppColors.trustBlue.withValues(alpha: 0.1)
-                      : AppColors.slate200,
+                      : AppColors.surface(context),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   widget.icon,
                   color: widget.isPrimary
                       ? AppColors.trustBlue
-                      : AppColors.slate700,
+                      : AppColors.textSecondary(context),
                   size: 24,
                 ),
               ),
@@ -199,7 +200,7 @@ class _RoleCardState extends State<_RoleCard> {
                 style: AppTypography.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
-                  color: AppColors.slate900,
+                  color: AppColors.textPrimary(context),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -208,7 +209,7 @@ class _RoleCardState extends State<_RoleCard> {
               Text(
                 widget.description,
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.slate600,
+                  color: AppColors.textSecondary(context),
                 ),
               ),
               const SizedBox(height: 24),

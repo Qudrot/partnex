@@ -49,16 +49,16 @@ class CustomCurrencyField extends StatelessWidget {
           validator: validator,
           textAlign: TextAlign.right,
           style: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           decoration: InputDecoration(
             hintText: placeholder,
             hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate400,
+              color: AppColors.textSecondary(context),
             ),
             prefixText: prefixText,
             prefixStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate600,
+              color: AppColors.textSecondary(context),
             ),
             errorText: errorText,
             errorStyle: AppTypography.textTheme.bodySmall?.copyWith(
@@ -67,9 +67,9 @@ class CustomCurrencyField extends StatelessWidget {
             filled: true,
             fillColor: fillColor ?? WidgetStateColor.resolveWith((Set<WidgetState> states) {
               if (states.contains(WidgetState.error) || states.contains(WidgetState.focused)) {
-                return AppColors.slate50;
+                return AppColors.background(context);
               }
-              return AppColors.slate100;
+              return Theme.of(context).brightness == Brightness.dark ? AppColors.slate800 : AppColors.slate100;
             }),
             contentPadding: contentPadding ?? EdgeInsets.symmetric(
               vertical: 12,
@@ -77,11 +77,11 @@ class CustomCurrencyField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.slate200),
+              borderSide: BorderSide(color: AppColors.border(context)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

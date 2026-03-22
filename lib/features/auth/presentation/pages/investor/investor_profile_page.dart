@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
+import 'package:partnex/features/auth/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/investor/investor_onboarding_page.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
@@ -28,24 +29,25 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
         : true; // default to true to hide if not authenticated
 
     return Scaffold(
-      backgroundColor: AppColors.slate50,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
         title: Text(
           'My Profile',
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
+            color: AppColors.textPrimary(context),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         titleSpacing: 0,
         centerTitle: false,
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 1,
-        shadowColor: AppColors.slate200,
+        shadowColor: AppColors.border(context),
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => uiService.goBack(),
         ),
       ),
@@ -69,12 +71,12 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                 width: double.infinity,
                 padding: EdgeInsets.all(AppSpacing.xl),
                 decoration: BoxDecoration(
-                  color: AppColors.neutralWhite,
+                  color: AppColors.surface(context),
                   borderRadius: BorderRadius.circular(AppRadius.md),
-                  border: Border.all(color: AppColors.slate200),
+                  border: Border.all(color: AppColors.border(context)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -114,60 +116,95 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
               ),
             SizedBox(height: AppSpacing.xxl),
             Text(
-              'Actions',
+              'Preferences',
               style: AppTypography.textTheme.labelLarge?.copyWith(
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
               ),
             ),
             SizedBox(height: AppSpacing.smd),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.neutralWhite,
+                color: AppColors.surface(context),
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: AppColors.slate200),
+                border: Border.all(color: AppColors.border(context)),
+              ),
+              child: SwitchListTile(
+                value: Theme.of(context).brightness == Brightness.dark,
+                onChanged: (val) {
+                  context.read<ThemeCubit>().toggleTheme();
+                },
+                title: Text(
+                  'Turn on Dark Mode',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary(context),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                secondary: Icon(
+                  LucideIcons.moon,
+                  color: AppColors.textSecondary(context),
+                  size: 20,
+                ),
+                activeColor: AppColors.trustBlue,
+              ),
+            ),
+
+            SizedBox(height: AppSpacing.xxl),
+            Text(
+              'Actions',
+              style: AppTypography.textTheme.labelLarge?.copyWith(
+                color: AppColors.textSecondary(context),
+              ),
+            ),
+            SizedBox(height: AppSpacing.smd),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface(context),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: AppColors.border(context)),
               ),
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       LucideIcons.edit2,
-                      color: AppColors.slate600,
+                      color: AppColors.textSecondary(context),
                       size: 20,
                     ),
                     title: Text(
                       'Update Investment Preferences',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    trailing: const Icon(
+                    trailing: Icon(
                       LucideIcons.chevronRight,
                       size: 16,
-                      color: AppColors.slate400,
+                      color: AppColors.textSecondary(context),
                     ),
                     onTap: () => uiService.navigateTo(
                       const InvestorOnboardingPage(isEditing: true),
                     ),
                   ),
-                    Divider(height: 1, color: AppColors.slate200),
+                    Divider(height: 1, color: AppColors.border(context)),
                     ListTile(
-                      leading: const Icon(
-                        LucideIcons.helpCircle,
-                        color: AppColors.slate600,
-                        size: 20,
-                      ),
+                      leading: Icon(
+                      LucideIcons.helpCircle,
+                      color: AppColors.textSecondary(context),
+                      size: 20,
+                    ),
                       title: Text(
                         'FAQ & Help',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.slate900,
+                          color: AppColors.textPrimary(context),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      trailing: const Icon(
+                      trailing: Icon(
                         LucideIcons.chevronRight,
                         size: 16,
-                        color: AppColors.slate400,
+                        color: AppColors.textSecondary(context),
                       ),
                       onTap: () => uiService.navigateTo(
                         FaqPage(isInvestor: true),
@@ -204,7 +241,8 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                     icon: const Icon(
                       LucideIcons.trash,
                       size: 16,
-                      color: AppColors.dangerRed,),
+                      color: AppColors.dangerRed,
+                    ),
                     onPressed: () {},
                   ),
                   
@@ -221,7 +259,7 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: AppColors.slate500),
+          Icon(icon, size: 18, color: AppColors.textSecondary(context)),
           const SizedBox(width: AppSpacing.smd),
           Expanded(
             child: Column(
@@ -230,7 +268,7 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                 Text(
                   label,
                   style: AppTypography.textTheme.labelMedium?.copyWith(
-                    color: AppColors.slate500,
+                    color: AppColors.textSecondary(context),
                     fontSize: 12,
                   ),
                 ),
@@ -238,7 +276,7 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                 Text(
                   value,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                   ),
@@ -307,10 +345,10 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
     return Container(
       padding: EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.slate50,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: AppColors.slate300,
+          color: AppColors.border(context),
           width: 2,
         ),
         // Alternatively, you could use a CustomPainter for dashed borders,
@@ -322,10 +360,10 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
           // Header Section
           Row(
             children: [
-              const Icon(
+              Icon(
                 LucideIcons.clipboardList,
                 size: AppSpacing.xl,
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
               ),
               SizedBox(width: AppSpacing.smd),
               Expanded(
@@ -334,7 +372,7 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
                   style: AppTypography.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
               ),
@@ -345,9 +383,9 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
             _copyText,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w400,
-              fontSize: 14,
+               fontSize: 14,
               height: 1.6,
-              color: AppColors.slate600,
+              color: AppColors.textSecondary(context),
             ),
           ),
           SizedBox(height: AppSpacing.md),
@@ -374,7 +412,7 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
               width: double.infinity,
               height: 6,
               decoration: BoxDecoration(
-                color: AppColors.slate200,
+                color: AppColors.border(context),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: FractionallySizedBox(
@@ -397,7 +435,7 @@ class _EmptyProfileCardState extends State<EmptyProfileCard> {
               style: AppTypography.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontSize: 12,
-                color: AppColors.slate600,
+                color: AppColors.textSecondary(context),
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_typography.dart';
+import 'package:partnex/core/theme/widgets/two_line_text.dart';
 
 class SmeAboutSection extends StatelessWidget {
   final String? bio;
@@ -45,36 +46,12 @@ class SmeAboutSection extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Bio content with inline Edit Bio
           if (hasBio)
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: bio!.length > 100 ? '${bio!.substring(0, 100)}... ' : '${bio!} ',
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.slate700,
-                      height: 1.6,
-                    ),
-                  ),
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.baseline,
-                    baseline: TextBaseline.alphabetic,
-                    child: GestureDetector(
-                      onTap: onEditBio,
-                      child: Text(
-                        'Edit Bio',
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.linkBlue,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+            TwoLineText(
+              text: bio!,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: AppColors.linkBlue,
               ),
             )
           else

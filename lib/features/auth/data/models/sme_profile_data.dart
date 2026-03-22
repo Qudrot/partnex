@@ -54,14 +54,20 @@ class SmeCardData {
     if (s.contains('positive') ||
         s.contains('healthy') ||
         s.contains('low') ||
-        s.contains('excellent'))
+        s.contains('excellent')) {
       return DriverRiskLevel.excellent;
-    if (s.contains('good') || s.contains('strong')) return DriverRiskLevel.good;
-    if (s.contains('moderate')) return DriverRiskLevel.moderate;
+    }
+    if (s.contains('good') || s.contains('strong')) {
+      return DriverRiskLevel.good;
+    }
+    if (s.contains('moderate')) {
+      return DriverRiskLevel.moderate;
+    }
     if (s.contains('declining') ||
         s.contains('high') ||
-        s.contains('needs work'))
+        s.contains('needs work')) {
       return DriverRiskLevel.needsWork;
+    }
     return DriverRiskLevel.critical;
   }
 

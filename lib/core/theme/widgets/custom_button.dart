@@ -109,8 +109,8 @@ class CustomButton extends StatelessWidget {
       onPressed: isDisabled || isLoading ? null : onPressed,
       style:
           OutlinedButton.styleFrom(
-            backgroundColor: AppColors.slate100,
-            side: const BorderSide(color: AppColors.slate200, width: 1),
+            backgroundColor: AppColors.background(context),
+            side: BorderSide(color: AppColors.border(context), width: 1),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.button),
             ),
@@ -124,12 +124,12 @@ class CustomButton extends StatelessWidget {
               Set<WidgetState> states,
             ) {
               if (states.contains(WidgetState.pressed) && !isDisabled) {
-                return AppColors.slate100;
+                return AppColors.border(context);
               }
               if (states.contains(WidgetState.hovered) && !isDisabled) {
-                return AppColors.slate50;
+                return AppColors.background(context).withValues(alpha: 0.8);
               }
-              return AppColors.slate100;
+              return AppColors.background(context);
             }),
           ),
       child: isLoading
@@ -150,7 +150,7 @@ class CustomButton extends StatelessWidget {
                   child: Text(
                     text,
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.slate900,
+                      color: AppColors.textPrimary(context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -179,10 +179,10 @@ class CustomButton extends StatelessWidget {
               Set<WidgetState> states,
             ) {
               if (states.contains(WidgetState.pressed) && !isDisabled) {
-                return AppColors.slate100;
+                return AppColors.background(context);
               }
               if (states.contains(WidgetState.hovered) && !isDisabled) {
-                return AppColors.slate50;
+                return AppColors.background(context).withValues(alpha: 0.5);
               }
               return Colors.transparent;
             }),

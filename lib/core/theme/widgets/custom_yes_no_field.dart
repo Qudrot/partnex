@@ -66,10 +66,10 @@ class _OptionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.trustBlue.withValues(alpha: 0.1)
-              : AppColors.neutralWhite,
+              : AppColors.surface(context),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? AppColors.trustBlue : AppColors.slate200,
+            color: isSelected ? AppColors.trustBlue : AppColors.border(context),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -77,7 +77,7 @@ class _OptionButton extends StatelessWidget {
           child: Text(
             title,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: isSelected ? AppColors.trustBlue : AppColors.slate900,
+              color: isSelected ? AppColors.trustBlue : AppColors.textPrimary(context),
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:partnex/core/theme/widgets/two_line_text.dart';
 import 'package:intl/intl.dart';
 import 'package:partnex/core/theme/widgets/message_sme_bottom_sheet.dart';
 import 'dart:math' as math;
@@ -9,7 +9,7 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
-import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
+
 
 // Advanced Charts Imports
 import 'package:partnex/core/theme/widgets/advanced_charts/circular_rings_chart.dart';
@@ -17,7 +17,7 @@ import 'package:partnex/core/theme/widgets/advanced_charts/cagr_timeline_chart.d
 import 'package:partnex/core/theme/widgets/advanced_charts/horizontal_bar_chart.dart';
 import 'package:partnex/core/theme/widgets/advanced_charts/donut_chart.dart';
 import 'package:partnex/core/theme/widgets/advanced_charts/gauge_chart.dart';
-import 'package:partnex/core/theme/widgets/advanced_charts/column_chart.dart';
+
 import 'package:partnex/core/theme/widgets/advanced_charts/timeline_chart.dart';
 
 class BusinessInsightsPage extends StatelessWidget {
@@ -33,12 +33,12 @@ class BusinessInsightsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.slate50,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -46,7 +46,7 @@ class BusinessInsightsPage extends StatelessWidget {
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
         ),
         titleSpacing: 0,
@@ -57,6 +57,43 @@ class BusinessInsightsPage extends StatelessWidget {
       ),
     );
   }
+
+  /// Shows the contact sheet — uses a Dialog on wide screens (web/tablet)
+  /// and a BottomSheet on narrow screens (mobile).
+  void _showContactSheet(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width > 600;
+    final sheet = MessageSmeBottomSheet(
+      companyName: sme.companyName,
+      email: sme.email,
+      phoneNumber: sme.phoneNumber,
+      website: sme.website,
+      whatsappNumber: sme.whatsappNumber,
+      linkedinUrl: sme.linkedinUrl,
+      twitterHandle: sme.twitterHandle,
+    );
+
+    if (isWide) {
+      showDialog(
+        context: context,
+        builder: (ctx) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: sheet,
+          ),
+        ),
+      );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => sheet,
+      );
+    }
+  }
+
 
   Widget _buildBody(BuildContext context) {
     // Privacy Logic: SMEs can always see their own data. 
@@ -89,13 +126,13 @@ class BusinessInsightsPage extends StatelessWidget {
         return ListView(
           padding: EdgeInsets.symmetric(horizontal: spacing, vertical: spacing),
           children: [
-            _buildAssessmentBox(),
+            _buildAssessmentBox(context),
             const SizedBox(height: 24),
             
             Text(
               'Performance Metrics',
               style: AppTypography.textTheme.headlineSmall?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
                 fontSize: 18,
               ),
             ),
@@ -106,42 +143,42 @@ class BusinessInsightsPage extends StatelessWidget {
               children: [
                 // Revenue Metrics
                 if (hasHistory) ...[
-                  _wrapItem(crossAxisCount, spacing, _buildYoYGrowthCard()),
-                  _wrapItem(crossAxisCount, spacing, _buildCAGRCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildYoYGrowthCard(context)),
+                  _wrapItem(crossAxisCount, spacing, _buildCAGRCard(context)),
                 ],
                 if (hasRevenue && hasEmployees)
-                  _wrapItem(crossAxisCount, spacing, _buildRevenuePerEmployeeCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildRevenuePerEmployeeCard(context)),
 
                 // Profitability
                 if (hasExpenses && hasRevenue) ...[
-                  _wrapItem(crossAxisCount, spacing, _buildExpenseRatioCard()),
-                  _wrapItem(crossAxisCount, spacing, _buildProfitMarginCard()),
-                  _wrapItem(crossAxisCount, spacing, _buildMonthlyProfitCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildExpenseRatioCard(context)),
+                  _wrapItem(crossAxisCount, spacing, _buildProfitMarginCard(context)),
+                  _wrapItem(crossAxisCount, spacing, _buildMonthlyProfitCard(context)),
                 ],
 
                 // Debt
                 if (hasLiabilities && hasRevenue) ...[
-                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesToRevenueCard()),
-                  _wrapItem(crossAxisCount, spacing, _buildDebtServiceRatioCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesToRevenueCard(context)),
+                  _wrapItem(crossAxisCount, spacing, _buildDebtServiceRatioCard(context)),
                 ],
                 if (hasLiabilities && hasEmployees)
-                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesPerEmployeeCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesPerEmployeeCard(context)),
                 if (hasLiabilities && (sme.annualRevenue - sme.monthlyExpenses * 12) > 0)
-                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesCoverageCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildLiabilitiesCoverageCard(context)),
 
                 // Maturity
-                _wrapItem(crossAxisCount, spacing, _buildYearsOfOperationCard()),
+                _wrapItem(crossAxisCount, spacing, _buildYearsOfOperationCard(context)),
                 if (hasEmployees)
-                  _wrapItem(crossAxisCount, spacing, _buildEmployeesPerYearCard()),
+                  _wrapItem(crossAxisCount, spacing, _buildEmployeesPerYearCard(context)),
 
                 // Efficiency
                 if (hasHistory && hasEmployees)
                   // Full width for this one if we want, or regular item. Spec says full width on row 7.
-                  _wrapItem(1, spacing, _buildRevenueGrowthPerEmployeeCard()),
+                  _wrapItem(1, spacing, _buildRevenueGrowthPerEmployeeCard(context)),
               ],
             ),
             const SizedBox(height: 32),
-            _buildFinancialStatementsRow(),
+            _buildFinancialStatementsRow(context),
           ],
         );
       },
@@ -161,12 +198,12 @@ class BusinessInsightsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAssessmentBox() {
+  Widget _buildAssessmentBox(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.successGreen.withValues(alpha: 0.05),
-        border: Border.all(color: AppColors.successGreen),
+        color: AppColors.trustBlue.withValues(alpha: 0.06),
+        border: Border.all(color: AppColors.trustBlue.withValues(alpha: 0.4)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -175,25 +212,31 @@ class BusinessInsightsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Overall Assessment',
-                style: AppTypography.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.slate900,
-                ),
+              Row(
+                children: [
+                  Icon(Icons.info_outline_rounded, size: 16, color: AppColors.trustBlue),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Overall Assessment',
+                    style: AppTypography.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary(context),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.neutralWhite,
+                  color: AppColors.surface(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.successGreen),
+                  border: Border.all(color: AppColors.trustBlue.withValues(alpha: 0.4)),
                 ),
                 child: Text(
                   sme.riskLevel.toUpperCase(),
                   style: AppTypography.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.successGreen,
+                    color: AppColors.trustBlue,
                   ),
                 ),
               ),
@@ -207,8 +250,9 @@ class BusinessInsightsPage extends StatelessWidget {
   }
 
   // 1.1 YoY Revenue Growth
-  Widget _buildYoYGrowthCard() {
+  Widget _buildYoYGrowthCard(BuildContext context) {
     return _buildMetricCard(
+      context: context,
       title: 'YoY Revenue Growth',
       subtitle: 'Year-over-year growth visualization',
       chart: CircularRingsChart(
@@ -225,13 +269,13 @@ class BusinessInsightsPage extends StatelessWidget {
         baseColor: AppColors.trustBlue,
         thirdColor: AppColors.slate400,
       ),
-      summary: _buildSummaryText('Growth Rate', '${sme.yoyGrowth > 0 ? '+' : ''}${sme.yoyGrowth.toStringAsFixed(1)}% YoY', 
+      summary: _buildSummaryText(context, 'Growth Rate', '${sme.yoyGrowth > 0 ? '+' : ''}${sme.yoyGrowth.toStringAsFixed(1)}% YoY', 
         valueColor: sme.revenueTrendColor),
     );
   }
 
   // 1.2 CAGR
-  Widget _buildCAGRCard() {
+  Widget _buildCAGRCard(BuildContext context) {
     double nYears = 1.0;
     double totalMultiplier = 1.0;
     
@@ -287,6 +331,7 @@ class BusinessInsightsPage extends StatelessWidget {
     }
 
     return _buildMetricCard(
+      context: context,
       title: 'CAGR',
       subtitle: 'Compound annual growth rate trajectory',
       chart: CAGRTimelineChart(
@@ -295,17 +340,18 @@ class BusinessInsightsPage extends StatelessWidget {
         negativeColor: AppColors.dangerRed,
         baseColor: AppColors.trustBlue,
       ),
-      summary: _buildSummaryText('Compounded Rate', '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}% / yr', 
+      summary: _buildSummaryText(context, 'Compounded Rate', '${cagr > 0 ? '+' : ''}${cagr.toStringAsFixed(1)}% / yr', 
         valueColor: cagr >= 0 ? AppColors.successGreen : AppColors.dangerRed),
     );
   }
 
   // 1.3 Revenue per Employee
-  Widget _buildRevenuePerEmployeeCard() {
+  Widget _buildRevenuePerEmployeeCard(BuildContext context) {
     final double revPerEmp = sme.annualRevenue / sme.numberOfEmployees;
     final double benchmark = 2000000; // 2M NGN benchmark
     final Color color = revPerEmp >= benchmark ? AppColors.successGreen : AppColors.warningOrange;
     return _buildMetricCard(
+      context: context,
       title: 'Revenue per Employee',
       subtitle: 'Revenue efficiency per workforce member',
       chart: HorizontalBarChart(
@@ -315,13 +361,14 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: benchmark * 1.5,
         currentLabel: '₦${(revPerEmp/1000000).toStringAsFixed(2)}M',
       ),
-      summary: _buildSummaryText('Employees', '${sme.numberOfEmployees}', secondLabel: 'Status', secondValue: revPerEmp >= benchmark ? 'Positive' : 'Concerning'),
+      summary: _buildSummaryText(context, 'Employees', '${sme.numberOfEmployees}', secondLabel: 'Status', secondValue: revPerEmp >= benchmark ? 'Positive' : 'Concerning'),
     );
   }
 
   // 2.1 Expense Ratio
-  Widget _buildExpenseRatioCard() {
+  Widget _buildExpenseRatioCard(BuildContext context) {
     return _buildMetricCard(
+      context: context,
       title: 'Expense Ratio',
       subtitle: 'Operating efficiency and profit margin',
       chart: Center(
@@ -334,13 +381,14 @@ class BusinessInsightsPage extends StatelessWidget {
           centerSubLabel: 'Expenses',
         ),
       ),
-      summary: _buildSummaryText('Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'),
+      summary: _buildSummaryText(context, 'Monthly Expenses', '₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'),
     );
   }
 
   // 2.2 Profit Margin
-  Widget _buildProfitMarginCard() {
+  Widget _buildProfitMarginCard(BuildContext context) {
     return _buildMetricCard(
+      context: context,
       title: 'Profit Margin',
       subtitle: 'Percentage of revenue remaining as profit',
       chart: GaugeChart(
@@ -353,14 +401,15 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 20, endValue: 30, color: AppColors.successGreen, label: 'Healthy'),
         ],
       ),
-      summary: _buildSummaryText('Annual Profit', '₦${NumberFormat('#,###').format(sme.annualRevenue - sme.monthlyExpenses * 12)}'),
+      summary: _buildSummaryText(context, 'Annual Profit', '₦${NumberFormat('#,###').format(sme.annualRevenue - sme.monthlyExpenses * 12)}'),
     );
   }
 
   // 2.3 Monthly Profit
-  Widget _buildMonthlyProfitCard() {
+  Widget _buildMonthlyProfitCard(BuildContext context) {
     final double avgProfit = (sme.annualRevenue / 12) - sme.monthlyExpenses;
     return _buildMetricCard(
+      context: context,
       title: 'Monthly Profit',
       subtitle: 'Monthly cash profit after expenses',
       chart: HorizontalBarChart(
@@ -371,13 +420,14 @@ class BusinessInsightsPage extends StatelessWidget {
         currentLabel: '₦${(avgProfit/1000).toStringAsFixed(0)}K',
         showBenchmarkLabels: false,
       ),
-      summary: _buildSummaryText('Avg Monthly Profit', '₦${NumberFormat('#,###').format(avgProfit)}'),
+      summary: _buildSummaryText(context, 'Avg Monthly Profit', '₦${NumberFormat('#,###').format(avgProfit)}'),
     );
   }
 
   // 3.1 Liabilities-to-Revenue
-  Widget _buildLiabilitiesToRevenueCard() {
+  Widget _buildLiabilitiesToRevenueCard(BuildContext context) {
     return _buildMetricCard(
+      context: context,
       title: 'Liabilities-to-Revenue',
       subtitle: 'Debt obligations relative to revenue',
       chart: GaugeChart(
@@ -390,15 +440,16 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 50, endValue: 70, color: AppColors.dangerRed, label: 'Critical'),
         ],
       ),
-      summary: _buildSummaryText('Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'),
+      summary: _buildSummaryText(context, 'Liabilities', '₦${NumberFormat('#,###').format(sme.liabilities)}'),
     );
   }
 
   // 3.2 Debt Service Ratio
-  Widget _buildDebtServiceRatioCard() {
+  Widget _buildDebtServiceRatioCard(BuildContext context) {
     final annualProfit = sme.annualRevenue - (sme.monthlyExpenses * 12);
     final ratio = annualProfit > 0 ? (sme.liabilities / annualProfit) * 100 : 300.0;
     return _buildMetricCard(
+      context: context,
       title: 'Debt Service Ratio',
       subtitle: 'Profit needed to pay off liabilities',
       chart: GaugeChart(
@@ -411,15 +462,16 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 200, endValue: 300, color: AppColors.dangerRed, label: '3+ yrs'),
         ],
       ),
-      summary: _buildSummaryText('Ratio', '${ratio.toStringAsFixed(1)}%'),
+      summary: _buildSummaryText(context, 'Ratio', '${ratio.toStringAsFixed(1)}%'),
     );
   }
 
   // 3.3 Liabilities per Employee
-  Widget _buildLiabilitiesPerEmployeeCard() {
+  Widget _buildLiabilitiesPerEmployeeCard(BuildContext context) {
     final double val = sme.liabilities / sme.numberOfEmployees;
     final double bench = 500000;
     return _buildMetricCard(
+      context: context,
       title: 'Liabilities per Employee',
       subtitle: 'Debt burden per workforce member',
       chart: HorizontalBarChart(
@@ -429,15 +481,16 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: bench * 2,
         currentLabel: '₦${(val/1000).toStringAsFixed(0)}K',
       ),
-      summary: _buildSummaryText('Target', '< ₦500K / employee'),
+      summary: _buildSummaryText(context, 'Target', '< ₦500K / employee'),
     );
   }
 
   // 3.4 Liabilities Coverage
-  Widget _buildLiabilitiesCoverageCard() {
+  Widget _buildLiabilitiesCoverageCard(BuildContext context) {
     final annualProfit = sme.annualRevenue - (sme.monthlyExpenses * 12);
     final coverage = annualProfit / sme.liabilities;
     return _buildMetricCard(
+      context: context,
       title: 'Liabilities Coverage',
       subtitle: 'Annual profit vs liabilities',
       chart: GaugeChart(
@@ -450,13 +503,14 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 1.0, endValue: 2.5, color: AppColors.successGreen, label: 'Healthy'),
         ],
       ),
-      summary: _buildSummaryText('Coverage Ratio', coverage.toStringAsFixed(2)),
+      summary: _buildSummaryText(context, 'Coverage Ratio', coverage.toStringAsFixed(2)),
     );
   }
 
   // 4.1 Years of Operation
-  Widget _buildYearsOfOperationCard() {
+  Widget _buildYearsOfOperationCard(BuildContext context) {
     return _buildMetricCard(
+      context: context,
       title: 'Years of Operation',
       subtitle: 'Business age and maturity stage',
       chart: TimelineChart(
@@ -468,7 +522,7 @@ class BusinessInsightsPage extends StatelessWidget {
           TimelineMilestone(year: 5, label: '5 yrs'),
         ],
       ),
-      summary: _buildSummaryText('Current', '${sme.yearsOfOperation} years'),
+      summary: _buildSummaryText(context, 'Current', '${sme.yearsOfOperation} years'),
     );
   }
 
@@ -480,9 +534,10 @@ class BusinessInsightsPage extends StatelessWidget {
   }
 
   // 4.2 Employees per Year
-  Widget _buildEmployeesPerYearCard() {
+  Widget _buildEmployeesPerYearCard(BuildContext context) {
     final rate = sme.numberOfEmployees / sme.yearsOfOperation.clamp(1, 100);
     return _buildMetricCard(
+      context: context,
       title: 'Employees per Year',
       subtitle: 'Hiring and growth rate',
       chart: HorizontalBarChart(
@@ -493,16 +548,17 @@ class BusinessInsightsPage extends StatelessWidget {
         currentLabel: '${rate.toStringAsFixed(1)} / yr',
         showBenchmarkLabels: false,
       ),
-      summary: _buildSummaryText('Avg Hiring Rate', '${rate.toStringAsFixed(1)} / year'),
+      summary: _buildSummaryText(context, 'Avg Hiring Rate', '${rate.toStringAsFixed(1)} / year'),
     );
   }
 
   // 5.1 Revenue Growth per Employee
-  Widget _buildRevenueGrowthPerEmployeeCard() {
+  Widget _buildRevenueGrowthPerEmployeeCard(BuildContext context) {
     final growth = sme.annualRevenue - sme.previousAnnualRevenue;
     final val = growth / sme.numberOfEmployees;
     final bench = 500000.0;
     return _buildMetricCard(
+      context: context,
       title: 'Revenue Growth / Employee',
       subtitle: 'Growth contribution per employee',
       chart: HorizontalBarChart(
@@ -512,27 +568,27 @@ class BusinessInsightsPage extends StatelessWidget {
         maxValue: bench * 2,
         currentLabel: '₦${(val/1000).toStringAsFixed(0)}K',
       ),
-      summary: _buildSummaryText('Total Growth', '₦${NumberFormat('#,###').format(growth)}'),
+      summary: _buildSummaryText(context, 'Total Growth', '₦${NumberFormat('#,###').format(growth)}'),
     );
   }
 
-  Widget _buildFinancialStatementsRow() {
+  Widget _buildFinancialStatementsRow(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           'Financial Statements',
-          style: AppTypography.textTheme.headlineSmall?.copyWith(color: AppColors.slate900, fontSize: 18),
+          style: AppTypography.textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary(context), fontSize: 18),
         ),
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.neutralWhite,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.slate200),
+            border: Border.all(color: AppColors.border(context)),
           ),
           child: DataTable(
-            headingRowColor: WidgetStateProperty.all(AppColors.slate50),
+            headingRowColor: WidgetStateProperty.all(AppColors.background(context)),
             columns: [
               DataColumn(label: Text('Metric', style: AppTypography.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
               DataColumn(label: Text('Amount', style: AppTypography.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
@@ -562,9 +618,9 @@ class BusinessInsightsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -585,7 +641,7 @@ class BusinessInsightsPage extends StatelessWidget {
           Text(
             'Financial Data is Private',
             style: AppTypography.textTheme.headlineSmall?.copyWith(
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -595,7 +651,7 @@ class BusinessInsightsPage extends StatelessWidget {
           Text(
             '${sme.companyName} has restricted access to their comprehensive financial metrics. If you see high potential in their profile, we encourage you to initiate a conversation directly to request detailed financial access and explore a partnership.',
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate600,
+              color: AppColors.textSecondary(context),
               height: 1.5,
               fontSize: 14,
             ),
@@ -603,25 +659,10 @@ class BusinessInsightsPage extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           CustomButton(
-            text: 'Message SME',
+            text: 'Contact SME',
             variant: ButtonVariant.primary,
             isFullWidth: true,
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => MessageSmeBottomSheet(
-                  companyName: sme.companyName,
-                  email: sme.email,
-                  phoneNumber: sme.phoneNumber,
-                  website: sme.website,
-                  whatsappNumber: sme.whatsappNumber,
-                  linkedinUrl: sme.linkedinUrl,
-                  twitterHandle: sme.twitterHandle,
-                ),
-              );
-            },
+            onPressed: () => _showContactSheet(context),
           ),
         ],
       ),
@@ -630,25 +671,17 @@ class BusinessInsightsPage extends StatelessWidget {
 
   // --- Helper Widgets ---
 
-  Widget _buildCardTitle(String title) {
-    return Text(
-      title,
-      style: AppTypography.textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: AppColors.slate900,
-      ),
-    );
-  }
 
-  Widget _buildMetricCard({required String title, required String subtitle, required Widget chart, Widget? summary}) {
+
+  Widget _buildMetricCard({required BuildContext context, required String title, required String subtitle, required Widget chart, Widget? summary}) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.slate900.withValues(alpha: 0.04),
+            color: AppColors.textPrimary(context).withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -666,14 +699,14 @@ class BusinessInsightsPage extends StatelessWidget {
                   title,
                   style: AppTypography.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate500,
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -685,10 +718,10 @@ class BusinessInsightsPage extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: AppColors.slate100, width: 1)),
-                color: AppColors.slate50,
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: AppColors.border(context), width: 1)),
+                color: AppColors.background(context),
+                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
               ),
               child: summary,
             ),
@@ -697,11 +730,11 @@ class BusinessInsightsPage extends StatelessWidget {
       ),
     );
   }
-  Widget _buildSummaryText(String label, String value, {Color? valueColor, String? secondLabel, String? secondValue}) {
+  Widget _buildSummaryText(BuildContext context, String label, String value, {Color? valueColor, String? secondLabel, String? secondValue}) {
     return Text.rich(
       TextSpan(
         style: AppTypography.textTheme.bodyMedium?.copyWith(
-          color: AppColors.slate600,
+          color: AppColors.textSecondary(context),
           fontSize: 12.5,
         ),
         children: [
@@ -710,7 +743,7 @@ class BusinessInsightsPage extends StatelessWidget {
             text: value,
             style: TextStyle(
               fontWeight: FontWeight.bold, 
-              color: valueColor ?? AppColors.slate900,
+              color: valueColor ?? AppColors.textPrimary(context),
             ),
           ),
           if (secondLabel != null && secondValue != null) ...[
@@ -718,9 +751,9 @@ class BusinessInsightsPage extends StatelessWidget {
             TextSpan(text: '$secondLabel: '),
             TextSpan(
               text: secondValue,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold, 
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
               ),
             ),
           ],
@@ -744,24 +777,22 @@ class _ExpandableAssessmentTextState extends State<_ExpandableAssessmentText> {
 
   @override
   Widget build(BuildContext context) {
-    final bool needsExpansion = widget.text.length > 100;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          (!isExpanded && needsExpansion) ? '${widget.text.substring(0, 100)}...' : widget.text,
-          style: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.slate700,
-            height: 1.5,
+    if (isExpanded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.text,
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textPrimary(context),
+              height: 1.6,
+            ),
           ),
-        ),
-        if (needsExpansion) ...[
           const SizedBox(height: 8),
           InkWell(
-            onTap: () => setState(() => isExpanded = !isExpanded),
+            onTap: () => setState(() => isExpanded = false),
             child: Text(
-              isExpanded ? 'Read less' : 'Read more',
+              'Read less',
               style: AppTypography.textTheme.labelMedium?.copyWith(
                 color: AppColors.trustBlue,
                 fontWeight: FontWeight.w600,
@@ -769,7 +800,13 @@ class _ExpandableAssessmentTextState extends State<_ExpandableAssessmentText> {
             ),
           ),
         ],
-      ],
+      );
+    }
+
+    return TwoLineText(
+      text: widget.text,
+      ctaText: 'Read more',
+      onCtaTap: () => setState(() => isExpanded = true),
     );
   }
 }

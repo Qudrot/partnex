@@ -12,7 +12,9 @@ class AppColors {
   static const Color slate500 = Color(0xFF64748B);
   static const Color slate600 = Color(0xFF475569);
   static const Color slate700 = Color(0xFF334155);
+  static const Color slate800 = Color(0xFF1E293B);
   static const Color slate900 = Color(0xFF0F172A);
+  static const Color slate950 = Color(0xFF020617);
 
   // Accent Colors (Functional)
   static const Color trustBlue = Color(0xFF0066CC);
@@ -29,4 +31,20 @@ class AppColors {
   static const Color successGreenText = Color(0xFF16A34A);
 
   static const Color neutralGray = Color(0xFF6B7280);
+
+  // Semantic mappings for themes
+  static Color background(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? slate950 : slate50;
+  
+  static Color surface(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? slate900 : neutralWhite;
+
+  static Color border(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? slate800 : slate200;
+
+  static Color textPrimary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? slate50 : slate900;
+
+  static Color textSecondary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? slate400 : slate600;
 }

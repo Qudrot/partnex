@@ -49,12 +49,12 @@ class InvestorFullBioPage extends StatelessWidget {
     final contactDisplay = contactParts.join(', ');
 
     return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -62,7 +62,7 @@ class InvestorFullBioPage extends StatelessWidget {
           style: AppTypography.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 16,
-            color: AppColors.slate900,
+            color: AppColors.textPrimary(context),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -71,7 +71,7 @@ class InvestorFullBioPage extends StatelessWidget {
         centerTitle: false,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(color: AppColors.slate200, height: 1.0),
+          child: Container(color: AppColors.border(context), height: 1.0),
         ),
       ),
       body: SafeArea(
@@ -87,7 +87,7 @@ class InvestorFullBioPage extends StatelessWidget {
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.slate700,
+                        color: AppColors.textPrimary(context),
                         height: 1.6,
                       ),
                     ),
@@ -100,7 +100,7 @@ class InvestorFullBioPage extends StatelessWidget {
                           Icon(
                             LucideIcons.fileText,
                             size: 32,
-                            color: AppColors.slate400,
+                            color: AppColors.textSecondary(context),
                           ),
                           SizedBox(height: AppSpacing.md),
                           Text(
@@ -108,7 +108,7 @@ class InvestorFullBioPage extends StatelessWidget {
                             style: AppTypography.textTheme.bodyLarge?.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.slate900,
+                              color: AppColors.textPrimary(context),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -117,7 +117,7 @@ class InvestorFullBioPage extends StatelessWidget {
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.slate500,
+                              color: AppColors.textSecondary(context),
                             ),
                           ),
                         ],
@@ -129,7 +129,7 @@ class InvestorFullBioPage extends StatelessWidget {
                     SizedBox(height: AppSpacing.xl),
                     Container(
                       height: 1,
-                      color: AppColors.slate200,
+                      color: AppColors.border(context),
                     ),
                     SizedBox(height: AppSpacing.md),
                     Text(
@@ -137,7 +137,7 @@ class InvestorFullBioPage extends StatelessWidget {
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -146,7 +146,7 @@ class InvestorFullBioPage extends StatelessWidget {
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                   ],
@@ -156,7 +156,7 @@ class InvestorFullBioPage extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(AppSpacing.md),
               child: CustomButton(
-                text: 'Message SME',
+                text: 'Contact SME',
                 variant: ButtonVariant.primary,
                 isFullWidth: true,
                 onPressed: () {

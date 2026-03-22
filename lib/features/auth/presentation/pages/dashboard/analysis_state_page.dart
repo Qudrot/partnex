@@ -197,7 +197,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.slate50,
+      backgroundColor: AppColors.background(context),
       body: Stack(
         children: [
           SafeArea(
@@ -220,7 +220,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                       style: AppTypography.textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -228,7 +228,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                     Text(
                       'Please check back in a few minutes or try again.',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -249,7 +249,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                       style: AppTypography.textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -259,7 +259,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                           ? 'Extracting documents. This typically takes 30–60 seconds.'
                           : 'Applying AI models. This will only take a moment.',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -269,7 +269,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                       'Step $_step of $_totalSteps: ${_getStepName(_step)}',
                       style: AppTypography.textTheme.bodySmall?.copyWith(
                         fontSize: 12,
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -280,7 +280,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                         width: 200,
                         height: 2,
                         decoration: BoxDecoration(
-                          color: AppColors.slate200,
+                          color: AppColors.border(context),
                           borderRadius: BorderRadius.circular(1),
                         ),
                         child: Align(
@@ -310,7 +310,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                           const Icon(
                             LucideIcons.lock,
                             size: 14,
-                            color: AppColors.slate500,
+                            color: AppColors.textSecondary(context),
                           ),
                           const SizedBox(width: 4),
                           Flexible(
@@ -318,7 +318,7 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
                               'Your data is secure. Never shared without your consent.',
                               style: AppTypography.textTheme.bodySmall?.copyWith(
                                 fontSize: 11,
-                                color: AppColors.slate500,
+                                color: AppColors.textSecondary(context),
                                 letterSpacing: 0,
                               ),
                               textAlign: TextAlign.center,
@@ -568,8 +568,8 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
     AppColors.trustBlue.withValues(alpha: 0.5),
     AppColors.warningOrange,
     AppColors.successGreen,
-    AppColors.slate600,
-    AppColors.slate400,
+    AppColors.textSecondary(context).withValues(alpha: 0.6),
+    AppColors.textSecondary(context).withValues(alpha: 0.4),
   ];
 
   @override
@@ -649,10 +649,10 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
       width: 120,
       height: 120,
       decoration: BoxDecoration(
-        color: AppColors.neutralWhite, // Brighter box
+        color: AppColors.surface(context), // Brighter box
         borderRadius: BorderRadius.circular(AppRadius.xl), // Softer corners
         border: Border.all(
-          color: AppColors.slate200,
+          color: AppColors.border(context),
           width: AppSizes.borderMedium,
         ),
         boxShadow: [

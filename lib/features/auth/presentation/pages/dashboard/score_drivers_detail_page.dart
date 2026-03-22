@@ -13,6 +13,7 @@ import 'package:partnex/features/auth/data/models/financial_metrics.dart';
 import 'package:partnex/features/auth/data/models/sme_profile_data.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
 import 'package:partnex/features/auth/presentation/blocs/discovery_cubit/discovery_cubit.dart';
+import 'package:partnex/core/theme/widgets/message_sme_bottom_sheet.dart';
 
 class ScoreDriversDetailPage extends StatelessWidget {
   final SmeCardData? sme;
@@ -47,14 +48,14 @@ class ScoreDriversDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.neutralWhite,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.neutralWhite,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         centerTitle: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.slate900),
+          icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -62,7 +63,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
             Text(
               'Score Breakdown',
               style: AppTypography.textTheme.bodyLarge?.copyWith(
-                color: AppColors.slate900,
+                color: AppColors.textPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -95,7 +96,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                       'Score: ${sc.toInt()}',
                       style: AppTypography.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.slate900,
+                        color: AppColors.textPrimary(context),
                         fontSize: 28,
                       ),
                     ),
@@ -124,7 +125,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 Text(
                   'Primary Drivers (Top Impact)',
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -173,7 +174,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                     title: Text(
                       'Secondary Drivers',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.slate600,
+                        color: AppColors.textSecondary(context),
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
@@ -220,7 +221,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 Text(
                   'Improvement Recommendations',
                   style: AppTypography.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.slate900,
+                    color: AppColors.textPrimary(context),
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -232,11 +233,24 @@ class ScoreDriversDetailPage extends StatelessWidget {
                 const SizedBox(height: 32),
                 if (sme != null) ...[
                   CustomButton(
-                    text: 'Message SME',
+                    text: 'Contact SME',
                     variant: ButtonVariant.primary,
                     isFullWidth: true,
                     onPressed: () {
-                      // Logic for messaging SME (bottom sheet)
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (ctx) => MessageSmeBottomSheet(
+                          companyName: sme!.companyName,
+                          email: sme!.email,
+                          phoneNumber: sme!.phoneNumber,
+                          website: sme!.website,
+                          whatsappNumber: sme!.whatsappNumber,
+                          linkedinUrl: sme!.linkedinUrl,
+                          twitterHandle: sme!.twitterHandle,
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 12),
@@ -281,7 +295,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
           Text(
             title,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.slate900,
+              color: AppColors.textPrimary(context),
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
