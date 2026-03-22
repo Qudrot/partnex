@@ -112,7 +112,7 @@ class _InvestorOnboardingPageState extends State<InvestorOnboardingPage> {
                 : null,
             automaticallyImplyLeading: false,
             title: Text(
-              'Complete Your Profile',
+              widget.isEditing ? 'Update Profile' : 'Complete Your Profile',
               style: AppTypography.textTheme.bodyLarge?.copyWith(
                 color: AppColors.textPrimary(context),
                 fontWeight: FontWeight.w600,

@@ -7,182 +7,21 @@ import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
-import 'package:partnex/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_cubit.dart';
-import 'package:partnex/features/auth/presentation/blocs/sme_profile_cubit/sme_profile_state.dart';
 import 'package:partnex/features/auth/presentation/blocs/score_cubit/score_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/analysis_cubit/analysis_cubit.dart';
+import 'package:partnex/features/auth/presentation/blocs/analysis_cubit/analysis_state.dart';
 import 'package:partnex/core/services/ui_service.dart';
 import 'package:partnex/features/auth/presentation/pages/dashboard/credibility_dashboard_page.dart';
 import 'package:partnex/core/theme/widgets/custom_button.dart';
 
-class AnalysisStatePage extends StatefulWidget {
+class AnalysisStatePage extends StatelessWidget {
   final bool isDocumentUpload;
 
   const AnalysisStatePage({super.key, this.isDocumentUpload = false});
 
-  @override
-  State<AnalysisStatePage> createState() => _AnalysisStatePageState();
-}
-
-class _AnalysisStatePageState extends State<AnalysisStatePage> {
-  int _step = 1;
-  double _progress = 0.0;
-  Timer? _progressTimer;
-  Timer? _timeoutTimer;
-  bool _isError = false;
-
-  // Sync Locks to ensure the transition doesn't happen too fast
-  bool _minimumTimeElapsed = false;
-  bool _apiComplete = false;
-  int get _totalSteps => widget.isDocumentUpload ? 4 : 3;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAnalysis();
-
-    // FORCE the page to stay here for at least 4.5 seconds for visual effect
-    Future.delayed(const Duration(milliseconds: 4500), () {
-      if (!mounted) return;
-      _minimumTimeElapsed = true;
-      _checkAndNavigate();
-    });
-  }
-
-  void _startAnalysis() async {
-    final profileCubit = context.read<SmeProfileCubit>();
-    final authBloc = context.read<AuthBloc>();
-    final scoreCubit = context.read<ScoreCubit>();
-
-    _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (!mounted) return;
-      setState(() {
-        double increment = widget.isDocumentUpload ? 1.5 : 10.0;
-
-        // Cap visual progress at 90% until the API actually finishes
-        if (_progress < 90) {
-          _progress += increment;
-        }
-
-        if (widget.isDocumentUpload) {
-          if (_progress < 25) {
-            _step = 1;
-          } else if (_progress < 50) {
-            _step = 2;
-          } else if (_progress < 75) {
-            _step = 3;
-          } else {
-            _step = 4;
-          }
-        } else {
-          if (_progress < 33) {
-            _step = 1;
-          } else if (_progress < 66) {
-            _step = 2;
-          } else {
-            _step = 3;
-          }
-        }
-      });
-    });
-
-    _timeoutTimer = Timer(const Duration(minutes: 5), () {
-      if (!mounted) return;
-      setState(() => _isError = true);
-      _progressTimer?.cancel();
-    });
-
-    if (profileCubit.state.csvProcessingStatus ==
-        CsvProcessingStatus.processing) {
-      await for (final state in profileCubit.stream) {
-        if (state.csvProcessingStatus == CsvProcessingStatus.success ||
-            state.csvProcessingStatus == CsvProcessingStatus.error) {
-          break;
-        }
-      }
-    }
-
-    if (profileCubit.state.csvProcessingStatus == CsvProcessingStatus.error) {
-      _handleError(
-        profileCubit.state.csvErrorMessage ??
-            'Financial document analysis failed',
-      );
-      return;
-    }
-
-    if (authBloc.state is! SmeProfileSubmittedSuccess) {
-      authBloc.add(SubmitSmeProfileEvent(profileCubit.state.toMap()));
-    }
-
-    final currentState = authBloc.state;
-    if (currentState is SmeProfileSubmittedSuccess) {
-      _markApiComplete(scoreCubit, currentState.score);
-      return;
-    } else if (currentState is SmeProfileSubmissionError) {
-      _handleError(currentState.message);
-      return;
-    }
-
-    await for (final state in authBloc.stream) {
-      if (!mounted) return;
-      if (state is SmeProfileSubmittedSuccess) {
-        _markApiComplete(scoreCubit, state.score);
-        break;
-      } else if (state is SmeProfileSubmissionError) {
-        _handleError(state.message);
-        break;
-      }
-    }
-  }
-
-  void _markApiComplete(ScoreCubit scoreCubit, dynamic score) {
-    if (!mounted) return;
-    _apiComplete = true;
-    scoreCubit.loadScore(score); // Load it in the background immediately
-
-    // Jump progress to 95% while we wait for the 4.5s timer to finish
-    setState(() {
-      _progress = 95.0;
-      _step = _totalSteps;
-    });
-
-    _checkAndNavigate();
-  }
-
-  void _checkAndNavigate() {
-    // Only navigate when BOTH the API is done AND the minimum visual time has passed
-    if (_apiComplete && _minimumTimeElapsed) {
-      _progressTimer?.cancel();
-      _timeoutTimer?.cancel();
-
-      setState(() {
-        _progress = 100.0;
-      });
-
-      Future.delayed(const Duration(milliseconds: 600), () {
-        if (!mounted) return;
-        uiService.clearAndNavigateTo(const CredibilityDashboardPage());
-      });
-    }
-  }
-
-  void _handleError(String message) {
-    if (!mounted) return;
-    _progressTimer?.cancel();
-    _timeoutTimer?.cancel();
-    setState(() => _isError = true);
-  }
-
-  @override
-  void dispose() {
-    _progressTimer?.cancel();
-    _timeoutTimer?.cancel();
-    super.dispose();
-  }
-
   String _getStepName(int step) {
-    if (widget.isDocumentUpload) {
+    if (isDocumentUpload) {
       if (step == 1) return 'Document Validation';
       if (step == 2) return 'Data Extraction';
       if (step == 3) return 'Model Inference';
@@ -196,147 +35,164 @@ class _AnalysisStatePageState extends State<AnalysisStatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background(context),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              child: Stack(
-                children: [
-                  const FloatingMetricsBackground(),
-                  Column(
-                    children: [
-                      const SizedBox(height: 24),
-                      const Spacer(),
+    return BlocProvider(
+      create: (context) => AnalysisCubit(
+        profileCubit: context.read<SmeProfileCubit>(),
+        authBloc: context.read<AuthBloc>(),
+        scoreCubit: context.read<ScoreCubit>(),
+        isDocumentUpload: isDocumentUpload,
+      ),
+      child: BlocConsumer<AnalysisCubit, AnalysisState>(
+        listener: (context, state) {
+          if (state.isComplete) {
+            uiService.clearAndNavigateTo(const CredibilityDashboardPage());
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AppColors.background(context),
+            body: Stack(
+              children: [
+                SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    child: Stack(
+                      children: [
+                        const FloatingMetricsBackground(),
+                        Column(
+                          children: [
+                            const SizedBox(height: 24),
+                            const Spacer(),
 
-                      if (_isError) ...[
-                        const Icon(
-                          LucideIcons.alertCircle,
-                          size: 64,
-                          color: AppColors.dangerRed,
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Analysis encountered an issue.',
-                          style: AppTypography.textTheme.bodyLarge?.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary(context),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Please check back in a few minutes or try again.',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        CustomButton(
-                          text: 'Go Back',
-                          onPressed: () => uiService.goBack(),
-                          variant: ButtonVariant.secondary,
-                        ),
-                      ] else ...[
-                        const Center(child: NumberStreamAnimation()),
-                        const SizedBox(height: 32),
-
-                        Text(
-                          widget.isDocumentUpload
-                              ? 'Analyzing your financial data...'
-                              : 'Generating your credibility score...',
-                          style: AppTypography.textTheme.bodyLarge?.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary(context),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.isDocumentUpload
-                              ? 'Extracting documents. This typically takes 30–60 seconds.'
-                              : 'Applying AI models. This will only take a moment.',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 48),
-
-                        Text(
-                          'Step $_step of $_totalSteps: ${_getStepName(_step)}',
-                          style: AppTypography.textTheme.bodySmall?.copyWith(
-                            fontSize: 12,
-                            color: AppColors.textSecondary(context),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 12),
-
-                        Center(
-                          child: Container(
-                            width: 200,
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: AppColors.border(context),
-                              borderRadius: BorderRadius.circular(1),
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 800),
-                                curve: Curves.easeOutCubic,
-                                width: 200 * (_progress / 100),
-                                height: 2,
-                                decoration: BoxDecoration(
-                                  color: AppColors.trustBlue,
-                                  borderRadius: BorderRadius.circular(1),
+                            if (state.isError) ...[
+                              const Icon(
+                                LucideIcons.alertCircle,
+                                size: 64,
+                                color: AppColors.dangerRed,
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Analysis encountered an issue.',
+                                style: AppTypography.textTheme.bodyLarge?.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary(context),
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
+                              const SizedBox(height: 8),
+                              Text(
+                                state.errorMessage ?? 'Please check back in a few minutes or try again.',
+                                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textSecondary(context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 32),
+                              CustomButton(
+                                text: 'Go Back',
+                                onPressed: () => uiService.goBack(),
+                                variant: ButtonVariant.secondary,
+                              ),
+                            ] else ...[
+                              const Center(child: NumberStreamAnimation()),
+                              const SizedBox(height: 32),
 
-                      const Spacer(),
-                      if (!_isError)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 24.0, left: 12.0, right: 12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                LucideIcons.lock,
-                                size: 14,
-                                color: AppColors.textSecondary(context),
+                              Text(
+                                isDocumentUpload
+                                    ? 'Analyzing your financial data...'
+                                    : 'Generating your credibility score...',
+                                style: AppTypography.textTheme.bodyLarge?.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary(context),
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  'Your data is secure. Never shared without your consent.',
-                                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                                    fontSize: 11,
-                                    color: AppColors.textSecondary(context),
-                                    letterSpacing: 0,
+                              const SizedBox(height: 8),
+                              Text(
+                                isDocumentUpload
+                                    ? 'Extracting documents. This typically takes 30–60 seconds.'
+                                    : 'Applying AI models. This will only take a moment.',
+                                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textSecondary(context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 48),
+
+                              Text(
+                                'Step ${state.step} of ${state.totalSteps}: ${_getStepName(state.step)}',
+                                style: AppTypography.textTheme.bodySmall?.copyWith(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary(context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 12),
+
+                              Center(
+                                child: Container(
+                                  width: 200,
+                                  height: 2,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.border(context),
+                                    borderRadius: BorderRadius.circular(1),
                                   ),
-                                  textAlign: TextAlign.center,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 800),
+                                      curve: Curves.easeOutCubic,
+                                      width: 200 * (state.progress / 100),
+                                      height: 2,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.trustBlue,
+                                        borderRadius: BorderRadius.circular(1),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
+
+                            const Spacer(),
+                            if (!state.isError)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 24.0, left: 12.0, right: 12.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      LucideIcons.lock,
+                                      size: 14,
+                                      color: AppColors.textSecondary(context),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Flexible(
+                                      child: Text(
+                                        'Your data is secure. Never shared without your consent.',
+                                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                                          fontSize: 11,
+                                          color: AppColors.textSecondary(context),
+                                          letterSpacing: 0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

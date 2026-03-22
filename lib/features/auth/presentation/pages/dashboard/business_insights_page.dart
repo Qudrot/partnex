@@ -402,13 +402,13 @@ class BusinessInsightsPage extends StatelessWidget {
           GaugeZone(startValue: 20, endValue: 30, color: AppColors.successGreen, label: 'Healthy'),
         ],
       ),
-      summary: _buildSummaryText(context, 'Annual Profit', '₦${NumberFormat('#,###').format(sme.annualRevenue - sme.monthlyExpenses * 12)}'),
+      summary: _buildSummaryText(context, 'Annual Profit', '₦${NumberFormat('#,###').format(sme.estimatedAnnualProfit)}'),
     );
   }
 
   // 2.3 Monthly Profit
   Widget _buildMonthlyProfitCard(BuildContext context) {
-    final double avgProfit = (sme.annualRevenue / 12) - sme.monthlyExpenses;
+    final double avgProfit = sme.monthlyProfit;
     return _buildMetricCard(
       context: context,
       title: 'Monthly Profit',
@@ -447,7 +447,7 @@ class BusinessInsightsPage extends StatelessWidget {
 
   // 3.2 Debt Service Ratio
   Widget _buildDebtServiceRatioCard(BuildContext context) {
-    final annualProfit = sme.annualRevenue - (sme.monthlyExpenses * 12);
+    final annualProfit = sme.estimatedAnnualProfit;
     final ratio = annualProfit > 0 ? (sme.liabilities / annualProfit) * 100 : 300.0;
     return _buildMetricCard(
       context: context,
@@ -469,7 +469,7 @@ class BusinessInsightsPage extends StatelessWidget {
 
   // 3.3 Liabilities per Employee
   Widget _buildLiabilitiesPerEmployeeCard(BuildContext context) {
-    final double val = sme.liabilities / sme.numberOfEmployees;
+    final double val = sme.liabilitiesPerEmployee;
     final double bench = 500000;
     return _buildMetricCard(
       context: context,
@@ -488,8 +488,7 @@ class BusinessInsightsPage extends StatelessWidget {
 
   // 3.4 Liabilities Coverage
   Widget _buildLiabilitiesCoverageCard(BuildContext context) {
-    final annualProfit = sme.annualRevenue - (sme.monthlyExpenses * 12);
-    final coverage = annualProfit / sme.liabilities;
+    final coverage = sme.liabilitiesCoverageRatio;
     return _buildMetricCard(
       context: context,
       title: 'Liabilities Coverage',
@@ -536,7 +535,7 @@ class BusinessInsightsPage extends StatelessWidget {
 
   // 4.2 Employees per Year
   Widget _buildEmployeesPerYearCard(BuildContext context) {
-    final rate = sme.numberOfEmployees / sme.yearsOfOperation.clamp(1, 100);
+    final rate = sme.employeesHiringRate;
     return _buildMetricCard(
       context: context,
       title: 'Employees per Year',
@@ -556,7 +555,7 @@ class BusinessInsightsPage extends StatelessWidget {
   // 5.1 Revenue Growth per Employee
   Widget _buildRevenueGrowthPerEmployeeCard(BuildContext context) {
     final growth = sme.annualRevenue - sme.previousAnnualRevenue;
-    final val = growth / sme.numberOfEmployees;
+    final val = sme.revenueGrowthPerEmployee;
     final bench = 500000.0;
     return _buildMetricCard(
       context: context,
@@ -607,7 +606,7 @@ class BusinessInsightsPage extends StatelessWidget {
 
               DataRow(cells: [DataCell(Text('Monthly Expenses')), DataCell(Text('₦${NumberFormat('#,###').format(sme.monthlyExpenses)}'))]),
               DataRow(cells: [DataCell(Text('Total Liabilities')), DataCell(Text('₦${NumberFormat('#,###').format(sme.liabilities)}'))]),
-              DataRow(cells: [DataCell(Text('Net Profit (Est)')), DataCell(Text('₦${NumberFormat('#,###').format(sme.annualRevenue - (sme.monthlyExpenses * 12))}'))]),
+              DataRow(cells: [DataCell(Text('Net Profit (Est)')), DataCell(Text('₦${NumberFormat('#,###').format(sme.estimatedAnnualProfit)}'))]),
             ],
           ),
         ),

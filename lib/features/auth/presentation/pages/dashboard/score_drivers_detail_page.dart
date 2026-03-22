@@ -32,19 +32,6 @@ class ScoreDriversDetailPage extends StatelessWidget {
     }
   }
 
-  double _calculateImpactPoints(
-    MetricStatus status,
-    double scoreValue,
-    double weight,
-  ) {
-    if (status == MetricStatus.critical) {
-      return -((100 - scoreValue) * weight);
-    } else if (status == MetricStatus.concerning) {
-      return -((100 - scoreValue) * weight * 0.5);
-    }
-    return scoreValue * weight;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,17 +131,10 @@ class ScoreDriversDetailPage extends StatelessWidget {
                       : (driver as ScoreDriver).scoreValue;
                   final double impact = (driver is DriverMetric)
                       ? driver.impactPoints
-                      : _calculateImpactPoints(
-                          (driver as ScoreDriver).status,
-                          (driver as ScoreDriver).scoreValue,
-                          (driver as ScoreDriver).weight,
-                        );
+                      : (driver as ScoreDriver).impactPoints;
                   final String desc = (driver is DriverMetric)
                       ? driver.description
-                      : _getDriverExplanation(
-                          (driver as ScoreDriver).name,
-                          (state as ScoreLoadedSuccess).financialMetrics!,
-                        );
+                      : (state as ScoreLoadedSuccess).financialMetrics!.getDriverExplanation((driver as ScoreDriver).name);
 
                   return DriverCard(
                     driverName: name,
@@ -193,17 +173,10 @@ class ScoreDriversDetailPage extends StatelessWidget {
                           : (driver as ScoreDriver).scoreValue;
                       final double impact = (driver is DriverMetric)
                           ? driver.impactPoints
-                          : _calculateImpactPoints(
-                              (driver as ScoreDriver).status,
-                              (driver as ScoreDriver).scoreValue,
-                              (driver as ScoreDriver).weight,
-                            );
+                          : (driver as ScoreDriver).impactPoints;
                       final String desc = (driver is DriverMetric)
                           ? driver.description
-                          : _getDriverExplanation(
-                              (driver as ScoreDriver).name,
-                              (state as ScoreLoadedSuccess).financialMetrics!,
-                            );
+                          : (state as ScoreLoadedSuccess).financialMetrics!.getDriverExplanation((driver as ScoreDriver).name);
 
                       return DriverCard(
                         driverName: name,
@@ -320,64 +293,14 @@ class ScoreDriversDetailPage extends StatelessWidget {
     );
   }
 
-  String _getDriverExplanation(String driverName, FinancialMetrics metrics) {
-    if (driverName.contains('Revenue Growth')) {
-      final val = metrics.yoyGrowth.toStringAsFixed(metrics.yoyGrowth % 1 == 0 ? 0 : 1);
-      return 'Measures your business\'s revenue trajectory. You have a $val% YoY growth rate. Consistent growth is key to credibility.';
-    } else if (driverName.contains('Profitability')) {
-      final exp = metrics.expenseRatio.toStringAsFixed(metrics.expenseRatio % 1 == 0 ? 0 : 1);
-      final prof = metrics.profitMargin.toStringAsFixed(metrics.profitMargin % 1 == 0 ? 0 : 1);
-      return 'Measures your ability to generate profit. Your expense ratio is $exp% with a profit margin of $prof%.';
-    } else if (driverName.contains('Debt')) {
-      final lib = metrics.liabilitiesToRevenueRatio.toStringAsFixed(metrics.liabilitiesToRevenueRatio % 1 == 0 ? 0 : 1);
-      return 'Measures your debt relative to revenue. Your liabilities-to-revenue ratio is $lib%.';
-    } else if (driverName.contains('Efficiency')) {
-      return 'Measures operational output. You are generating ₦${(metrics.revenuePerEmployee / 1000000).toStringAsFixed(2)}M in revenue per employee.';
-    } else if (driverName.contains('Maturity')) {
-      return 'Measures business stability based on your ${metrics.yearsOfOperation} years of operation. Older businesses have more predictable performance.';
-    }
-    return 'This metric evaluates a key aspect of your business creditworthiness.';
-  }
-
   List<Widget> _generateRecommendations(BuildContext context, FinancialMetrics metrics) {
     List<Widget> sections = [];
+    final recommendationsMap = metrics.getImprovementRecommendations();
 
-    for (var driver in metrics.rankedDrivers) {
-      if (driver.status == MetricStatus.concerning ||
-          driver.status == MetricStatus.critical) {
-        List<String> items = [];
-
-        if (driver.name.contains("Revenue")) {
-          items = [
-            '→ Maintain consistent revenue growth',
-            '→ Document growth drivers and expand market reach',
-          ];
-        } else if (driver.name.contains("Profitability")) {
-          items = [
-            '→ Audit expenses and identify cost-saving opportunities',
-            '→ Negotiate supplier contracts to reduce overhead',
-          ];
-        } else if (driver.name.contains("Debt")) {
-          items = [
-            '→ Develop a structured debt repayment plan',
-            '→ Prioritize paying off high-interest liabilities first',
-          ];
-        } else if (driver.name.contains("Efficiency")) {
-          items = [
-            '→ Invest in employee training and productivity tools',
-            '→ Document operational processes for scalability',
-          ];
-        } else if (driver.name.contains("Maturity")) {
-          items = [
-            '→ Focus on building a consistent track record',
-            '→ Establish long-term 3-5 year growth plans',
-          ];
-        }
-
-        sections.add(
-          _buildRecommendationSection(context, title: '${driver.name}:', items: items),
-        );
-      }
+    for (var entry in recommendationsMap.entries) {
+      sections.add(
+        _buildRecommendationSection(context, title: '${entry.key}:', items: entry.value),
+      );
     }
 
     if (sections.isEmpty) {

@@ -144,6 +144,23 @@ class SmeCardData {
     return '$sign${yoyGrowth.toStringAsFixed(0)}% YoY';
   }
 
+  // Derived Business Insights Metrics
+  double get monthlyProfit => (annualRevenue / 12) - monthlyExpenses;
+  
+  double get estimatedAnnualProfit => annualRevenue - (monthlyExpenses * 12);
+  
+  double get liabilitiesCoverageRatio => 
+    liabilities > 0 ? estimatedAnnualProfit / liabilities : 100.0;
+    
+  double get employeesHiringRate => 
+    yearsOfOperation > 0 ? numberOfEmployees / yearsOfOperation : numberOfEmployees.toDouble();
+    
+  double get revenueGrowthPerEmployee => 
+    numberOfEmployees > 0 ? (annualRevenue - previousAnnualRevenue) / numberOfEmployees : 0.0;
+    
+  double get liabilitiesPerEmployee =>
+    numberOfEmployees > 0 ? liabilities / numberOfEmployees : 0.0;
+
   String get revenueTrendSignal {
     if (previousAnnualRevenue <= 0) return 'Baseline';
     if (yoyGrowth > 15) return 'Positive';

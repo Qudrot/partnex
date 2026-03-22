@@ -19,15 +19,15 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (variant) {
       case CardVariant.standard:
-        return _buildStandardCard();
+        return _buildStandardCard(context);
       case CardVariant.elevated:
-        return _buildElevatedCard();
+        return _buildElevatedCard(context);
       case CardVariant.outlined:
-        return _buildOutlinedCard();
+        return _buildOutlinedCard(context);
     }
   }
 
-  Widget _buildStandardCard() {
+  Widget _buildStandardCard(BuildContext context) {
     return Container(
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -48,7 +48,7 @@ class CustomCard extends StatelessWidget {
     );
   }
 
-  Widget _buildElevatedCard() {
+  Widget _buildElevatedCard(BuildContext context) {
     return Container(
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -68,7 +68,7 @@ class CustomCard extends StatelessWidget {
     );
   }
 
-  Widget _buildOutlinedCard() {
+  Widget _buildOutlinedCard(BuildContext context) {
     return Container(
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
