@@ -385,7 +385,7 @@ class _SignupPageState extends State<SignupPage> {
                             SizedBox(height: AppSpacing.md),
                             
                             Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.center,
                               child: CustomButton(
                                 text: 'Already have an account? Sign in',
                                 variant: ButtonVariant.tertiary,

@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               SizedBox(height: AppSpacing.smd),
                               Align(
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.center,
                                 child: CustomButton(
                                   text: "Don't have an account? Sign up",
                                   variant: ButtonVariant.tertiary,

@@ -107,7 +107,7 @@ class _SplashPageState extends State<SplashPage> {
                 'Your SME credibility platform',
                 style: AppTypography.textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary(context),
-                  fontSize: AppSpacing.smd,
+                  fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
               ),

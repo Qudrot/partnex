@@ -308,13 +308,13 @@ class ScoreDriversDetailPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8.0),
           child: Text(
-            'You have it figured out! Keep rising and growing—you are on an exceptional path of financial stability and credibility.',
+            'You have it figured out! Keep rising and growing, you are on an exceptional path of financial stability and credibility.',
             style: AppTypography.textTheme.bodyLarge?.copyWith(
               color: AppColors.trustBlue,
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
+              //fontWeight: FontWeight.w600,
+              //fontStyle: FontStyle.italic,
             ),
-            //textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
           ),
         ),
       );
