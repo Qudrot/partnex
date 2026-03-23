@@ -58,7 +58,6 @@ class AnalysisStatePage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: Stack(
                       children: [
-                        const FloatingMetricsBackground(),
                         Column(
                           children: [
                             const SizedBox(height: 24),
@@ -199,192 +198,6 @@ class AnalysisStatePage extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// NEW: FLOATING METRICS BACKGROUND
-// ---------------------------------------------------------------------------
-
-class _FloatingMetricData {
-  final String id;
-  final String text;
-  final Color color;
-  final double startX;
-  final double startY;
-  final double angle;
-  _FloatingMetricData({
-    required this.id,
-    required this.text,
-    required this.color,
-    required this.startX,
-    required this.startY,
-    required this.angle,
-  });
-}
-
-class FloatingMetricsBackground extends StatefulWidget {
-  const FloatingMetricsBackground({super.key});
-  @override
-  State<FloatingMetricsBackground> createState() =>
-      _FloatingMetricsBackgroundState();
-}
-
-class _FloatingMetricsBackgroundState extends State<FloatingMetricsBackground> {
-  final List<_FloatingMetricData> _items = [];
-  Timer? _spawnTimer;
-  final math.Random _random = math.Random();
-
-  final List<String> _pool = [
-    '+15%',
-    '₦2.4M',
-    '89%',
-    '60%',
-    'Low Risk',
-    'Moderate',
-    'On Time',
-    '98',
-    '-5%',
-    'Healthy',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    for (int i = 0; i < 4; i++) {
-      _spawnItem(i); // Initial burst
-    }
-    _spawnTimer = Timer.periodic(const Duration(milliseconds: 1200), (timer) {
-      if (_items.length < 8) _spawnItem(0); // Keep max 8 on screen
-    });
-  }
-
-  void _spawnItem(int index) {
-    if (!mounted) return;
-    final id = '${DateTime.now().microsecondsSinceEpoch}_${index}_${_random.nextInt(100000)}';
-    final text = _pool[_random.nextInt(_pool.length)];
-
-    // Assign Colors based on Partnex Signal Rules
-    Color color = AppColors.slate400;
-    if (text == 'High' ||
-        text == 'Medium' ||
-        text == 'Low Risk' ||
-        text == 'On Time') {
-      color = AppColors.successGreen.withValues(alpha: 0.3);
-    } else if (text.contains('-') || text == '89%') {
-      color = AppColors.dangerRed.withValues(alpha: 0.3);
-    } else if (text == 'Moderate' || text == '60%') {
-      color = AppColors.warningOrange.withValues(alpha: 0.3);
-    } else {
-      color = AppColors.trustBlue.withValues(alpha: 0.2); // Default numbers
-    }
-
-    setState(() {
-      _items.add(
-        _FloatingMetricData(
-          id: id,
-          text: text,
-          color: color,
-          startX: _random.nextDouble(), // 0.0 to 1.0 (screen width)
-          startY: _random.nextDouble(), // 0.0 to 1.0 (screen height)
-          angle: (_random.nextDouble() * 0.5) - 0.25, // Slight tilt
-        ),
-      );
-    });
-
-    Future.delayed(const Duration(milliseconds: 6000), () {
-      if (mounted) setState(() => _items.removeWhere((item) => item.id == id));
-    });
-  }
-
-  @override
-  void dispose() {
-    _spawnTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Stack(
-        fit: StackFit.expand,
-        children: _items
-            .map((data) => _AnimatedDrifter(key: ValueKey(data.id), data: data))
-            .toList(),
-      ),
-    );
-  }
-}
-
-class _AnimatedDrifter extends StatefulWidget {
-  final _FloatingMetricData data;
-  const _AnimatedDrifter({super.key, required this.data});
-  @override
-  State<_AnimatedDrifter> createState() => _AnimatedDrifterState();
-}
-
-class _AnimatedDrifterState extends State<_AnimatedDrifter>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacity;
-  late Animation<double> _translateY;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 6000),
-    );
-    _opacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 20),
-      TweenSequenceItem(tween: ConstantTween(1.0), weight: 60),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 20),
-    ]).animate(_controller);
-
-    // Drifts upwards slowly
-    _translateY = Tween<double>(
-      begin: 30,
-      end: -60,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final w = size.width > 0 ? size.width : 400.0;
-    final h = size.height > 0 ? size.height : 800.0;
-    
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Positioned(
-          left: widget.data.startX * w,
-          top: (widget.data.startY * h) + _translateY.value,
-          child: Opacity(
-            opacity: _opacity.value,
-            child: Transform.rotate(
-              angle: widget.data.angle,
-              child: Text(
-                widget.data.text,
-                style: AppTypography.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 28,
-                  color: widget.data.color,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
 // NEW: ANIMATED NUMBER STREAM WIDGET
 // ---------------------------------------------------------------------------
 class _NumberStreamData {
@@ -424,11 +237,23 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
   Timer? _spawnTimer;
   final math.Random _random = math.Random();
 
-  late final List<Color> _colors;
+  List<Color> _colors = [];
 
   @override
   void initState() {
     super.initState();
+    _spawnTimer = Timer.periodic(const Duration(milliseconds: 800), (timer) {
+      if (!mounted || _colors.isEmpty) return;
+      // Keep around 3-4 items on screen
+      if (_numbers.length < 4) {
+        _spawnNumber(_numbers.length);
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _colors = [
       AppColors.trustBlue,
       AppColors.trustBlue.withValues(alpha: 0.5),
@@ -437,17 +262,11 @@ class _NumberStreamAnimationState extends State<NumberStreamAnimation> {
       AppColors.textSecondary(context).withValues(alpha: 0.6),
       AppColors.textSecondary(context).withValues(alpha: 0.4),
     ];
-    // Start with 2 numbers
-    _spawnNumber(0);
-    _spawnNumber(1);
-
-    _spawnTimer = Timer.periodic(const Duration(milliseconds: 800), (timer) {
-      if (!mounted) return;
-      // Keep around 3-4 items on screen
-      if (_numbers.length < 4) {
-        _spawnNumber(_numbers.length);
-      }
-    });
+    // Start initial numbers if they are not already there
+    if (_numbers.isEmpty) {
+      _spawnNumber(0);
+      _spawnNumber(1);
+    }
   }
 
   void _spawnNumber(int salt) {

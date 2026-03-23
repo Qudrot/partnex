@@ -4,6 +4,8 @@ import 'package:partnex/core/theme/app_colors.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/core/theme/app_typography.dart';
 import 'package:partnex/core/services/ui_service.dart';
+import 'package:partnex/core/theme/widgets/custom_button.dart';
+import 'package:partnex/core/utils/url_helper.dart';
 
 class FaqPage extends StatelessWidget {
   final bool isInvestor;
@@ -47,7 +49,7 @@ class FaqPage extends StatelessWidget {
             // SizedBox(height: AppSpacing.sm),
             Text(
               isInvestor ? 'Learn how Partnex calculates credibility and extracts financial records for SMEs.' : 'Learn how Partnex calculates your credibility and extracts financial records securely.',
-              textAlign: TextAlign.center,
+              //textAlign: TextAlign.center,
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary(context),
               ),
@@ -92,6 +94,18 @@ class FaqPage extends StatelessWidget {
               isInvestor
                 ? "During extraction, the algorithm scans for recurring fixed payments or keywords indicating loan servicing (e.g., 'interest,' 'repayment,' 'credit facility'). These payments are aggregated to estimate the SME's monthly debt burden. The total outstanding liabilities are then calculated to factor into the final credibility and risk assessment."
                 : "During extraction, the algorithm scans for recurring fixed payments or keywords indicating loan servicing (e.g., 'interest,' 'repayment,' 'credit facility'). These payments are aggregated to estimate your monthly debt burden. The total outstanding liabilities are then calculated to factor into your final credibility and risk assessment.",
+            ),
+
+            SizedBox(height: AppSpacing.xl),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CustomButton(
+                  text: 'Need help? Contact support',
+                  variant: ButtonVariant.tertiary,
+                  onPressed: () => UrlHelper.launchEmail('support@partnex.ng'),
+                ),
+              ],
             ),
           ],
         ),

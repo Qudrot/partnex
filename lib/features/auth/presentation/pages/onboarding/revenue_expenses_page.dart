@@ -306,6 +306,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
         appBar: AppBar(
           backgroundColor: AppColors.surface(context),
           elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.textPrimary(context)),
           leading: IconButton(
             icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
             iconSize: 20,
@@ -451,7 +452,7 @@ class _RevenueExpensesPageState extends State<RevenueExpensesPage> {
                         'Average monthly figures for the last 12 months',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           fontSize: 12,
-                          color: AppColors.slate600,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                       SizedBox(height: AppSpacing.md),

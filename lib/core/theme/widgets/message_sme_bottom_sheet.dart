@@ -126,10 +126,11 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
                             Expanded(
                               child: _buildSocialOption(
                                 'Twitter',
-                                context.isDarkMode ? 'assets/icons/twitter_light.png' : 'assets/icons/twitter.png',
+                                'assets/icons/twitter.png',
                                 onTap: () => UrlHelper.launchWebsite(
                                   'https://twitter.com/${widget.twitterHandle!.replaceAll('@', '')}',
                                 ),
+                                isTwitter: true,
                               ),
                             ),
 
@@ -187,6 +188,7 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
     String label,
     String assetPath, {
     required VoidCallback onTap,
+    bool isTwitter = false,
   }) {
     return Material(
       color: Colors.transparent,
@@ -203,7 +205,12 @@ class _MessageSmeBottomSheetState extends State<MessageSmeBottomSheet> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(assetPath, width: 32, height: 32),
+              Image.asset(
+                assetPath,
+                width: 32,
+                height: 32,
+                color: (isTwitter && context.isDarkMode) ? Colors.white : null,
+              ),
               SizedBox(height: AppSpacing.sm),
               Text(
                 label,

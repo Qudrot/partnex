@@ -181,13 +181,15 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               SizedBox(height: AppSpacing.smd),
-                              CustomButton(
-                                text: "Don't have an account? Sign up",
-                                variant: ButtonVariant.tertiary,
-                                isFullWidth: true,
-                                onPressed: () {
-                                  uiService.replaceWith(const SignupPage());
-                                },
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: CustomButton(
+                                  text: "Don't have an account? Sign up",
+                                  variant: ButtonVariant.tertiary,
+                                  onPressed: () {
+                                    uiService.replaceWith(const SignupPage());
+                                  },
+                                ),
                               ),
                               SizedBox(height: AppSpacing.xl),
                             ],

@@ -260,7 +260,6 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
 
     return Column(
       children: [
-        _buildComparisonHeader(),
         Expanded(
           child: ListView(
             padding: EdgeInsets.all(AppSpacing.md),
@@ -276,7 +275,11 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(LucideIcons.heart, size: AppSpacing.avatar, color: AppColors.textSecondary(context)),
+          Icon(
+            LucideIcons.heart,
+            size: AppSpacing.avatar,
+            color: AppColors.textSecondary(context),
+          ),
           SizedBox(height: AppSpacing.md),
           Text(
             'No companies yet',
@@ -296,41 +299,6 @@ class _ComparisonWatchlistPageState extends State<ComparisonWatchlistPage>
             text: 'Explore Companies',
             variant: ButtonVariant.tertiary,
             onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildComparisonHeader() {
-    return Container(
-      color: AppColors.surface(context),
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border(context), width: 1)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomButton(
-            text: 'Share',
-            variant: ButtonVariant.tertiary,
-            icon: const Icon(
-              LucideIcons.share2,
-              size: 16,
-              color: AppColors.trustBlue,
-            ),
-            onPressed: () {},
-          ),
-          CustomButton(
-            text: 'Export PDF',
-            variant: ButtonVariant.tertiary,
-            icon: const Icon(
-              LucideIcons.download,
-              size: 16,
-              color: AppColors.trustBlue,
-            ),
-            onPressed: () {},
           ),
         ],
       ),

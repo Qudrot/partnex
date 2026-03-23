@@ -275,8 +275,8 @@ class _CredibilityDashboardPageState extends State<CredibilityDashboardPage> {
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 16.0,
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

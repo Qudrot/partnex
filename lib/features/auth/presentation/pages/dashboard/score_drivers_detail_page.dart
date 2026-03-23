@@ -72,7 +72,7 @@ class ScoreDriversDetailPage extends StatelessWidget {
           return SafeArea(
             child: ListView(
               padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
+                horizontal: AppSpacing.lg,
                 vertical: AppSpacing.xl,
               ),
               children: [
@@ -310,11 +310,11 @@ class ScoreDriversDetailPage extends StatelessWidget {
           child: Text(
             'You have it figured out! Keep rising and growing—you are on an exceptional path of financial stability and credibility.',
             style: AppTypography.textTheme.bodyLarge?.copyWith(
-              color: AppColors.successGreen,
+              color: AppColors.trustBlue,
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.italic,
             ),
-            textAlign: TextAlign.center,
+            //textAlign: TextAlign.center,
           ),
         ),
       );

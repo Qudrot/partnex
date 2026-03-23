@@ -233,18 +233,7 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
 
             SizedBox(height: AppSpacing.xl),
 
-                    // Danger Zone
-                  CustomButton(
-                    text: 'Delete Account',
-                    variant: ButtonVariant.dangerTertiary,
-                    isFullWidth: true,
-                    icon: const Icon(
-                      LucideIcons.trash,
-                      size: 16,
-                      color: AppColors.dangerRed,
-                    ),
-                    onPressed: () {},
-                  ),
+            SizedBox(height: AppSpacing.xl),
                   
             SizedBox(height: AppSpacing.xxl),
           ],

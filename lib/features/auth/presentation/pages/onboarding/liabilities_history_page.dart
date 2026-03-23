@@ -150,6 +150,7 @@ class _LiabilitiesHistoryPageState extends State<LiabilitiesHistoryPage> {
         appBar: AppBar(
           backgroundColor: AppColors.surface(context),
           elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.textPrimary(context)),
           leading: IconButton(
             icon: Icon(LucideIcons.chevronLeft, color: AppColors.textPrimary(context)),
             onPressed: () => Navigator.pop(context),

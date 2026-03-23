@@ -7,6 +7,7 @@ import 'package:partnex/core/theme/widgets/custom_progress_indicator.dart';
 import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/csv_upload_page.dart';
 import 'package:partnex/features/auth/presentation/pages/onboarding/revenue_expenses_page.dart';
+import 'package:partnex/core/utils/url_helper.dart';
 
 class InputMethodSelectionPage extends StatelessWidget {
   final bool isUpdatingRecord;
@@ -114,12 +115,15 @@ class InputMethodSelectionPage extends StatelessWidget {
                         },
                       ),
                       SizedBox(height: AppSpacing.xl),
-                      CustomButton(
-                        text: 'Need help? Contact support',
-                        variant: ButtonVariant.tertiary,
-                        onPressed: () {
-                          // TODO: handle help/support
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CustomButton(
+                            text: 'Need help? Contact support',
+                            variant: ButtonVariant.tertiary,
+                            onPressed: () => UrlHelper.launchEmail('support@partnex.ng'),
+                          ),
+                        ],
                       ),
                     ],
                   ),

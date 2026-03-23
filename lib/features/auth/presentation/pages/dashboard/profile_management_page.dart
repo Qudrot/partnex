@@ -237,13 +237,17 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                         _ActionTile(
                           title: 'View Score History',
                           icon: LucideIcons.history,
-                          onTap: () {},
+                          onTap: () => uiService.showSnackBar(
+                            'Score History Coming Soon: Track your business credibility trends and see how your score improves over time.',
+                          ),
                         ),
                         Divider(height: 1, color: AppColors.border(context)),
                         _ActionTile(
                           title: 'Download All Reports',
                           icon: LucideIcons.download,
-                          onTap: () {},
+                          onTap: () => uiService.showSnackBar(
+                            'Report Exports Coming Soon: Generate professional PDF reports of your credibility score and business analysis.',
+                          ),
                         ),
                       ],
                     ),
@@ -327,7 +331,9 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                       LucideIcons.trash,
                       size: 16,
                       color: AppColors.dangerRed,),
-                    onPressed: () {},
+                    onPressed: () => uiService.showSnackBar(
+                      'Account Deletion: Please contact support@partnex.ng for account deletion requests. Self-service deletion is coming soon.',
+                    ),
                   ),
                   
                   SizedBox(height: AppSpacing.xxl),

@@ -384,13 +384,15 @@ class _SignupPageState extends State<SignupPage> {
                             
                             SizedBox(height: AppSpacing.md),
                             
-                            CustomButton(
-                              text: 'Already have an account? Sign in',
-                              variant: ButtonVariant.tertiary,
-                              isFullWidth: true,
-                              onPressed: () {
-                                uiService.replaceWith(const LoginPage());
-                              },
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: CustomButton(
+                                text: 'Already have an account? Sign in',
+                                variant: ButtonVariant.tertiary,
+                                onPressed: () {
+                                  uiService.replaceWith(const LoginPage());
+                                },
+                              ),
                             ),
                             
                             SizedBox(height: AppSpacing.xl),

@@ -85,20 +85,20 @@ class FinancialMetrics extends Equatable {
   String getDriverExplanation(String driverName) {
     if (driverName.contains('Revenue Growth')) {
       final val = yoyGrowth.toStringAsFixed(yoyGrowth % 1 == 0 ? 0 : 1);
-      return 'Measures your business\'s revenue trajectory. You have a $val% YoY growth rate. Consistent growth is key to credibility.';
+      return 'Calculated from the annual revenue trajectory. This business maintains a $val% YoY growth rate. Consistent growth typically indicates market demand and scalability.';
     } else if (driverName.contains('Profitability')) {
       final exp = expenseRatio.toStringAsFixed(expenseRatio % 1 == 0 ? 0 : 1);
       final prof = profitMargin.toStringAsFixed(profitMargin % 1 == 0 ? 0 : 1);
-      return 'Measures your ability to generate profit. Your expense ratio is $exp% with a profit margin of $prof%.';
+      return 'Evaluated based on the net profit margin and expense management. The business operates with a $prof% profit margin and an expense ratio of $exp%.';
     } else if (driverName.contains('Debt')) {
       final lib = liabilitiesToRevenueRatio.toStringAsFixed(liabilitiesToRevenueRatio % 1 == 0 ? 0 : 1);
-      return 'Measures your debt relative to revenue. Your liabilities-to-revenue ratio is $lib%.';
+      return 'Measures total liabilities relative to annual revenue. The business has a liabilities-to-revenue ratio of $lib%, reflecting its current debt coverage capacity.';
     } else if (driverName.contains('Efficiency')) {
-      return 'Measures operational output. You are generating ₦${(revenuePerEmployee / 1000000).toStringAsFixed(2)}M in revenue per employee.';
+      return 'Operational output is measured by revenue generated per employee. This business generates ₦${(revenuePerEmployee / 1000000).toStringAsFixed(2)}M per head, reflecting workforce productivity.';
     } else if (driverName.contains('Maturity')) {
-      return 'Measures business stability based on your $yearsOfOperation years of operation. Older businesses have more predictable performance.';
+      return 'Maturity is assessed by the $yearsOfOperation years of operation. Established businesses with longer track records typically offer more predictable performance data.';
     }
-    return 'This metric evaluates a key aspect of your business creditworthiness.';
+    return 'This metric evaluates a key aspect of the business creditworthiness and financial health.';
   }
 
   Map<String, List<String>> getImprovementRecommendations() {

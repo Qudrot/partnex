@@ -124,6 +124,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.textPrimary(context)),
           leading: IconButton(
             icon: Icon(
               LucideIcons.chevronLeft,
@@ -180,7 +181,7 @@ class _CsvUploadPageState extends State<CsvUploadPage> {
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary(context),
                   ),
-                  textAlign: TextAlign.center,
+                  //textAlign: TextAlign.center,
                 ),
                 SizedBox(height: AppSpacing.xxl),
 
