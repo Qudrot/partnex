@@ -232,7 +232,6 @@ class ApiAuthRepository implements AuthRepository {
         "data_source": data['dataSource'],
       };
 
-
       List<Map<String, dynamic>> revData = [];
       if (data['annualRevenueYear1'] != null) {
         revData.add({'year': data['annualRevenueYear1'], 'amount': data['annualRevenueAmount1'] ?? 0});
@@ -244,8 +243,7 @@ class ApiAuthRepository implements AuthRepository {
         revData.add({'year': data['annualRevenueYear3'], 'amount': data['annualRevenueAmount3'] ?? 0});
       }
 
-      // THE FIX: Swap 'b' and 'a' so the newest year is always year_1
-revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
+      revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
 
       if (revData.isNotEmpty) {
         payload["annual_revenue_year_1"] = revData[0]['year'];
@@ -427,6 +425,20 @@ revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
         parsedRole = UserRole.investor;
       }
 
+      // Check to verify token liveness
+      try {
+        await apiClient.dio.get(
+          parsedRole == UserRole.sme ? '/api/sme/me' : '/api/investor/me',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
+      } on DioException catch (e) {
+        // If the backend says the token is dead (401), force a logout!
+        if (e.response?.statusCode == 401) {
+          await logout();
+          return null; 
+        }
+      } catch (_) {}
+
       try {
         if (parsedRole == UserRole.sme) {
           final profileMap = await getMySmeProfile();
@@ -466,7 +478,7 @@ revData.sort((a, b) => (b['year'] as int).compareTo(a['year'] as int));
 
       return UserModel(
         id: "cached-session",
-        email: "user@partnex",
+        email: parsedRole == UserRole.sme ? "user@partnex" : "investor@partnex",
         name: "User",
         role: parsedRole,
         profilePicture: "",
