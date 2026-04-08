@@ -94,7 +94,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         position: user.position,
       );
 
-      emit(AuthAuthenticated(user));
+      // Automatically log the user in right after signup!
+      // This forces the backend to hand over a fresh JWT token and 
+      // ensures the 'user_role' is permanently written to local storage.
+      try {
+        final loggedInUser = await authRepository.login(
+          email: event.email,
+          password: event.password,
+        );
+        emit(AuthAuthenticated(loggedInUser));
+      } catch (loginError) {
+        // Fallback: If auto-login fails for any reason, proceed with the registered user
+        emit(AuthAuthenticated(user));
+      }
     } catch (e) {
       final msg = e.toString().replaceAll('Exception: ', '');
       emit(AuthError(msg));
