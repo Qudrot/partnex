@@ -32,12 +32,12 @@ class PartnexLogo extends StatelessWidget {
   final Color? textSecondaryColor;
 
   const PartnexLogo({
-    Key? key,
+    super.key,
     this.size = 40.0,
     this.variant = PartnexLogoVariant.brandCombo,
     this.textPrimaryColor,
     this.textSecondaryColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

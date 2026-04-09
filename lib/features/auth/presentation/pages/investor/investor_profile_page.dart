@@ -145,7 +145,7 @@ class _InvestorProfilePageState extends State<InvestorProfilePage> {
                   color: AppColors.textSecondary(context),
                   size: 20,
                 ),
-                activeColor: AppColors.trustBlue,
+                activeThumbColor: AppColors.trustBlue,
               ),
             ),
 

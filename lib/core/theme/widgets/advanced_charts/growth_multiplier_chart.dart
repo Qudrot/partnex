@@ -103,7 +103,7 @@ class GrowthMultiplierChart extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '${data.multiplier.toStringAsFixed(2)}',
+                data.multiplier.toStringAsFixed(2),
                 style: AppTypography.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: mainColor,

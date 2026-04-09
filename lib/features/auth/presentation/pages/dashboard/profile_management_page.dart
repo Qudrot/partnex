@@ -31,8 +31,8 @@ class ProfileManagementPage extends StatefulWidget {
 }
 
 class _ProfileManagementPageState extends State<ProfileManagementPage> {
-  bool _dataPrivacyEnabled = true;
-  bool _notificationsEnabled = true;
+  final bool _dataPrivacyEnabled = true;
+  final bool _notificationsEnabled = true;
 
   @override
   Widget build(BuildContext context) {

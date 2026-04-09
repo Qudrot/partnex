@@ -1,0 +1,26 @@
+﻿Analyzing pages_golden_test.dart...                             
+
+warning - Unused import: 'dart:io' - test\pages_golden_test.dart:1:8 - unused_import
+  error - The named parameter 'sme' is required, but there's no corresponding argument - test\pages_golden_test.dart:198:23 - missing_required_argument
+  error - The named parameter 'smeData' isn't defined - test\pages_golden_test.dart:198:44 - undefined_named_parameter
+  error - The named parameter 'sme' is required, but there's no corresponding argument - test\pages_golden_test.dart:209:23 - missing_required_argument
+  error - The named parameter 'smeData' isn't defined - test\pages_golden_test.dart:209:46 - undefined_named_parameter
+  error - The named parameter 'smeData' isn't defined - test\pages_golden_test.dart:264:46 - undefined_named_parameter
+
+flutter : 6 issues found. 
+(ran in 3.0s)
+At line:1 char:1
++ flutter analyze test/page
+s_golden_test.dart > 
+analysis_output.txt 2>& ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (6 i  
+  ssues found. (ran in 3   
+ .0s):String) [], Remot    
+eException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 

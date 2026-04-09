@@ -50,13 +50,15 @@ class AnalysisCubit extends Cubit<AnalysisState> {
 
       int newStep = state.step;
       if (isDocumentUpload) {
-        if (newProgress < 25) newStep = 1;
-        else if (newProgress < 50) newStep = 2;
+        if (newProgress < 25) {
+          newStep = 1;
+        } else if (newProgress < 50) newStep = 2;
         else if (newProgress < 75) newStep = 3;
         else newStep = 4;
       } else {
-        if (newProgress < 33) newStep = 1;
-        else if (newProgress < 66) newStep = 2;
+        if (newProgress < 33) {
+          newStep = 1;
+        } else if (newProgress < 66) newStep = 2;
         else newStep = 3;
       }
 

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:partnex/core/theme/app_sizes.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:partnex/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:partnex/core/network/api_client.dart';

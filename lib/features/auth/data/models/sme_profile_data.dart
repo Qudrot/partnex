@@ -132,8 +132,9 @@ class SmeCardData {
 
   double get yoyGrowth {
     if (_prevRevenue <= 0) return 0.0;
-    if (previousAnnualRevenue <= 0)
+    if (previousAnnualRevenue <= 0) {
       return 0.0; // Avoid showing +Inf or synthetic numbers if no history
+    }
     return ((annualRevenue - _prevRevenue) / _prevRevenue) * 100;
   }
 
@@ -353,8 +354,9 @@ class SmeCardData {
       );
     }
 
-    if (highlights.isEmpty)
+    if (highlights.isEmpty) {
       return "The financial profile shows neutral indicators across revenue and expense management.";
+    }
 
     String assessment = "$subject ${highlights[0]}. ";
     if (highlights.length > 1) {

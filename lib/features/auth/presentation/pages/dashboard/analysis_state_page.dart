@@ -17,8 +17,13 @@ import 'package:partnex/core/theme/widgets/custom_button.dart';
 
 class AnalysisStatePage extends StatelessWidget {
   final bool isDocumentUpload;
+  final AnalysisCubit? analysisCubit;
 
-  const AnalysisStatePage({super.key, this.isDocumentUpload = false});
+  const AnalysisStatePage({
+    super.key,
+    this.isDocumentUpload = false,
+    this.analysisCubit,
+  });
 
   String _getStepName(int step) {
     if (isDocumentUpload) {
